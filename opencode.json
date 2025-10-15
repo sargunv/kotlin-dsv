@@ -7,10 +7,6 @@
         "kotlin-formatter": {
             "command": ["ktfmt", "--ktfmt-style=google", "-w", "$FILE"],
             "extensions": [".kt", ".kts"]
-        },
-        "java-formatter": {
-            "command": ["clang-format", "-i", "$FILE"],
-            "extensions": [".java"]
         }
     }
 }
