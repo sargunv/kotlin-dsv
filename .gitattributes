@@ -3,8 +3,8 @@
 docs/** linguist-documentation
 
 # Test resources - mark as vendored to exclude from language statistics
+**/resources/**/*.csv linguist-vendored
 **/resources/**/*.json linguist-vendored
-**/resources/**/*.geojson linguist-vendored
 
 # Dependency lock files - mark as vendored
 yarn.lock linguist-vendored

@@ -10,3 +10,5 @@ dependencyResolutionManagement { @Suppress("UnstableApiUsage") repositories { ma
 rootProject.name = "root"
 
 include(":kotlin-dsv")
+
+include(":benchmark")

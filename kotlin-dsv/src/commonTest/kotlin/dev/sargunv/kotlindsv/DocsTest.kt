@@ -17,7 +17,7 @@ class DocsTest {
     @Serializable data class Person(val name: String, val age: Int, val email: String?)
 
     // Encode to CSV string
-    val people = listOf(Person("Alice", 30, "alice@example.com"), Person("Bob", 25, null))
+    val people = listOf(Person("Keiko", 30, "keiko@example.com"), Person("Rashid", 25, null))
     val csv = Csv.encodeToString(people)
 
     // Decode from CSV string
@@ -28,8 +28,8 @@ class DocsTest {
     assertEquals(
       """
       name,age,email
-      Alice,30,alice@example.com
-      Bob,25,
+      Keiko,30,keiko@example.com
+      Rashid,25,
 
       """
         .trimIndent(),
@@ -120,7 +120,7 @@ class DocsTest {
     val format = DsvFormat(Csv.scheme, namingStrategy = DsvNamingStrategy.SnakeCase)
 
     val users =
-      listOf(User("John", "Doe", "john@example.com"), User("Jane", "Smith", "jane@example.com"))
+      listOf(User("Amara", "Okafor", "amara@example.com"), User("Chen", "Wei", "chen@example.com"))
 
     val csv = format.encodeToString(users)
     // CSV will have headers: first_name,last_name,email_address
@@ -132,8 +132,8 @@ class DocsTest {
     assertEquals(
       """
       first_name,last_name,email_address
-      John,Doe,john@example.com
-      Jane,Smith,jane@example.com
+      Amara,Okafor,amara@example.com
+      Chen,Wei,chen@example.com
 
       """
         .trimIndent(),
