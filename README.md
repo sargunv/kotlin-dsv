@@ -36,8 +36,8 @@ data class Person(val name: String, val age: Int, val email: String?)
 
 // Encode to CSV string
 val people = listOf(
-    Person("Alice", 30, "alice@example.com"),
-    Person("Bob", 25, null)
+    Person("A", 30, "a@example.com"),
+    Person("B", 25, null)
 )
 val csv = Csv.encodeToString(people)
 
