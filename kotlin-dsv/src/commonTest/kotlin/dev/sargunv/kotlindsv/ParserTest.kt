@@ -12,7 +12,7 @@ class ParserTest {
   private inline fun testCase(input: String, delimiter: Char = ',', block: DsvParser.() -> Unit) {
     val buffer = Buffer()
     buffer.writeString(input)
-    val parser = DsvParser(buffer, DsvEncoding(delimiter))
+    val parser = DsvParser(buffer, DsvScheme(delimiter))
     parser.block()
   }
 

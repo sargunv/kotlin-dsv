@@ -27,7 +27,7 @@ internal class DsvDecoder(source: Source, private val format: DsvFormat) : Abstr
   private lateinit var recordDescriptor: SerialDescriptor
 
   init {
-    val table = DsvParser(source, format.encoding).parseTable()
+    val table = DsvParser(source, format.scheme).parseTable()
     originalHeader = table.header
     mappedHeader = table.header.map { format.namingStrategy.fromDsvName(it) }
     records = table.records.iterator()
@@ -36,8 +36,8 @@ internal class DsvDecoder(source: Source, private val format: DsvFormat) : Abstr
 
   override val serializersModule = format.serializersModule
 
-  override fun beginStructure(descriptor: SerialDescriptor): CompositeDecoder {
-    return when (level) {
+  override fun beginStructure(descriptor: SerialDescriptor): CompositeDecoder =
+    when (level) {
       0 -> {
         require(descriptor.kind == StructureKind.LIST) {
           "Top-level structure must be a list (got ${descriptor.kind})"
@@ -79,16 +79,15 @@ internal class DsvDecoder(source: Source, private val format: DsvFormat) : Abstr
 
       else -> throw SerializationException("Structures within fields are not supported")
     }
-  }
 
   override fun endStructure(descriptor: SerialDescriptor) {
     level--
     if (level < 0) throw SerializationException("Unbalanced structure")
   }
 
-  override fun decodeElementIndex(descriptor: SerialDescriptor): Int {
-    return when (level) {
-      1 -> if (record == null) return CompositeDecoder.DECODE_DONE else row
+  override fun decodeElementIndex(descriptor: SerialDescriptor): Int =
+    when (level) {
+      1 -> if (record == null) CompositeDecoder.DECODE_DONE else row
 
       2 -> {
         var ret: Int
@@ -118,7 +117,6 @@ internal class DsvDecoder(source: Source, private val format: DsvFormat) : Abstr
       else ->
         throw SerializationException("Fields must be within a list of objects (got level $level)")
     }
-  }
 
   override fun decodeValue(): Any {
     require(level == 2) { "Fields must be within a list of objects (got level $level)" }
@@ -129,10 +127,9 @@ internal class DsvDecoder(source: Source, private val format: DsvFormat) : Abstr
 
   override fun decodeString(): String = decodeValue() as String
 
-  override fun decodeNotNullMark(): Boolean {
-    if (col >= record!!.size) return false // implicit null
-    return record!![col] != ""
-  }
+  override fun decodeNotNullMark(): Boolean =
+    if (col >= record!!.size) false // implicit null
+    else record!![col] != ""
 
   override fun decodeNull(): Nothing? {
     if (col >= record!!.size) {

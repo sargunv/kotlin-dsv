@@ -2,7 +2,7 @@ package dev.sargunv.kotlindsv
 
 import kotlinx.io.Source
 
-public class DsvParser(private val input: Source, private val encoding: DsvEncoding) {
+public class DsvParser(private val input: Source, private val scheme: DsvScheme) {
   private var data = StringBuilder()
   private val buffer = ByteArray(4096)
 
@@ -21,18 +21,18 @@ public class DsvParser(private val input: Source, private val encoding: DsvEncod
     var cursor = pos
 
     // accept opening quote
-    if (charAt(cursor) != encoding.quote) return null
+    if (charAt(cursor) != scheme.quote) return null
     cursor++
 
     val result = StringBuilder()
     while (true) {
       // require content
       val c = charAt(cursor) ?: throw DsvParseException("Unterminated quoted value")
-      if (c == encoding.quote) {
+      if (c == scheme.quote) {
         val next = charAt(cursor + 1)
-        if (next == encoding.quote) {
+        if (next == scheme.quote) {
           // accept escaped quote
-          result.append(encoding.quote)
+          result.append(scheme.quote)
           cursor += 2
         } else {
           // accept closing quote
@@ -50,7 +50,7 @@ public class DsvParser(private val input: Source, private val encoding: DsvEncod
 
   private fun readNonQuotedField(pos: Int): ReadResult<String>? {
     val firstChar = charAt(pos) ?: return null
-    if (firstChar == encoding.quote) return null // not a non-quoted field
+    if (firstChar == scheme.quote) return null // not a non-quoted field
 
     var cursor = pos
     val result = StringBuilder()
@@ -58,10 +58,10 @@ public class DsvParser(private val input: Source, private val encoding: DsvEncod
     while (true) {
       val c = charAt(cursor) ?: break
       when (c) {
-        encoding.quote -> throw DsvParseException("Unexpected quote in non-quoted field")
-        encoding.delimiter,
-        encoding.newline,
-        encoding.carriageReturn -> break
+        scheme.quote -> throw DsvParseException("Unexpected quote in non-quoted field")
+        scheme.delimiter,
+        scheme.newline,
+        scheme.carriageReturn -> break
         else -> result.append(c)
       }
       cursor++
@@ -70,9 +70,8 @@ public class DsvParser(private val input: Source, private val encoding: DsvEncod
     return ReadResult(result.toString(), cursor)
   }
 
-  private fun readNonEmptyField(pos: Int): ReadResult<String>? {
-    return readQuotedField(pos) ?: readNonQuotedField(pos)
-  }
+  private fun readNonEmptyField(pos: Int): ReadResult<String>? =
+    readQuotedField(pos) ?: readNonQuotedField(pos)
 
   private fun readRecord(pos: Int): ReadResult<List<String>>? {
     val (firstField, newPos) = readNonEmptyField(pos) ?: return null
@@ -83,9 +82,9 @@ public class DsvParser(private val input: Source, private val encoding: DsvEncod
     while (true) {
       val c = charAt(cursor) ?: break
       when (c) {
-        encoding.carriageReturn,
-        encoding.newline -> break
-        encoding.delimiter -> {
+        scheme.carriageReturn,
+        scheme.newline -> break
+        scheme.delimiter -> {
           cursor++
           val fieldResult = readNonEmptyField(cursor) ?: ReadResult("", cursor)
           fields.add(fieldResult.value)
@@ -101,9 +100,9 @@ public class DsvParser(private val input: Source, private val encoding: DsvEncod
   private fun readEndOfLine(pos: Int): ReadResult<Unit>? {
     val c = charAt(pos) ?: return ReadResult(Unit, pos)
     return when (c) {
-      encoding.newline -> ReadResult(Unit, pos + 1)
-      encoding.carriageReturn -> {
-        if (charAt(pos + 1) == encoding.newline) ReadResult(Unit, pos + 2)
+      scheme.newline -> ReadResult(Unit, pos + 1)
+      scheme.carriageReturn -> {
+        if (charAt(pos + 1) == scheme.newline) ReadResult(Unit, pos + 2)
         else ReadResult(Unit, pos + 1)
       }
 

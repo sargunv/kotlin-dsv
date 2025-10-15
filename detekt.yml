@@ -4,12 +4,12 @@ config:
 
 comments:
     EndOfSentenceFormat:
-        active: false
+        active: true
     KDocReferencesNonPublicProperty:
-        active: false
+        active: true
     UndocumentedPublicClass:
-        active: false
+        active: true
     UndocumentedPublicFunction:
-        active: false
+        active: true
     UndocumentedPublicProperty:
-        active: false
+        active: true

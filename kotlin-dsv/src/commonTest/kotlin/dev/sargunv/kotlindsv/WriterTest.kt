@@ -13,7 +13,7 @@ class WriterTest {
     block: DsvWriter.() -> Unit,
   ) {
     val buffer = Buffer()
-    val writer = DsvWriter(buffer, DsvEncoding(delimiter))
+    val writer = DsvWriter(buffer, DsvScheme(delimiter))
     writer.block()
     assertEquals(expected.trim(), buffer.readString().trim())
   }

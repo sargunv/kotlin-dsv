@@ -1,5 +1,5 @@
 package dev.sargunv.kotlindsv
 
-public object Csv : DsvFormat(encoding = DsvEncoding(quote = '"', delimiter = ','))
+public object Csv : DsvFormat(scheme = DsvScheme(delimiter = ','))
 
-public object Tsv : DsvFormat(DsvEncoding(quote = '"', delimiter = '\t'))
+public object Tsv : DsvFormat(scheme = DsvScheme(delimiter = '\t'))

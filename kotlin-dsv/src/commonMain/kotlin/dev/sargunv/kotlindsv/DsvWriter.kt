@@ -4,32 +4,29 @@ import kotlin.jvm.JvmName
 import kotlinx.io.Sink
 import kotlinx.io.writeString
 
-public class DsvWriter(private val sink: Sink, private val encoding: DsvEncoding) {
+public class DsvWriter(private val sink: Sink, private val scheme: DsvScheme) {
   private var numColumns = -1
   private var rowCount = 0
 
-  private fun Sink.writeChar(c: Char) {
-    writeString(c.toString())
-  }
+  private fun Sink.writeChar(c: Char) = writeString(c.toString())
 
-  private fun writeField(field: String) {
+  private fun writeField(field: String) =
     if (
       field.any {
-        it == encoding.delimiter ||
-          it == encoding.quote ||
-          it == encoding.newline ||
-          it == encoding.carriageReturn
+        it == scheme.delimiter ||
+          it == scheme.quote ||
+          it == scheme.newline ||
+          it == scheme.carriageReturn
       }
     ) {
-      sink.writeChar(encoding.quote)
+      sink.writeChar(scheme.quote)
       sink.writeString(
-        field.replace(encoding.quote.toString(), encoding.quote.toString() + encoding.quote)
+        field.replace(scheme.quote.toString(), scheme.quote.toString() + scheme.quote)
       )
-      sink.writeChar(encoding.quote)
+      sink.writeChar(scheme.quote)
     } else {
       sink.writeString(field)
     }
-  }
 
   internal fun writeRecord(record: List<String>) {
     if (numColumns < 0) numColumns = record.size
@@ -41,12 +38,12 @@ public class DsvWriter(private val sink: Sink, private val encoding: DsvEncoding
     rowCount++
 
     record.forEachIndexed { i, field ->
-      if (i > 0) sink.writeChar(encoding.delimiter)
+      if (i > 0) sink.writeChar(scheme.delimiter)
       writeField(field)
     }
 
-    if (encoding.writeCrlf) sink.writeChar(encoding.carriageReturn)
-    sink.writeChar(encoding.newline)
+    if (scheme.writeCrlf) sink.writeChar(scheme.carriageReturn)
+    sink.writeChar(scheme.newline)
   }
 
   @JvmName("writeTable")

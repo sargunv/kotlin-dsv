@@ -12,7 +12,7 @@ import kotlinx.serialization.encoding.CompositeEncoder
 internal class DsvEncoder(private val sink: Sink, private val format: DsvFormat) :
   AbstractEncoder() {
 
-  private val dsvWriter = DsvWriter(sink, format.encoding)
+  private val dsvWriter = DsvWriter(sink, format.scheme)
   private var nextIndex: Int = -1
   private var level = 0
   private lateinit var header: List<String>
@@ -58,8 +58,8 @@ internal class DsvEncoder(private val sink: Sink, private val format: DsvFormat)
     }
   }
 
-  override fun encodeElement(descriptor: SerialDescriptor, index: Int): Boolean {
-    return when (level) {
+  override fun encodeElement(descriptor: SerialDescriptor, index: Int): Boolean =
+    when (level) {
       1 -> true
       2 -> {
         nextIndex = index
@@ -67,23 +67,17 @@ internal class DsvEncoder(private val sink: Sink, private val format: DsvFormat)
       }
       else -> throw IllegalStateException("Invalid level $level")
     }
-  }
 
   override fun encodeString(value: String) {
     record[nextIndex] = value
     nextIndex = -1
   }
 
-  override fun encodeValue(value: Any) {
-    encodeString(value.toString())
-  }
+  override fun encodeValue(value: Any) = encodeString(value.toString())
 
-  override fun encodeNull() {
-    encodeString("")
-  }
+  override fun encodeNull() = encodeString("")
 
-  override fun encodeEnum(enumDescriptor: SerialDescriptor, index: Int) {
+  override fun encodeEnum(enumDescriptor: SerialDescriptor, index: Int) =
     if (format.writeEnumsByName) encodeString(enumDescriptor.getElementName(index))
     else encodeInt(index)
-  }
 }
