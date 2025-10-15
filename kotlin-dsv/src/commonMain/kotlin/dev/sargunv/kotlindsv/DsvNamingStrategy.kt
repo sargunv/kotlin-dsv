@@ -10,8 +10,6 @@ public interface DsvNamingStrategy {
       override fun toDsvName(name: String) = this@DsvNamingStrategy.fromDsvName(name)
 
       override fun fromDsvName(name: String) = this@DsvNamingStrategy.toDsvName(name)
-
-      override fun toString(): String = "Reverse:${this@DsvNamingStrategy}"
     }
 
   public data object Identity : DsvNamingStrategy {
@@ -44,7 +42,5 @@ public interface DsvNamingStrategy {
 
     override fun fromDsvName(name: String): String =
       strategies.reversed().fold(name) { acc, strategy -> strategy.fromDsvName(acc) }
-
-    override fun toString(): String = strategies.joinToString("-")
   }
 }

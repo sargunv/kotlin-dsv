@@ -1,5 +1,6 @@
 package dev.sargunv.kotlindsv
 
+import kotlin.jvm.JvmName
 import kotlinx.io.Sink
 import kotlinx.io.writeString
 
@@ -12,7 +13,14 @@ public class DsvWriter(private val sink: Sink, private val encoding: DsvEncoding
   }
 
   private fun writeField(field: String) {
-    if (field.contains(encoding.delimiter) || field.contains(encoding.quote)) {
+    if (
+      field.any {
+        it == encoding.delimiter ||
+          it == encoding.quote ||
+          it == encoding.newline ||
+          it == encoding.carriageReturn
+      }
+    ) {
       sink.writeChar(encoding.quote)
       sink.writeString(
         field.replace(encoding.quote.toString(), encoding.quote.toString() + encoding.quote)
@@ -41,13 +49,17 @@ public class DsvWriter(private val sink: Sink, private val encoding: DsvEncoding
     sink.writeChar(encoding.newline)
   }
 
-  public fun write(table: Sequence<List<String>>): Unit = sink.use { table.forEach(::writeRecord) }
-
+  @JvmName("writeTable")
   public fun write(table: DsvTable): Unit = write(sequenceOf(table.header) + table.records)
 
+  @JvmName("writeRecords")
+  public fun write(table: Sequence<List<String>>): Unit = sink.use { table.forEach(::writeRecord) }
+
+  @JvmName("writeRecords")
   public fun write(table: List<List<String>>): Unit = write(table.asSequence())
 
-  public fun writeMaps(table: Sequence<Map<String, String>>): Unit =
+  @JvmName("writeTable")
+  public fun write(table: Sequence<Map<String, String>>): Unit =
     write(
       sequence<List<String>> {
         val keys = table.firstOrNull()?.keys ?: return@sequence
@@ -59,5 +71,6 @@ public class DsvWriter(private val sink: Sink, private val encoding: DsvEncoding
       }
     )
 
-  public fun writeMaps(table: List<Map<String, String>>): Unit = writeMaps(table.asSequence())
+  @JvmName("writeTable")
+  public fun write(table: List<Map<String, String>>): Unit = write(table.asSequence())
 }

@@ -3,7 +3,7 @@ package dev.sargunv.kotlindsv
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
-class DsvNamingStrategyTest {
+class NamingStrategyTest {
 
   private fun testCase(strategy: DsvNamingStrategy, kotlinName: String, dsvName: String) {
     assertEquals(dsvName, strategy.toDsvName(kotlinName))

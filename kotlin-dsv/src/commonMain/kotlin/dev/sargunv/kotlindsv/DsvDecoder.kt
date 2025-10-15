@@ -2,6 +2,7 @@ package dev.sargunv.kotlindsv
 
 import kotlinx.io.Source
 import kotlinx.serialization.ExperimentalSerializationApi
+import kotlinx.serialization.SerializationException
 import kotlinx.serialization.descriptors.SerialDescriptor
 import kotlinx.serialization.descriptors.StructureKind
 import kotlinx.serialization.descriptors.elementNames
@@ -26,7 +27,7 @@ internal class DsvDecoder(source: Source, private val format: DsvFormat) : Abstr
   private lateinit var recordDescriptor: SerialDescriptor
 
   init {
-    val table = DsvParser(source, format.encoding).parse()
+    val table = DsvParser(source, format.encoding).parseTable()
     originalHeader = table.header
     mappedHeader = table.header.map { format.namingStrategy.fromDsvName(it) }
     records = table.records.iterator()
@@ -76,13 +77,13 @@ internal class DsvDecoder(source: Source, private val format: DsvFormat) : Abstr
         this
       }
 
-      else -> throw NotImplementedError("Structures within fields are not supported")
+      else -> throw SerializationException("Structures within fields are not supported")
     }
   }
 
   override fun endStructure(descriptor: SerialDescriptor) {
     level--
-    if (level < 0) throw IllegalStateException("Unbalanced structure")
+    if (level < 0) throw SerializationException("Unbalanced structure")
   }
 
   override fun decodeElementIndex(descriptor: SerialDescriptor): Int {
@@ -115,7 +116,7 @@ internal class DsvDecoder(source: Source, private val format: DsvFormat) : Abstr
       }
 
       else ->
-        throw NotImplementedError("Fields must be within a list of objects (got level $level)")
+        throw SerializationException("Fields must be within a list of objects (got level $level)")
     }
   }
 
@@ -141,7 +142,7 @@ internal class DsvDecoder(source: Source, private val format: DsvFormat) : Abstr
     }
     val value = decodeString()
     if (value.isEmpty()) return null
-    throw IllegalStateException("Expected null, but got '$value'")
+    throw SerializationException("Expected null, but got '$value'")
   }
 
   override fun decodeBoolean(): Boolean = decodeString().toBoolean()

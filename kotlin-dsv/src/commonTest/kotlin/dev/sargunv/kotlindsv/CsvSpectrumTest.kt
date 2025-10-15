@@ -16,10 +16,16 @@ class CsvSpectrumTest {
     @Language("csv") csv: String,
     @Language("json") json: String,
   ) {
+    // Decode
     val expectedJson = Json.decodeFromString<JsonArray>(json)
-    val actual = Csv.decodeFromString<List<T>>(csv)
-    val actualJson = Json.encodeToJsonElement(actual)
-    assertEquals(expectedJson, actualJson)
+    val decoded = Csv.decodeFromString<List<T>>(csv)
+    val decodedJson = Json.encodeToJsonElement(decoded)
+    assertEquals(expectedJson, decodedJson)
+
+    // Round trip
+    val encoded = Csv.encodeToString(decoded)
+    val decoded2 = Csv.decodeFromString<List<T>>(encoded)
+    assertEquals(decoded, decoded2)
   }
 
   @Serializable

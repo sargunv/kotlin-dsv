@@ -70,12 +70,12 @@ public class DsvParser(private val input: Source, private val encoding: DsvEncod
     return ReadResult(result.toString(), cursor)
   }
 
-  private fun readField(pos: Int): ReadResult<String>? {
+  private fun readNonEmptyField(pos: Int): ReadResult<String>? {
     return readQuotedField(pos) ?: readNonQuotedField(pos)
   }
 
   private fun readRecord(pos: Int): ReadResult<List<String>>? {
-    val (firstField, newPos) = readField(pos) ?: return null
+    val (firstField, newPos) = readNonEmptyField(pos) ?: return null
 
     var cursor = newPos
     val fields = mutableListOf(firstField)
@@ -85,16 +85,13 @@ public class DsvParser(private val input: Source, private val encoding: DsvEncod
       when (c) {
         encoding.carriageReturn,
         encoding.newline -> break
-
         encoding.delimiter -> {
           cursor++
-          val fieldResult =
-            readField(cursor) ?: throw DsvParseException("Expected field after comma")
+          val fieldResult = readNonEmptyField(cursor) ?: ReadResult("", cursor)
           fields.add(fieldResult.value)
           cursor = fieldResult.newPos
         }
-
-        else -> throw DsvParseException("Expected comma or end of line, got $c")
+        else -> throw DsvParseException("Expected delimiter or end of line, got $c")
       }
     }
 
@@ -114,10 +111,9 @@ public class DsvParser(private val input: Source, private val encoding: DsvEncod
     }
   }
 
-  public fun parseHeaderless(): Sequence<List<String>> = sequence {
+  public fun parseRecords(): Sequence<List<String>> = sequence {
     input.use {
-      val (firstRecord, pos) =
-        readRecord(0) ?: throw DsvParseException("Expected at least one record")
+      val (firstRecord, pos) = readRecord(0) ?: return@use
       var cursor =
         readEndOfLine(pos)?.newPos
           ?: throw DsvParseException("Expected end of line, got '${charAt(pos)}'")
@@ -151,15 +147,10 @@ public class DsvParser(private val input: Source, private val encoding: DsvEncod
     }
   }
 
-  public fun parse(): DsvTable {
-    val records = parseHeaderless().iterator()
+  public fun parseTable(): DsvTable {
+    val records = parseRecords().iterator()
     if (!records.hasNext()) throw DsvParseException("Expected a header")
     val header = records.next()
     return DsvTable(header, records.asSequence())
-  }
-
-  public fun parseToMaps(): Sequence<Map<String, String>> {
-    val (header, records) = parse()
-    return records.map { record -> header.zip(record).toMap() }
   }
 }

@@ -47,7 +47,6 @@ public final class dev/sargunv/kotlindsv/DsvNamingStrategy$Composite : dev/sargu
 	public fun fromDsvName (Ljava/lang/String;)Ljava/lang/String;
 	public fun reversed ()Ldev/sargunv/kotlindsv/DsvNamingStrategy;
 	public fun toDsvName (Ljava/lang/String;)Ljava/lang/String;
-	public fun toString ()Ljava/lang/String;
 }
 
 public final class dev/sargunv/kotlindsv/DsvNamingStrategy$DefaultImpls {
@@ -90,9 +89,8 @@ public final class dev/sargunv/kotlindsv/DsvParseException : kotlinx/serializati
 
 public final class dev/sargunv/kotlindsv/DsvParser {
 	public fun <init> (Lkotlinx/io/Source;Ldev/sargunv/kotlindsv/DsvEncoding;)V
-	public final fun parse ()Ldev/sargunv/kotlindsv/DsvTable;
-	public final fun parseHeaderless ()Lkotlin/sequences/Sequence;
-	public final fun parseToMaps ()Lkotlin/sequences/Sequence;
+	public final fun parseRecords ()Lkotlin/sequences/Sequence;
+	public final fun parseTable ()Ldev/sargunv/kotlindsv/DsvTable;
 }
 
 public final class dev/sargunv/kotlindsv/DsvTable {
@@ -105,16 +103,17 @@ public final class dev/sargunv/kotlindsv/DsvTable {
 	public final fun getHeader ()Ljava/util/List;
 	public final fun getRecords ()Lkotlin/sequences/Sequence;
 	public fun hashCode ()I
+	public final fun recordsAsMaps ()Lkotlin/sequences/Sequence;
 	public fun toString ()Ljava/lang/String;
 }
 
 public final class dev/sargunv/kotlindsv/DsvWriter {
 	public fun <init> (Lkotlinx/io/Sink;Ldev/sargunv/kotlindsv/DsvEncoding;)V
-	public final fun write (Ldev/sargunv/kotlindsv/DsvTable;)V
-	public final fun write (Ljava/util/List;)V
-	public final fun write (Lkotlin/sequences/Sequence;)V
-	public final fun writeMaps (Ljava/util/List;)V
-	public final fun writeMaps (Lkotlin/sequences/Sequence;)V
+	public final fun writeRecords (Ljava/util/List;)V
+	public final fun writeRecords (Lkotlin/sequences/Sequence;)V
+	public final fun writeTable (Ldev/sargunv/kotlindsv/DsvTable;)V
+	public final fun writeTable (Ljava/util/List;)V
+	public final fun writeTable (Lkotlin/sequences/Sequence;)V
 }
 
 public final class dev/sargunv/kotlindsv/Tsv : dev/sargunv/kotlindsv/DsvFormat {

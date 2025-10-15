@@ -17,7 +17,6 @@ abstract interface dev.sargunv.kotlindsv/DsvNamingStrategy { // dev.sargunv.kotl
 
         final fun fromDsvName(kotlin/String): kotlin/String // dev.sargunv.kotlindsv/DsvNamingStrategy.Composite.fromDsvName|fromDsvName(kotlin.String){}[0]
         final fun toDsvName(kotlin/String): kotlin/String // dev.sargunv.kotlindsv/DsvNamingStrategy.Composite.toDsvName|toDsvName(kotlin.String){}[0]
-        final fun toString(): kotlin/String // dev.sargunv.kotlindsv/DsvNamingStrategy.Composite.toString|toString(){}[0]
     }
 
     final object Identity : dev.sargunv.kotlindsv/DsvNamingStrategy { // dev.sargunv.kotlindsv/DsvNamingStrategy.Identity|null[0]
@@ -46,7 +45,7 @@ abstract interface dev.sargunv.kotlindsv/DsvNamingStrategy { // dev.sargunv.kotl
 }
 
 final class dev.sargunv.kotlindsv/DsvEncoding { // dev.sargunv.kotlindsv/DsvEncoding|null[0]
-    constructor <init>(kotlin/Char, kotlin/Char, kotlin/Boolean = ...) // dev.sargunv.kotlindsv/DsvEncoding.<init>|<init>(kotlin.Char;kotlin.Char;kotlin.Boolean){}[0]
+    constructor <init>(kotlin/Char, kotlin/Char = ..., kotlin/Boolean = ...) // dev.sargunv.kotlindsv/DsvEncoding.<init>|<init>(kotlin.Char;kotlin.Char;kotlin.Boolean){}[0]
 
     final val carriageReturn // dev.sargunv.kotlindsv/DsvEncoding.carriageReturn|{}carriageReturn[0]
         final fun <get-carriageReturn>(): kotlin/Char // dev.sargunv.kotlindsv/DsvEncoding.carriageReturn.<get-carriageReturn>|<get-carriageReturn>(){}[0]
@@ -75,9 +74,8 @@ final class dev.sargunv.kotlindsv/DsvParseException : kotlinx.serialization/Seri
 final class dev.sargunv.kotlindsv/DsvParser { // dev.sargunv.kotlindsv/DsvParser|null[0]
     constructor <init>(kotlinx.io/Source, dev.sargunv.kotlindsv/DsvEncoding) // dev.sargunv.kotlindsv/DsvParser.<init>|<init>(kotlinx.io.Source;dev.sargunv.kotlindsv.DsvEncoding){}[0]
 
-    final fun parse(): dev.sargunv.kotlindsv/DsvTable // dev.sargunv.kotlindsv/DsvParser.parse|parse(){}[0]
-    final fun parseHeaderless(): kotlin.sequences/Sequence<kotlin.collections/List<kotlin/String>> // dev.sargunv.kotlindsv/DsvParser.parseHeaderless|parseHeaderless(){}[0]
-    final fun parseToMaps(): kotlin.sequences/Sequence<kotlin.collections/Map<kotlin/String, kotlin/String>> // dev.sargunv.kotlindsv/DsvParser.parseToMaps|parseToMaps(){}[0]
+    final fun parseRecords(): kotlin.sequences/Sequence<kotlin.collections/List<kotlin/String>> // dev.sargunv.kotlindsv/DsvParser.parseRecords|parseRecords(){}[0]
+    final fun parseTable(): dev.sargunv.kotlindsv/DsvTable // dev.sargunv.kotlindsv/DsvParser.parseTable|parseTable(){}[0]
 }
 
 final class dev.sargunv.kotlindsv/DsvTable { // dev.sargunv.kotlindsv/DsvTable|null[0]
@@ -93,6 +91,7 @@ final class dev.sargunv.kotlindsv/DsvTable { // dev.sargunv.kotlindsv/DsvTable|n
     final fun copy(kotlin.collections/List<kotlin/String> = ..., kotlin.sequences/Sequence<kotlin.collections/List<kotlin/String>> = ...): dev.sargunv.kotlindsv/DsvTable // dev.sargunv.kotlindsv/DsvTable.copy|copy(kotlin.collections.List<kotlin.String>;kotlin.sequences.Sequence<kotlin.collections.List<kotlin.String>>){}[0]
     final fun equals(kotlin/Any?): kotlin/Boolean // dev.sargunv.kotlindsv/DsvTable.equals|equals(kotlin.Any?){}[0]
     final fun hashCode(): kotlin/Int // dev.sargunv.kotlindsv/DsvTable.hashCode|hashCode(){}[0]
+    final fun recordsAsMaps(): kotlin.sequences/Sequence<kotlin.collections/Map<kotlin/String, kotlin/String>> // dev.sargunv.kotlindsv/DsvTable.recordsAsMaps|recordsAsMaps(){}[0]
     final fun toString(): kotlin/String // dev.sargunv.kotlindsv/DsvTable.toString|toString(){}[0]
 }
 
@@ -101,9 +100,9 @@ final class dev.sargunv.kotlindsv/DsvWriter { // dev.sargunv.kotlindsv/DsvWriter
 
     final fun write(dev.sargunv.kotlindsv/DsvTable) // dev.sargunv.kotlindsv/DsvWriter.write|write(dev.sargunv.kotlindsv.DsvTable){}[0]
     final fun write(kotlin.collections/List<kotlin.collections/List<kotlin/String>>) // dev.sargunv.kotlindsv/DsvWriter.write|write(kotlin.collections.List<kotlin.collections.List<kotlin.String>>){}[0]
+    final fun write(kotlin.collections/List<kotlin.collections/Map<kotlin/String, kotlin/String>>) // dev.sargunv.kotlindsv/DsvWriter.write|write(kotlin.collections.List<kotlin.collections.Map<kotlin.String,kotlin.String>>){}[0]
     final fun write(kotlin.sequences/Sequence<kotlin.collections/List<kotlin/String>>) // dev.sargunv.kotlindsv/DsvWriter.write|write(kotlin.sequences.Sequence<kotlin.collections.List<kotlin.String>>){}[0]
-    final fun writeMaps(kotlin.collections/List<kotlin.collections/Map<kotlin/String, kotlin/String>>) // dev.sargunv.kotlindsv/DsvWriter.writeMaps|writeMaps(kotlin.collections.List<kotlin.collections.Map<kotlin.String,kotlin.String>>){}[0]
-    final fun writeMaps(kotlin.sequences/Sequence<kotlin.collections/Map<kotlin/String, kotlin/String>>) // dev.sargunv.kotlindsv/DsvWriter.writeMaps|writeMaps(kotlin.sequences.Sequence<kotlin.collections.Map<kotlin.String,kotlin.String>>){}[0]
+    final fun write(kotlin.sequences/Sequence<kotlin.collections/Map<kotlin/String, kotlin/String>>) // dev.sargunv.kotlindsv/DsvWriter.write|write(kotlin.sequences.Sequence<kotlin.collections.Map<kotlin.String,kotlin.String>>){}[0]
 }
 
 open class dev.sargunv.kotlindsv/DsvFormat : kotlinx.serialization/StringFormat { // dev.sargunv.kotlindsv/DsvFormat|null[0]
