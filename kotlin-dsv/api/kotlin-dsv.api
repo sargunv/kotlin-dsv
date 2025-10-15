@@ -2,34 +2,16 @@ public final class dev/sargunv/kotlindsv/Csv : dev/sargunv/kotlindsv/DsvFormat {
 	public static final field INSTANCE Ldev/sargunv/kotlindsv/Csv;
 }
 
-public final class dev/sargunv/kotlindsv/DsvEncoding {
-	public fun <init> (CCZ)V
-	public synthetic fun <init> (CCZILkotlin/jvm/internal/DefaultConstructorMarker;)V
-	public final fun component1 ()C
-	public final fun component2 ()C
-	public final fun component3 ()Z
-	public final fun copy (CCZ)Ldev/sargunv/kotlindsv/DsvEncoding;
-	public static synthetic fun copy$default (Ldev/sargunv/kotlindsv/DsvEncoding;CCZILjava/lang/Object;)Ldev/sargunv/kotlindsv/DsvEncoding;
-	public fun equals (Ljava/lang/Object;)Z
-	public final fun getCarriageReturn ()C
-	public final fun getDelimiter ()C
-	public final fun getNewline ()C
-	public final fun getQuote ()C
-	public final fun getWriteCrlf ()Z
-	public fun hashCode ()I
-	public fun toString ()Ljava/lang/String;
-}
-
 public class dev/sargunv/kotlindsv/DsvFormat : kotlinx/serialization/StringFormat {
-	public fun <init> (Ldev/sargunv/kotlindsv/DsvEncoding;Lkotlinx/serialization/modules/SerializersModule;Ldev/sargunv/kotlindsv/DsvNamingStrategy;ZZZ)V
-	public synthetic fun <init> (Ldev/sargunv/kotlindsv/DsvEncoding;Lkotlinx/serialization/modules/SerializersModule;Ldev/sargunv/kotlindsv/DsvNamingStrategy;ZZZILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun <init> (Ldev/sargunv/kotlindsv/DsvScheme;Lkotlinx/serialization/modules/SerializersModule;Ldev/sargunv/kotlindsv/DsvNamingStrategy;ZZZ)V
+	public synthetic fun <init> (Ldev/sargunv/kotlindsv/DsvScheme;Lkotlinx/serialization/modules/SerializersModule;Ldev/sargunv/kotlindsv/DsvNamingStrategy;ZZZILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun decodeFromSource (Lkotlinx/serialization/DeserializationStrategy;Lkotlinx/io/Source;)Ljava/lang/Object;
 	public fun decodeFromString (Lkotlinx/serialization/DeserializationStrategy;Ljava/lang/String;)Ljava/lang/Object;
 	public final fun encodeToSink (Lkotlinx/serialization/SerializationStrategy;Ljava/lang/Object;Lkotlinx/io/Sink;)V
 	public fun encodeToString (Lkotlinx/serialization/SerializationStrategy;Ljava/lang/Object;)Ljava/lang/String;
-	public final fun getEncoding ()Ldev/sargunv/kotlindsv/DsvEncoding;
 	public final fun getIgnoreUnknownKeys ()Z
 	public final fun getNamingStrategy ()Ldev/sargunv/kotlindsv/DsvNamingStrategy;
+	public final fun getScheme ()Ldev/sargunv/kotlindsv/DsvScheme;
 	public fun getSerializersModule ()Lkotlinx/serialization/modules/SerializersModule;
 	public final fun getTreatMissingColumnsAsNull ()Z
 	public final fun getWriteEnumsByName ()Z
@@ -88,9 +70,19 @@ public final class dev/sargunv/kotlindsv/DsvParseException : kotlinx/serializati
 }
 
 public final class dev/sargunv/kotlindsv/DsvParser {
-	public fun <init> (Lkotlinx/io/Source;Ldev/sargunv/kotlindsv/DsvEncoding;)V
+	public fun <init> (Lkotlinx/io/Source;Ldev/sargunv/kotlindsv/DsvScheme;)V
 	public final fun parseRecords ()Lkotlin/sequences/Sequence;
 	public final fun parseTable ()Ldev/sargunv/kotlindsv/DsvTable;
+}
+
+public final class dev/sargunv/kotlindsv/DsvScheme {
+	public fun <init> (CCZ)V
+	public synthetic fun <init> (CCZILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun copy (CCZ)Ldev/sargunv/kotlindsv/DsvScheme;
+	public static synthetic fun copy$default (Ldev/sargunv/kotlindsv/DsvScheme;CCZILjava/lang/Object;)Ldev/sargunv/kotlindsv/DsvScheme;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
 }
 
 public final class dev/sargunv/kotlindsv/DsvTable {
@@ -108,7 +100,7 @@ public final class dev/sargunv/kotlindsv/DsvTable {
 }
 
 public final class dev/sargunv/kotlindsv/DsvWriter {
-	public fun <init> (Lkotlinx/io/Sink;Ldev/sargunv/kotlindsv/DsvEncoding;)V
+	public fun <init> (Lkotlinx/io/Sink;Ldev/sargunv/kotlindsv/DsvScheme;)V
 	public final fun writeRecords (Ljava/util/List;)V
 	public final fun writeRecords (Lkotlin/sequences/Sequence;)V
 	public final fun writeTable (Ldev/sargunv/kotlindsv/DsvTable;)V

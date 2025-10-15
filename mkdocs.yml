@@ -13,6 +13,7 @@ copyright: "Copyright &copy; 2025 Sargun Vohra"
 
 nav:
     - Introduction: index.md
+    - Examples: examples.md
     - "API Reference": api/index.html
 
 theme:
