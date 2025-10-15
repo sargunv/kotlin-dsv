@@ -1,0 +1,9 @@
+.idea
+.gradle
+.kotlin
+/local.properties
+**/build
+
+/site
+/docs/api
+.claude/*.local.json

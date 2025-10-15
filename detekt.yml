@@ -1,0 +1,15 @@
+config:
+    validation: true
+    warningsAsErrors: false
+
+comments:
+    EndOfSentenceFormat:
+        active: false
+    KDocReferencesNonPublicProperty:
+        active: false
+    UndocumentedPublicClass:
+        active: false
+    UndocumentedPublicFunction:
+        active: false
+    UndocumentedPublicProperty:
+        active: false

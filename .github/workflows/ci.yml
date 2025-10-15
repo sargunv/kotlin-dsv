@@ -1,0 +1,110 @@
+name: CI
+
+on:
+    push:
+        branches: [main]
+    pull_request:
+
+permissions:
+    contents: read
+
+jobs:
+    build:
+        strategy:
+            matrix:
+                include:
+                    # Run full build and most tests on ubuntu
+                    - runner: ubuntu-latest
+                      task: build
+                    # Run windows and macos native tests on those platforms
+                    - runner: windows-latest
+                      task: mingwX64Test
+                    - runner: macos-latest
+                      task: macosArm64Test
+
+        runs-on: ${{ matrix.runner }}
+        steps:
+            - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+              with:
+                  fetch-depth: 0
+                  fetch-tags: true
+                  persist-credentials: false
+            - uses: actions/setup-java@dded0888837ed1f317902acf8a20df0ad188d165 # v5.0.0
+              with:
+                  distribution: temurin
+                  java-version: 21
+            - run: ./gradlew version # TODO: remove this once we're confident in our config
+            - run: ./gradlew ${{ matrix.task }}
+            - if: ${{ matrix.task == 'build' }} # Kover only supports JVM
+              name: Generate coverage summary
+              run: |
+                  echo '## Coverage' >> $GITHUB_STEP_SUMMARY
+                  ./gradlew -q :koverLog >> $GITHUB_STEP_SUMMARY
+
+    benchmark:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+              with:
+                  fetch-depth: 0
+                  fetch-tags: true
+                  persist-credentials: false
+            - uses: actions/setup-java@dded0888837ed1f317902acf8a20df0ad188d165 # v5.0.0
+              with:
+                  distribution: temurin
+                  java-version: 21
+            - name: Run benchmark
+              run: |
+                  echo '## Benchmark' >> $GITHUB_STEP_SUMMARY
+                  ./gradlew -q benchmark -PbenchmarkIterations=1 >> $GITHUB_STEP_SUMMARY
+
+    build-docs:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+              with:
+                  fetch-depth: 0
+                  fetch-tags: true
+                  persist-credentials: false
+            - uses: actions/setup-java@dded0888837ed1f317902acf8a20df0ad188d165 # v5.0.0
+              with:
+                  distribution: temurin
+                  java-version: 21
+            - run: ./gradlew :mkdocsBuild
+            - uses: actions/upload-pages-artifact@7b1f4a764d45c48632c6b24a0339c27f5614fb0b # v4.0.0
+              with:
+                  path: build/mkdocs
+
+    check-format:
+        runs-on: ubuntu-latest
+        permissions:
+            contents: read
+            checks: write
+            issues: write
+            pull-requests: write
+        steps:
+            - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+              with:
+                  fetch-depth: 0
+                  fetch-tags: true
+                  persist-credentials: false
+            - uses: actions/setup-java@dded0888837ed1f317902acf8a20df0ad188d165 # v5.0.0
+              with:
+                  distribution: temurin
+                  java-version: 21
+            - uses: pre-commit/action@2c7b3805fd2a0fd8c1884dcaebf91fc102a13ecd # v3.0.1
+              with:
+                  extra_args: --all-files --hook-stage manual
+            - if: ${{ github.event_name == 'pull_request' && always() }}
+              uses: reviewdog/action-suggester@aa38384ceb608d00f84b4690cacc83a5aba307ff # v1.24.0
+              with:
+                  tool_name: format
+                  fail_level: any
+                  filter_mode: diff_context
+
+    # stub to use as a "required" check on github
+    all-good:
+        needs: [build, check-format, build-docs, benchmark]
+        runs-on: ubuntu-latest
+        steps:
+            - run: echo 'All checks passed!'

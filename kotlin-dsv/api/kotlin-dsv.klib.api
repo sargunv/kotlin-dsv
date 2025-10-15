@@ -1,0 +1,137 @@
+// Klib ABI Dump
+// Targets: [androidNativeArm32, androidNativeArm64, androidNativeX64, androidNativeX86, iosArm64, iosSimulatorArm64, iosX64, js, linuxArm64, linuxX64, macosArm64, macosX64, mingwX64, tvosArm64, tvosSimulatorArm64, tvosX64, wasmJs, wasmWasi, watchosArm32, watchosArm64, watchosDeviceArm64, watchosSimulatorArm64, watchosX64]
+// Rendering settings:
+// - Signature version: 2
+// - Show manifest properties: true
+// - Show declarations: true
+
+// Library unique name: <dev.sargunv.kotlin-dsv:kotlin-dsv>
+abstract interface dev.sargunv.kotlindsv/DsvNamingStrategy { // dev.sargunv.kotlindsv/DsvNamingStrategy|null[0]
+    abstract fun fromDsvName(kotlin/String): kotlin/String // dev.sargunv.kotlindsv/DsvNamingStrategy.fromDsvName|fromDsvName(kotlin.String){}[0]
+    abstract fun toDsvName(kotlin/String): kotlin/String // dev.sargunv.kotlindsv/DsvNamingStrategy.toDsvName|toDsvName(kotlin.String){}[0]
+    open fun reversed(): dev.sargunv.kotlindsv/DsvNamingStrategy // dev.sargunv.kotlindsv/DsvNamingStrategy.reversed|reversed(){}[0]
+
+    final class Composite : dev.sargunv.kotlindsv/DsvNamingStrategy { // dev.sargunv.kotlindsv/DsvNamingStrategy.Composite|null[0]
+        constructor <init>(kotlin.collections/List<dev.sargunv.kotlindsv/DsvNamingStrategy>) // dev.sargunv.kotlindsv/DsvNamingStrategy.Composite.<init>|<init>(kotlin.collections.List<dev.sargunv.kotlindsv.DsvNamingStrategy>){}[0]
+        constructor <init>(kotlin/Array<out dev.sargunv.kotlindsv/DsvNamingStrategy>...) // dev.sargunv.kotlindsv/DsvNamingStrategy.Composite.<init>|<init>(kotlin.Array<out|dev.sargunv.kotlindsv.DsvNamingStrategy>...){}[0]
+
+        final fun fromDsvName(kotlin/String): kotlin/String // dev.sargunv.kotlindsv/DsvNamingStrategy.Composite.fromDsvName|fromDsvName(kotlin.String){}[0]
+        final fun toDsvName(kotlin/String): kotlin/String // dev.sargunv.kotlindsv/DsvNamingStrategy.Composite.toDsvName|toDsvName(kotlin.String){}[0]
+        final fun toString(): kotlin/String // dev.sargunv.kotlindsv/DsvNamingStrategy.Composite.toString|toString(){}[0]
+    }
+
+    final object Identity : dev.sargunv.kotlindsv/DsvNamingStrategy { // dev.sargunv.kotlindsv/DsvNamingStrategy.Identity|null[0]
+        final fun equals(kotlin/Any?): kotlin/Boolean // dev.sargunv.kotlindsv/DsvNamingStrategy.Identity.equals|equals(kotlin.Any?){}[0]
+        final fun fromDsvName(kotlin/String): kotlin/String // dev.sargunv.kotlindsv/DsvNamingStrategy.Identity.fromDsvName|fromDsvName(kotlin.String){}[0]
+        final fun hashCode(): kotlin/Int // dev.sargunv.kotlindsv/DsvNamingStrategy.Identity.hashCode|hashCode(){}[0]
+        final fun toDsvName(kotlin/String): kotlin/String // dev.sargunv.kotlindsv/DsvNamingStrategy.Identity.toDsvName|toDsvName(kotlin.String){}[0]
+        final fun toString(): kotlin/String // dev.sargunv.kotlindsv/DsvNamingStrategy.Identity.toString|toString(){}[0]
+    }
+
+    final object KebabCase : dev.sargunv.kotlindsv/DsvNamingStrategy { // dev.sargunv.kotlindsv/DsvNamingStrategy.KebabCase|null[0]
+        final fun equals(kotlin/Any?): kotlin/Boolean // dev.sargunv.kotlindsv/DsvNamingStrategy.KebabCase.equals|equals(kotlin.Any?){}[0]
+        final fun fromDsvName(kotlin/String): kotlin/String // dev.sargunv.kotlindsv/DsvNamingStrategy.KebabCase.fromDsvName|fromDsvName(kotlin.String){}[0]
+        final fun hashCode(): kotlin/Int // dev.sargunv.kotlindsv/DsvNamingStrategy.KebabCase.hashCode|hashCode(){}[0]
+        final fun toDsvName(kotlin/String): kotlin/String // dev.sargunv.kotlindsv/DsvNamingStrategy.KebabCase.toDsvName|toDsvName(kotlin.String){}[0]
+        final fun toString(): kotlin/String // dev.sargunv.kotlindsv/DsvNamingStrategy.KebabCase.toString|toString(){}[0]
+    }
+
+    final object SnakeCase : dev.sargunv.kotlindsv/DsvNamingStrategy { // dev.sargunv.kotlindsv/DsvNamingStrategy.SnakeCase|null[0]
+        final fun equals(kotlin/Any?): kotlin/Boolean // dev.sargunv.kotlindsv/DsvNamingStrategy.SnakeCase.equals|equals(kotlin.Any?){}[0]
+        final fun fromDsvName(kotlin/String): kotlin/String // dev.sargunv.kotlindsv/DsvNamingStrategy.SnakeCase.fromDsvName|fromDsvName(kotlin.String){}[0]
+        final fun hashCode(): kotlin/Int // dev.sargunv.kotlindsv/DsvNamingStrategy.SnakeCase.hashCode|hashCode(){}[0]
+        final fun toDsvName(kotlin/String): kotlin/String // dev.sargunv.kotlindsv/DsvNamingStrategy.SnakeCase.toDsvName|toDsvName(kotlin.String){}[0]
+        final fun toString(): kotlin/String // dev.sargunv.kotlindsv/DsvNamingStrategy.SnakeCase.toString|toString(){}[0]
+    }
+}
+
+final class dev.sargunv.kotlindsv/DsvEncoding { // dev.sargunv.kotlindsv/DsvEncoding|null[0]
+    constructor <init>(kotlin/Char, kotlin/Char, kotlin/Boolean = ...) // dev.sargunv.kotlindsv/DsvEncoding.<init>|<init>(kotlin.Char;kotlin.Char;kotlin.Boolean){}[0]
+
+    final val carriageReturn // dev.sargunv.kotlindsv/DsvEncoding.carriageReturn|{}carriageReturn[0]
+        final fun <get-carriageReturn>(): kotlin/Char // dev.sargunv.kotlindsv/DsvEncoding.carriageReturn.<get-carriageReturn>|<get-carriageReturn>(){}[0]
+    final val delimiter // dev.sargunv.kotlindsv/DsvEncoding.delimiter|{}delimiter[0]
+        final fun <get-delimiter>(): kotlin/Char // dev.sargunv.kotlindsv/DsvEncoding.delimiter.<get-delimiter>|<get-delimiter>(){}[0]
+    final val newline // dev.sargunv.kotlindsv/DsvEncoding.newline|{}newline[0]
+        final fun <get-newline>(): kotlin/Char // dev.sargunv.kotlindsv/DsvEncoding.newline.<get-newline>|<get-newline>(){}[0]
+    final val quote // dev.sargunv.kotlindsv/DsvEncoding.quote|{}quote[0]
+        final fun <get-quote>(): kotlin/Char // dev.sargunv.kotlindsv/DsvEncoding.quote.<get-quote>|<get-quote>(){}[0]
+    final val writeCrlf // dev.sargunv.kotlindsv/DsvEncoding.writeCrlf|{}writeCrlf[0]
+        final fun <get-writeCrlf>(): kotlin/Boolean // dev.sargunv.kotlindsv/DsvEncoding.writeCrlf.<get-writeCrlf>|<get-writeCrlf>(){}[0]
+
+    final fun component1(): kotlin/Char // dev.sargunv.kotlindsv/DsvEncoding.component1|component1(){}[0]
+    final fun component2(): kotlin/Char // dev.sargunv.kotlindsv/DsvEncoding.component2|component2(){}[0]
+    final fun component3(): kotlin/Boolean // dev.sargunv.kotlindsv/DsvEncoding.component3|component3(){}[0]
+    final fun copy(kotlin/Char = ..., kotlin/Char = ..., kotlin/Boolean = ...): dev.sargunv.kotlindsv/DsvEncoding // dev.sargunv.kotlindsv/DsvEncoding.copy|copy(kotlin.Char;kotlin.Char;kotlin.Boolean){}[0]
+    final fun equals(kotlin/Any?): kotlin/Boolean // dev.sargunv.kotlindsv/DsvEncoding.equals|equals(kotlin.Any?){}[0]
+    final fun hashCode(): kotlin/Int // dev.sargunv.kotlindsv/DsvEncoding.hashCode|hashCode(){}[0]
+    final fun toString(): kotlin/String // dev.sargunv.kotlindsv/DsvEncoding.toString|toString(){}[0]
+}
+
+final class dev.sargunv.kotlindsv/DsvParseException : kotlinx.serialization/SerializationException { // dev.sargunv.kotlindsv/DsvParseException|null[0]
+    constructor <init>(kotlin/String) // dev.sargunv.kotlindsv/DsvParseException.<init>|<init>(kotlin.String){}[0]
+}
+
+final class dev.sargunv.kotlindsv/DsvParser { // dev.sargunv.kotlindsv/DsvParser|null[0]
+    constructor <init>(kotlinx.io/Source, dev.sargunv.kotlindsv/DsvEncoding) // dev.sargunv.kotlindsv/DsvParser.<init>|<init>(kotlinx.io.Source;dev.sargunv.kotlindsv.DsvEncoding){}[0]
+
+    final fun parse(): dev.sargunv.kotlindsv/DsvTable // dev.sargunv.kotlindsv/DsvParser.parse|parse(){}[0]
+    final fun parseHeaderless(): kotlin.sequences/Sequence<kotlin.collections/List<kotlin/String>> // dev.sargunv.kotlindsv/DsvParser.parseHeaderless|parseHeaderless(){}[0]
+    final fun parseToMaps(): kotlin.sequences/Sequence<kotlin.collections/Map<kotlin/String, kotlin/String>> // dev.sargunv.kotlindsv/DsvParser.parseToMaps|parseToMaps(){}[0]
+}
+
+final class dev.sargunv.kotlindsv/DsvTable { // dev.sargunv.kotlindsv/DsvTable|null[0]
+    constructor <init>(kotlin.collections/List<kotlin/String>, kotlin.sequences/Sequence<kotlin.collections/List<kotlin/String>>) // dev.sargunv.kotlindsv/DsvTable.<init>|<init>(kotlin.collections.List<kotlin.String>;kotlin.sequences.Sequence<kotlin.collections.List<kotlin.String>>){}[0]
+
+    final val header // dev.sargunv.kotlindsv/DsvTable.header|{}header[0]
+        final fun <get-header>(): kotlin.collections/List<kotlin/String> // dev.sargunv.kotlindsv/DsvTable.header.<get-header>|<get-header>(){}[0]
+    final val records // dev.sargunv.kotlindsv/DsvTable.records|{}records[0]
+        final fun <get-records>(): kotlin.sequences/Sequence<kotlin.collections/List<kotlin/String>> // dev.sargunv.kotlindsv/DsvTable.records.<get-records>|<get-records>(){}[0]
+
+    final fun component1(): kotlin.collections/List<kotlin/String> // dev.sargunv.kotlindsv/DsvTable.component1|component1(){}[0]
+    final fun component2(): kotlin.sequences/Sequence<kotlin.collections/List<kotlin/String>> // dev.sargunv.kotlindsv/DsvTable.component2|component2(){}[0]
+    final fun copy(kotlin.collections/List<kotlin/String> = ..., kotlin.sequences/Sequence<kotlin.collections/List<kotlin/String>> = ...): dev.sargunv.kotlindsv/DsvTable // dev.sargunv.kotlindsv/DsvTable.copy|copy(kotlin.collections.List<kotlin.String>;kotlin.sequences.Sequence<kotlin.collections.List<kotlin.String>>){}[0]
+    final fun equals(kotlin/Any?): kotlin/Boolean // dev.sargunv.kotlindsv/DsvTable.equals|equals(kotlin.Any?){}[0]
+    final fun hashCode(): kotlin/Int // dev.sargunv.kotlindsv/DsvTable.hashCode|hashCode(){}[0]
+    final fun toString(): kotlin/String // dev.sargunv.kotlindsv/DsvTable.toString|toString(){}[0]
+}
+
+final class dev.sargunv.kotlindsv/DsvWriter { // dev.sargunv.kotlindsv/DsvWriter|null[0]
+    constructor <init>(kotlinx.io/Sink, dev.sargunv.kotlindsv/DsvEncoding) // dev.sargunv.kotlindsv/DsvWriter.<init>|<init>(kotlinx.io.Sink;dev.sargunv.kotlindsv.DsvEncoding){}[0]
+
+    final fun write(dev.sargunv.kotlindsv/DsvTable) // dev.sargunv.kotlindsv/DsvWriter.write|write(dev.sargunv.kotlindsv.DsvTable){}[0]
+    final fun write(kotlin.collections/List<kotlin.collections/List<kotlin/String>>) // dev.sargunv.kotlindsv/DsvWriter.write|write(kotlin.collections.List<kotlin.collections.List<kotlin.String>>){}[0]
+    final fun write(kotlin.sequences/Sequence<kotlin.collections/List<kotlin/String>>) // dev.sargunv.kotlindsv/DsvWriter.write|write(kotlin.sequences.Sequence<kotlin.collections.List<kotlin.String>>){}[0]
+    final fun writeMaps(kotlin.collections/List<kotlin.collections/Map<kotlin/String, kotlin/String>>) // dev.sargunv.kotlindsv/DsvWriter.writeMaps|writeMaps(kotlin.collections.List<kotlin.collections.Map<kotlin.String,kotlin.String>>){}[0]
+    final fun writeMaps(kotlin.sequences/Sequence<kotlin.collections/Map<kotlin/String, kotlin/String>>) // dev.sargunv.kotlindsv/DsvWriter.writeMaps|writeMaps(kotlin.sequences.Sequence<kotlin.collections.Map<kotlin.String,kotlin.String>>){}[0]
+}
+
+open class dev.sargunv.kotlindsv/DsvFormat : kotlinx.serialization/StringFormat { // dev.sargunv.kotlindsv/DsvFormat|null[0]
+    constructor <init>(dev.sargunv.kotlindsv/DsvEncoding, kotlinx.serialization.modules/SerializersModule = ..., dev.sargunv.kotlindsv/DsvNamingStrategy = ..., kotlin/Boolean = ..., kotlin/Boolean = ..., kotlin/Boolean = ...) // dev.sargunv.kotlindsv/DsvFormat.<init>|<init>(dev.sargunv.kotlindsv.DsvEncoding;kotlinx.serialization.modules.SerializersModule;dev.sargunv.kotlindsv.DsvNamingStrategy;kotlin.Boolean;kotlin.Boolean;kotlin.Boolean){}[0]
+
+    final val encoding // dev.sargunv.kotlindsv/DsvFormat.encoding|{}encoding[0]
+        final fun <get-encoding>(): dev.sargunv.kotlindsv/DsvEncoding // dev.sargunv.kotlindsv/DsvFormat.encoding.<get-encoding>|<get-encoding>(){}[0]
+    final val ignoreUnknownKeys // dev.sargunv.kotlindsv/DsvFormat.ignoreUnknownKeys|{}ignoreUnknownKeys[0]
+        final fun <get-ignoreUnknownKeys>(): kotlin/Boolean // dev.sargunv.kotlindsv/DsvFormat.ignoreUnknownKeys.<get-ignoreUnknownKeys>|<get-ignoreUnknownKeys>(){}[0]
+    final val namingStrategy // dev.sargunv.kotlindsv/DsvFormat.namingStrategy|{}namingStrategy[0]
+        final fun <get-namingStrategy>(): dev.sargunv.kotlindsv/DsvNamingStrategy // dev.sargunv.kotlindsv/DsvFormat.namingStrategy.<get-namingStrategy>|<get-namingStrategy>(){}[0]
+    final val treatMissingColumnsAsNull // dev.sargunv.kotlindsv/DsvFormat.treatMissingColumnsAsNull|{}treatMissingColumnsAsNull[0]
+        final fun <get-treatMissingColumnsAsNull>(): kotlin/Boolean // dev.sargunv.kotlindsv/DsvFormat.treatMissingColumnsAsNull.<get-treatMissingColumnsAsNull>|<get-treatMissingColumnsAsNull>(){}[0]
+    final val writeEnumsByName // dev.sargunv.kotlindsv/DsvFormat.writeEnumsByName|{}writeEnumsByName[0]
+        final fun <get-writeEnumsByName>(): kotlin/Boolean // dev.sargunv.kotlindsv/DsvFormat.writeEnumsByName.<get-writeEnumsByName>|<get-writeEnumsByName>(){}[0]
+    open val serializersModule // dev.sargunv.kotlindsv/DsvFormat.serializersModule|{}serializersModule[0]
+        open fun <get-serializersModule>(): kotlinx.serialization.modules/SerializersModule // dev.sargunv.kotlindsv/DsvFormat.serializersModule.<get-serializersModule>|<get-serializersModule>(){}[0]
+
+    final fun <#A1: kotlin/Any?> decodeFromSource(kotlinx.serialization/DeserializationStrategy<#A1>, kotlinx.io/Source): #A1 // dev.sargunv.kotlindsv/DsvFormat.decodeFromSource|decodeFromSource(kotlinx.serialization.DeserializationStrategy<0:0>;kotlinx.io.Source){0§<kotlin.Any?>}[0]
+    final fun <#A1: kotlin/Any?> encodeToSink(kotlinx.serialization/SerializationStrategy<#A1>, #A1, kotlinx.io/Sink) // dev.sargunv.kotlindsv/DsvFormat.encodeToSink|encodeToSink(kotlinx.serialization.SerializationStrategy<0:0>;0:0;kotlinx.io.Sink){0§<kotlin.Any?>}[0]
+    final inline fun <#A1: reified kotlin/Any?> decodeFromSource(kotlinx.io/Source): #A1 // dev.sargunv.kotlindsv/DsvFormat.decodeFromSource|decodeFromSource(kotlinx.io.Source){0§<kotlin.Any?>}[0]
+    final inline fun <#A1: reified kotlin/Any?> decodeFromString(kotlin/String): #A1 // dev.sargunv.kotlindsv/DsvFormat.decodeFromString|decodeFromString(kotlin.String){0§<kotlin.Any?>}[0]
+    final inline fun <#A1: reified kotlin/Any?> encodeToSink(#A1, kotlinx.io/Sink) // dev.sargunv.kotlindsv/DsvFormat.encodeToSink|encodeToSink(0:0;kotlinx.io.Sink){0§<kotlin.Any?>}[0]
+    final inline fun <#A1: reified kotlin/Any?> encodeToString(#A1): kotlin/String // dev.sargunv.kotlindsv/DsvFormat.encodeToString|encodeToString(0:0){0§<kotlin.Any?>}[0]
+    open fun <#A1: kotlin/Any?> decodeFromString(kotlinx.serialization/DeserializationStrategy<#A1>, kotlin/String): #A1 // dev.sargunv.kotlindsv/DsvFormat.decodeFromString|decodeFromString(kotlinx.serialization.DeserializationStrategy<0:0>;kotlin.String){0§<kotlin.Any?>}[0]
+    open fun <#A1: kotlin/Any?> encodeToString(kotlinx.serialization/SerializationStrategy<#A1>, #A1): kotlin/String // dev.sargunv.kotlindsv/DsvFormat.encodeToString|encodeToString(kotlinx.serialization.SerializationStrategy<0:0>;0:0){0§<kotlin.Any?>}[0]
+}
+
+final object dev.sargunv.kotlindsv/Csv : dev.sargunv.kotlindsv/DsvFormat // dev.sargunv.kotlindsv/Csv|null[0]
+
+final object dev.sargunv.kotlindsv/Tsv : dev.sargunv.kotlindsv/DsvFormat // dev.sargunv.kotlindsv/Tsv|null[0]

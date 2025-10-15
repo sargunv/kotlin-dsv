@@ -1,0 +1,140 @@
+// Klib ABI Dump
+// Targets: [androidNativeArm32, androidNativeArm64, androidNativeX64, androidNativeX86, iosArm64, iosSimulatorArm64, iosX64, js, linuxArm64, linuxX64, macosArm64, macosX64, mingwX64, tvosArm64, tvosSimulatorArm64, tvosX64, wasmJs, wasmWasi, watchosArm32, watchosArm64, watchosDeviceArm64, watchosSimulatorArm64, watchosX64]
+// Rendering settings:
+// - Signature version: 2
+// - Show manifest properties: true
+// - Show declarations: true
+
+// Library unique name: <dev.sargunv.kotlinx-serialization-dsv:kotlinx-serialization-dsv>
+abstract interface dev.sargunv.kotlincsv/DsvNamingStrategy { // dev.sargunv.kotlincsv/DsvNamingStrategy|null[0]
+    abstract fun fromCsvName(kotlin/String): kotlin/String // dev.sargunv.kotlincsv/DsvNamingStrategy.fromCsvName|fromCsvName(kotlin.String){}[0]
+    abstract fun toCsvName(kotlin/String): kotlin/String // dev.sargunv.kotlincsv/DsvNamingStrategy.toCsvName|toCsvName(kotlin.String){}[0]
+    open fun reversed(): dev.sargunv.kotlincsv/DsvNamingStrategy // dev.sargunv.kotlincsv/DsvNamingStrategy.reversed|reversed(){}[0]
+
+    final class Composite : dev.sargunv.kotlincsv/DsvNamingStrategy { // dev.sargunv.kotlincsv/DsvNamingStrategy.Composite|null[0]
+        constructor <init>(kotlin.collections/List<dev.sargunv.kotlincsv/DsvNamingStrategy>) // dev.sargunv.kotlincsv/DsvNamingStrategy.Composite.<init>|<init>(kotlin.collections.List<dev.sargunv.kotlincsv.DsvNamingStrategy>){}[0]
+
+        final fun fromCsvName(kotlin/String): kotlin/String // dev.sargunv.kotlincsv/DsvNamingStrategy.Composite.fromCsvName|fromCsvName(kotlin.String){}[0]
+        final fun toCsvName(kotlin/String): kotlin/String // dev.sargunv.kotlincsv/DsvNamingStrategy.Composite.toCsvName|toCsvName(kotlin.String){}[0]
+    }
+
+    final object Identity : dev.sargunv.kotlincsv/DsvNamingStrategy { // dev.sargunv.kotlincsv/DsvNamingStrategy.Identity|null[0]
+        final fun fromCsvName(kotlin/String): kotlin/String // dev.sargunv.kotlincsv/DsvNamingStrategy.Identity.fromCsvName|fromCsvName(kotlin.String){}[0]
+        final fun toCsvName(kotlin/String): kotlin/String // dev.sargunv.kotlincsv/DsvNamingStrategy.Identity.toCsvName|toCsvName(kotlin.String){}[0]
+    }
+
+    final object KebabCase : dev.sargunv.kotlincsv/DsvNamingStrategy { // dev.sargunv.kotlincsv/DsvNamingStrategy.KebabCase|null[0]
+        final fun fromCsvName(kotlin/String): kotlin/String // dev.sargunv.kotlincsv/DsvNamingStrategy.KebabCase.fromCsvName|fromCsvName(kotlin.String){}[0]
+        final fun toCsvName(kotlin/String): kotlin/String // dev.sargunv.kotlincsv/DsvNamingStrategy.KebabCase.toCsvName|toCsvName(kotlin.String){}[0]
+    }
+
+    final object SnakeCase : dev.sargunv.kotlincsv/DsvNamingStrategy { // dev.sargunv.kotlincsv/DsvNamingStrategy.SnakeCase|null[0]
+        final fun fromCsvName(kotlin/String): kotlin/String // dev.sargunv.kotlincsv/DsvNamingStrategy.SnakeCase.fromCsvName|fromCsvName(kotlin.String){}[0]
+        final fun toCsvName(kotlin/String): kotlin/String // dev.sargunv.kotlincsv/DsvNamingStrategy.SnakeCase.toCsvName|toCsvName(kotlin.String){}[0]
+    }
+}
+
+final class dev.sargunv.kotlincsv/CsvEncoding { // dev.sargunv.kotlincsv/CsvEncoding|null[0]
+    constructor <init>(kotlin/Char = ..., kotlin/Char = ..., kotlin/Boolean = ...) // dev.sargunv.kotlincsv/CsvEncoding.<init>|<init>(kotlin.Char;kotlin.Char;kotlin.Boolean){}[0]
+
+    final val carriageReturn // dev.sargunv.kotlincsv/CsvEncoding.carriageReturn|{}carriageReturn[0]
+        final fun <get-carriageReturn>(): kotlin/Char // dev.sargunv.kotlincsv/CsvEncoding.carriageReturn.<get-carriageReturn>|<get-carriageReturn>(){}[0]
+    final val delimiter // dev.sargunv.kotlincsv/CsvEncoding.delimiter|{}delimiter[0]
+        final fun <get-delimiter>(): kotlin/Char // dev.sargunv.kotlincsv/CsvEncoding.delimiter.<get-delimiter>|<get-delimiter>(){}[0]
+    final val newline // dev.sargunv.kotlincsv/CsvEncoding.newline|{}newline[0]
+        final fun <get-newline>(): kotlin/Char // dev.sargunv.kotlincsv/CsvEncoding.newline.<get-newline>|<get-newline>(){}[0]
+    final val quote // dev.sargunv.kotlincsv/CsvEncoding.quote|{}quote[0]
+        final fun <get-quote>(): kotlin/Char // dev.sargunv.kotlincsv/CsvEncoding.quote.<get-quote>|<get-quote>(){}[0]
+    final val writeCrlf // dev.sargunv.kotlincsv/CsvEncoding.writeCrlf|{}writeCrlf[0]
+        final fun <get-writeCrlf>(): kotlin/Boolean // dev.sargunv.kotlincsv/CsvEncoding.writeCrlf.<get-writeCrlf>|<get-writeCrlf>(){}[0]
+
+    final fun component1(): kotlin/Char // dev.sargunv.kotlincsv/CsvEncoding.component1|component1(){}[0]
+    final fun component2(): kotlin/Char // dev.sargunv.kotlincsv/CsvEncoding.component2|component2(){}[0]
+    final fun component3(): kotlin/Boolean // dev.sargunv.kotlincsv/CsvEncoding.component3|component3(){}[0]
+    final fun copy(kotlin/Char = ..., kotlin/Char = ..., kotlin/Boolean = ...): dev.sargunv.kotlincsv/CsvEncoding // dev.sargunv.kotlincsv/CsvEncoding.copy|copy(kotlin.Char;kotlin.Char;kotlin.Boolean){}[0]
+    final fun equals(kotlin/Any?): kotlin/Boolean // dev.sargunv.kotlincsv/CsvEncoding.equals|equals(kotlin.Any?){}[0]
+    final fun hashCode(): kotlin/Int // dev.sargunv.kotlincsv/CsvEncoding.hashCode|hashCode(){}[0]
+    final fun toString(): kotlin/String // dev.sargunv.kotlincsv/CsvEncoding.toString|toString(){}[0]
+}
+
+final class dev.sargunv.kotlincsv/CsvParser { // dev.sargunv.kotlincsv/CsvParser|null[0]
+    constructor <init>(kotlinx.io/Source, dev.sargunv.kotlincsv/CsvEncoding = ...) // dev.sargunv.kotlincsv/CsvParser.<init>|<init>(kotlinx.io.Source;dev.sargunv.kotlincsv.CsvEncoding){}[0]
+
+    final fun parse(): dev.sargunv.kotlincsv/CsvTable // dev.sargunv.kotlincsv/CsvParser.parse|parse(){}[0]
+    final fun parseHeaderless(): kotlin.sequences/Sequence<kotlin.collections/List<kotlin/String>> // dev.sargunv.kotlincsv/CsvParser.parseHeaderless|parseHeaderless(){}[0]
+    final fun parseToMaps(): kotlin.sequences/Sequence<kotlin.collections/Map<kotlin/String, kotlin/String>> // dev.sargunv.kotlincsv/CsvParser.parseToMaps|parseToMaps(){}[0]
+
+    final class CsvParseException : kotlin/Exception { // dev.sargunv.kotlincsv/CsvParser.CsvParseException|null[0]
+        constructor <init>(kotlin/String) // dev.sargunv.kotlincsv/CsvParser.CsvParseException.<init>|<init>(kotlin.String){}[0]
+    }
+}
+
+final class dev.sargunv.kotlincsv/CsvTable { // dev.sargunv.kotlincsv/CsvTable|null[0]
+    constructor <init>(kotlin.collections/List<kotlin/String>, kotlin.sequences/Sequence<kotlin.collections/List<kotlin/String>>) // dev.sargunv.kotlincsv/CsvTable.<init>|<init>(kotlin.collections.List<kotlin.String>;kotlin.sequences.Sequence<kotlin.collections.List<kotlin.String>>){}[0]
+
+    final val header // dev.sargunv.kotlincsv/CsvTable.header|{}header[0]
+        final fun <get-header>(): kotlin.collections/List<kotlin/String> // dev.sargunv.kotlincsv/CsvTable.header.<get-header>|<get-header>(){}[0]
+    final val records // dev.sargunv.kotlincsv/CsvTable.records|{}records[0]
+        final fun <get-records>(): kotlin.sequences/Sequence<kotlin.collections/List<kotlin/String>> // dev.sargunv.kotlincsv/CsvTable.records.<get-records>|<get-records>(){}[0]
+
+    final fun component1(): kotlin.collections/List<kotlin/String> // dev.sargunv.kotlincsv/CsvTable.component1|component1(){}[0]
+    final fun component2(): kotlin.sequences/Sequence<kotlin.collections/List<kotlin/String>> // dev.sargunv.kotlincsv/CsvTable.component2|component2(){}[0]
+    final fun copy(kotlin.collections/List<kotlin/String> = ..., kotlin.sequences/Sequence<kotlin.collections/List<kotlin/String>> = ...): dev.sargunv.kotlincsv/CsvTable // dev.sargunv.kotlincsv/CsvTable.copy|copy(kotlin.collections.List<kotlin.String>;kotlin.sequences.Sequence<kotlin.collections.List<kotlin.String>>){}[0]
+    final fun equals(kotlin/Any?): kotlin/Boolean // dev.sargunv.kotlincsv/CsvTable.equals|equals(kotlin.Any?){}[0]
+    final fun hashCode(): kotlin/Int // dev.sargunv.kotlincsv/CsvTable.hashCode|hashCode(){}[0]
+    final fun toString(): kotlin/String // dev.sargunv.kotlincsv/CsvTable.toString|toString(){}[0]
+}
+
+final class dev.sargunv.kotlincsv/CsvWriter { // dev.sargunv.kotlincsv/CsvWriter|null[0]
+    constructor <init>(kotlinx.io/Sink, dev.sargunv.kotlincsv/CsvEncoding = ...) // dev.sargunv.kotlincsv/CsvWriter.<init>|<init>(kotlinx.io.Sink;dev.sargunv.kotlincsv.CsvEncoding){}[0]
+
+    final fun write(dev.sargunv.kotlincsv/CsvTable) // dev.sargunv.kotlincsv/CsvWriter.write|write(dev.sargunv.kotlincsv.CsvTable){}[0]
+    final fun write(kotlin.collections/List<kotlin.collections/List<kotlin/String>>) // dev.sargunv.kotlincsv/CsvWriter.write|write(kotlin.collections.List<kotlin.collections.List<kotlin.String>>){}[0]
+    final fun write(kotlin.sequences/Sequence<kotlin.collections/List<kotlin/String>>) // dev.sargunv.kotlincsv/CsvWriter.write|write(kotlin.sequences.Sequence<kotlin.collections.List<kotlin.String>>){}[0]
+    final fun writeMaps(kotlin.collections/List<kotlin.collections/Map<kotlin/String, kotlin/String>>) // dev.sargunv.kotlincsv/CsvWriter.writeMaps|writeMaps(kotlin.collections.List<kotlin.collections.Map<kotlin.String,kotlin.String>>){}[0]
+    final fun writeMaps(kotlin.sequences/Sequence<kotlin.collections/Map<kotlin/String, kotlin/String>>) // dev.sargunv.kotlincsv/CsvWriter.writeMaps|writeMaps(kotlin.sequences.Sequence<kotlin.collections.Map<kotlin.String,kotlin.String>>){}[0]
+}
+
+open class dev.sargunv.kotlincsv/CsvFormat : kotlinx.serialization/StringFormat { // dev.sargunv.kotlincsv/CsvFormat|null[0]
+    constructor <init>(dev.sargunv.kotlincsv/CsvFormat.Config = ...) // dev.sargunv.kotlincsv/CsvFormat.<init>|<init>(dev.sargunv.kotlincsv.CsvFormat.Config){}[0]
+
+    open val serializersModule // dev.sargunv.kotlincsv/CsvFormat.serializersModule|{}serializersModule[0]
+        open fun <get-serializersModule>(): kotlinx.serialization.modules/SerializersModule // dev.sargunv.kotlincsv/CsvFormat.serializersModule.<get-serializersModule>|<get-serializersModule>(){}[0]
+
+    final fun <#A1: kotlin/Any?> decodeFromSource(kotlinx.serialization/DeserializationStrategy<#A1>, kotlinx.io/Source): #A1 // dev.sargunv.kotlincsv/CsvFormat.decodeFromSource|decodeFromSource(kotlinx.serialization.DeserializationStrategy<0:0>;kotlinx.io.Source){0§<kotlin.Any?>}[0]
+    final fun <#A1: kotlin/Any?> encodeToSink(kotlinx.serialization/SerializationStrategy<#A1>, #A1, kotlinx.io/Sink) // dev.sargunv.kotlincsv/CsvFormat.encodeToSink|encodeToSink(kotlinx.serialization.SerializationStrategy<0:0>;0:0;kotlinx.io.Sink){0§<kotlin.Any?>}[0]
+    open fun <#A1: kotlin/Any?> decodeFromString(kotlinx.serialization/DeserializationStrategy<#A1>, kotlin/String): #A1 // dev.sargunv.kotlincsv/CsvFormat.decodeFromString|decodeFromString(kotlinx.serialization.DeserializationStrategy<0:0>;kotlin.String){0§<kotlin.Any?>}[0]
+    open fun <#A1: kotlin/Any?> encodeToString(kotlinx.serialization/SerializationStrategy<#A1>, #A1): kotlin/String // dev.sargunv.kotlincsv/CsvFormat.encodeToString|encodeToString(kotlinx.serialization.SerializationStrategy<0:0>;0:0){0§<kotlin.Any?>}[0]
+
+    final class Config { // dev.sargunv.kotlincsv/CsvFormat.Config|null[0]
+        constructor <init>(dev.sargunv.kotlincsv/CsvEncoding = ..., kotlinx.serialization.modules/SerializersModule = ..., dev.sargunv.kotlincsv/DsvNamingStrategy = ..., kotlin/Boolean = ..., kotlin/Boolean = ..., kotlin/Boolean = ...) // dev.sargunv.kotlincsv/CsvFormat.Config.<init>|<init>(dev.sargunv.kotlincsv.CsvEncoding;kotlinx.serialization.modules.SerializersModule;dev.sargunv.kotlincsv.DsvNamingStrategy;kotlin.Boolean;kotlin.Boolean;kotlin.Boolean){}[0]
+
+        final val encoding // dev.sargunv.kotlincsv/CsvFormat.Config.encoding|{}encoding[0]
+            final fun <get-encoding>(): dev.sargunv.kotlincsv/CsvEncoding // dev.sargunv.kotlincsv/CsvFormat.Config.encoding.<get-encoding>|<get-encoding>(){}[0]
+        final val ignoreUnknownKeys // dev.sargunv.kotlincsv/CsvFormat.Config.ignoreUnknownKeys|{}ignoreUnknownKeys[0]
+            final fun <get-ignoreUnknownKeys>(): kotlin/Boolean // dev.sargunv.kotlincsv/CsvFormat.Config.ignoreUnknownKeys.<get-ignoreUnknownKeys>|<get-ignoreUnknownKeys>(){}[0]
+        final val namingStrategy // dev.sargunv.kotlincsv/CsvFormat.Config.namingStrategy|{}namingStrategy[0]
+            final fun <get-namingStrategy>(): dev.sargunv.kotlincsv/DsvNamingStrategy // dev.sargunv.kotlincsv/CsvFormat.Config.namingStrategy.<get-namingStrategy>|<get-namingStrategy>(){}[0]
+        final val serializersModule // dev.sargunv.kotlincsv/CsvFormat.Config.serializersModule|{}serializersModule[0]
+            final fun <get-serializersModule>(): kotlinx.serialization.modules/SerializersModule // dev.sargunv.kotlincsv/CsvFormat.Config.serializersModule.<get-serializersModule>|<get-serializersModule>(){}[0]
+        final val treatMissingColumnsAsNull // dev.sargunv.kotlincsv/CsvFormat.Config.treatMissingColumnsAsNull|{}treatMissingColumnsAsNull[0]
+            final fun <get-treatMissingColumnsAsNull>(): kotlin/Boolean // dev.sargunv.kotlincsv/CsvFormat.Config.treatMissingColumnsAsNull.<get-treatMissingColumnsAsNull>|<get-treatMissingColumnsAsNull>(){}[0]
+        final val writeEnumsByName // dev.sargunv.kotlincsv/CsvFormat.Config.writeEnumsByName|{}writeEnumsByName[0]
+            final fun <get-writeEnumsByName>(): kotlin/Boolean // dev.sargunv.kotlincsv/CsvFormat.Config.writeEnumsByName.<get-writeEnumsByName>|<get-writeEnumsByName>(){}[0]
+
+        final fun component1(): dev.sargunv.kotlincsv/CsvEncoding // dev.sargunv.kotlincsv/CsvFormat.Config.component1|component1(){}[0]
+        final fun component2(): kotlinx.serialization.modules/SerializersModule // dev.sargunv.kotlincsv/CsvFormat.Config.component2|component2(){}[0]
+        final fun component3(): dev.sargunv.kotlincsv/DsvNamingStrategy // dev.sargunv.kotlincsv/CsvFormat.Config.component3|component3(){}[0]
+        final fun component4(): kotlin/Boolean // dev.sargunv.kotlincsv/CsvFormat.Config.component4|component4(){}[0]
+        final fun component5(): kotlin/Boolean // dev.sargunv.kotlincsv/CsvFormat.Config.component5|component5(){}[0]
+        final fun component6(): kotlin/Boolean // dev.sargunv.kotlincsv/CsvFormat.Config.component6|component6(){}[0]
+        final fun copy(dev.sargunv.kotlincsv/CsvEncoding = ..., kotlinx.serialization.modules/SerializersModule = ..., dev.sargunv.kotlincsv/DsvNamingStrategy = ..., kotlin/Boolean = ..., kotlin/Boolean = ..., kotlin/Boolean = ...): dev.sargunv.kotlincsv/CsvFormat.Config // dev.sargunv.kotlincsv/CsvFormat.Config.copy|copy(dev.sargunv.kotlincsv.CsvEncoding;kotlinx.serialization.modules.SerializersModule;dev.sargunv.kotlincsv.DsvNamingStrategy;kotlin.Boolean;kotlin.Boolean;kotlin.Boolean){}[0]
+        final fun equals(kotlin/Any?): kotlin/Boolean // dev.sargunv.kotlincsv/CsvFormat.Config.equals|equals(kotlin.Any?){}[0]
+        final fun hashCode(): kotlin/Int // dev.sargunv.kotlincsv/CsvFormat.Config.hashCode|hashCode(){}[0]
+        final fun toString(): kotlin/String // dev.sargunv.kotlincsv/CsvFormat.Config.toString|toString(){}[0]
+    }
+
+    final object Csv : dev.sargunv.kotlincsv/CsvFormat // dev.sargunv.kotlincsv/CsvFormat.Csv|null[0]
+
+    final object Tsv : dev.sargunv.kotlincsv/CsvFormat // dev.sargunv.kotlincsv/CsvFormat.Tsv|null[0]
+}

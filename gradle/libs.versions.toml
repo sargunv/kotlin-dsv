@@ -1,0 +1,28 @@
+[versions]
+jetbrains-annotations = "26.0.2-1"
+kotlin = "2.2.20"
+kotlinx-benchmark = "0.4.14"
+kotlinx-kover = "0.9.2"
+kotlinx-serialization = "1.9.0"
+vanniktech-publish = "0.34.0"
+dokka = "2.1.0-Beta"
+kotlinx-io = "0.8.0"
+semver = "0.8.0"
+mkdocs-build = "4.0.1"
+detekt = "2.0.0-alpha.0"
+
+[libraries]
+jetbrains-annotations = { module = "org.jetbrains:annotations", version.ref = "jetbrains-annotations" }
+kotlinx-serialization-core = { module = "org.jetbrains.kotlinx:kotlinx-serialization-core", version.ref = "kotlinx-serialization" }
+kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization" }
+kotlinx-benchmark = { module = "org.jetbrains.kotlinx:kotlinx-benchmark-runtime", version.ref = "kotlinx-benchmark" }
+kotlinx-io-core = { group = "org.jetbrains.kotlinx", name = "kotlinx-io-core", version.ref = "kotlinx-io" }
+gradle-kotlin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
+gradle-kotlin-serialization = { module = "org.jetbrains.kotlin:kotlin-serialization", version.ref = "kotlin" }
+gradle-dokka = { module = "org.jetbrains.dokka:dokka-gradle-plugin", version.ref = "dokka" }
+gradle-publish = { module = "com.vanniktech:gradle-maven-publish-plugin", version.ref = "vanniktech-publish" }
+gradle-benchmark = { module = "org.jetbrains.kotlinx:kotlinx-benchmark-plugin", version.ref = "kotlinx-benchmark" }
+gradle-kover = { module = "org.jetbrains.kotlinx:kover-gradle-plugin", version.ref = "kotlinx-kover" }
+gradle-semver = { module = "com.javiersc.semver:com.javiersc.semver.gradle.plugin", version.ref = "semver" }
+gradle-mkdocs-build = { module = "ru.vyarus.mkdocs-build:ru.vyarus.mkdocs-build.gradle.plugin", version.ref = "mkdocs-build" }
+gradle-detekt = { module = "dev.detekt:dev.detekt.gradle.plugin", version.ref = "detekt" }
