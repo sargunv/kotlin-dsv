@@ -1,5 +1,12 @@
 package dev.sargunv.kotlindsv
 
+/**
+ * Defines the delimiters and quoting rules for a [DsvFormat].
+ *
+ * @property delimiter The character used to separate fields (e.g., ',' for CSV, '\t' for TSV).
+ * @property quote The character used to quote fields containing special characters.
+ * @property writeCrlf When true, writes CRLF line endings; otherwise uses LF.
+ */
 public data class DsvScheme(
   internal val delimiter: Char,
   internal val quote: Char = '"',

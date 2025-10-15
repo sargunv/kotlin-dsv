@@ -2,6 +2,12 @@ package dev.sargunv.kotlindsv
 
 import kotlinx.io.Source
 
+/**
+ * Low-level parser for [DSV][DsvFormat] data.
+ *
+ * Reads from a [Source] and parses according to the provided [DsvScheme]. For typical use cases,
+ * prefer using [DsvFormat] instead.
+ */
 public class DsvParser(private val input: Source, private val scheme: DsvScheme) {
   private var data = StringBuilder()
   private val buffer = ByteArray(4096)
@@ -110,6 +116,11 @@ public class DsvParser(private val input: Source, private val scheme: DsvScheme)
     }
   }
 
+  /**
+   * Parses all records from the input as a sequence of string lists.
+   *
+   * Each list represents one record (row). All records must have the same number of fields.
+   */
   public fun parseRecords(): Sequence<List<String>> = sequence {
     input.use {
       val (firstRecord, pos) = readRecord(0) ?: return@use
@@ -146,6 +157,11 @@ public class DsvParser(private val input: Source, private val scheme: DsvScheme)
     }
   }
 
+  /**
+   * Parses the input as a [DsvTable], treating the first record as a header row.
+   *
+   * @throws DsvParseException if the input is empty or malformed.
+   */
   public fun parseTable(): DsvTable {
     val records = parseRecords().iterator()
     if (!records.hasNext()) throw DsvParseException("Expected a header")

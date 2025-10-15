@@ -4,6 +4,12 @@ import kotlin.jvm.JvmName
 import kotlinx.io.Sink
 import kotlinx.io.writeString
 
+/**
+ * Low-level writer for [DSV][DsvFormat] data.
+ *
+ * Writes to a [Sink] according to the provided [DsvScheme]. For typical use cases, prefer using
+ * [DsvFormat] instead.
+ */
 public class DsvWriter(private val sink: Sink, private val scheme: DsvScheme) {
   private var numColumns = -1
   private var rowCount = 0
@@ -46,15 +52,19 @@ public class DsvWriter(private val sink: Sink, private val scheme: DsvScheme) {
     sink.writeChar(scheme.newline)
   }
 
+  /** Writes a [DsvTable] including its header row. */
   @JvmName("writeTable")
   public fun write(table: DsvTable): Unit = write(sequenceOf(table.header) + table.records)
 
+  /** Writes a sequence of records as string lists. */
   @JvmName("writeRecords")
   public fun write(table: Sequence<List<String>>): Unit = sink.use { table.forEach(::writeRecord) }
 
+  /** Writes a list of records as string lists. */
   @JvmName("writeRecords")
   public fun write(table: List<List<String>>): Unit = write(table.asSequence())
 
+  /** Writes a sequence of records as maps, using keys as the header row. */
   @JvmName("writeTable")
   public fun write(table: Sequence<Map<String, String>>): Unit =
     write(
@@ -68,6 +78,7 @@ public class DsvWriter(private val sink: Sink, private val scheme: DsvScheme) {
       }
     )
 
+  /** Writes a list of records as maps, using keys as the header row. */
   @JvmName("writeTable")
   public fun write(table: List<Map<String, String>>): Unit = write(table.asSequence())
 }
