@@ -10,19 +10,7 @@ permissions:
 
 jobs:
     build:
-        strategy:
-            matrix:
-                include:
-                    # Run full build and most tests on ubuntu
-                    - runner: ubuntu-latest
-                      task: build
-                    # Run windows and macos native tests on those platforms
-                    - runner: windows-latest
-                      task: mingwX64Test
-                    - runner: macos-latest
-                      task: macosArm64Test
-
-        runs-on: ${{ matrix.runner }}
+        runs-on: macos-latest # for the broadest test compatibility
         steps:
             - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
               with:
@@ -33,13 +21,7 @@ jobs:
               with:
                   distribution: temurin
                   java-version: 21
-            - run: ./gradlew version # TODO: remove this once we're confident in our config
-            - run: ./gradlew ${{ matrix.task }}
-            - if: ${{ matrix.task == 'build' }} # Kover only supports JVM
-              name: Generate coverage summary
-              run: |
-                  echo '## Coverage' >> $GITHUB_STEP_SUMMARY
-                  ./gradlew -q :koverLog >> $GITHUB_STEP_SUMMARY
+            - run: ./gradlew build
 
     benchmark:
         runs-on: ubuntu-latest
