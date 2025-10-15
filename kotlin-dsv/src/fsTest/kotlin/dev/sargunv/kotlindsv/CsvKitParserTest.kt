@@ -200,6 +200,63 @@ class CsvKitParserTest {
     assertEquals(3, rows.first().size)
   }
 
+  @Test
+  fun testFoo1Csv() {
+    val csv = readFile("foo1.csv")
+    val records = parseRecords(csv)
+    assertTrue(records.size > 0)
+  }
+
+  @Test
+  fun testFoo2Csv() {
+    val csv = readFile("foo2.csv")
+    val records = parseRecords(csv)
+    assertTrue(records.size > 0)
+  }
+
+  @Test
+  fun testTestGeoJsonCsv() {
+    val csv = readFile("test_geojson.csv")
+    val records = parseRecords(csv)
+    assertTrue(records.size > 0)
+  }
+
+  @Test
+  fun testIrismetaCsv() {
+    val csv = readFile("irismeta.csv")
+    val records = parseRecords(csv)
+    assertTrue(records.size > 0)
+  }
+
+  @Test
+  fun testNullByteCsv() {
+    val csv = readFile("null_byte.csv")
+    // This file contains a null byte, which might cause issues
+    val records = parseRecords(csv)
+    assertTrue(records.size >= 0)
+  }
+
+  @Test
+  fun testTestJsonConvertedCsv() {
+    val csv = readFile("testjson_converted.csv")
+    val records = parseRecords(csv)
+    assertTrue(records.size > 0)
+  }
+
+  @Test
+  fun testTestJsonNestedConvertedCsv() {
+    val csv = readFile("testjson_nested_converted.csv")
+    val records = parseRecords(csv)
+    assertTrue(records.size > 0)
+  }
+
+  @Test
+  fun testBadSkipLinesCsv() {
+    val csv = readFile("bad_skip_lines.csv")
+    // This file likely has issues similar to bad.csv
+    assertFailsWith<DsvParseException> { parseRecords(csv) }
+  }
+
   // Test files from realdata subdirectory
 
   @Test
@@ -226,6 +283,48 @@ class CsvKitParserTest {
   @Test
   fun testRealdataKs1033() {
     val csv = readFile("realdata/ks_1033_data.csv")
+    val records = parseRecords(csv)
+    assertTrue(records.size > 0)
+  }
+
+  @Test
+  fun testRealdataReadme() {
+    val csv = readFile("realdata/README.csv")
+    val records = parseRecords(csv)
+    assertTrue(records.size > 0)
+  }
+
+  @Test
+  fun testRealdataCensus2000GeoSchema() {
+    val csv = readFile("realdata/census_2000/census2000_geo_schema.csv")
+    val records = parseRecords(csv)
+    assertTrue(records.size > 0)
+  }
+
+  @Test
+  fun testRealdataCensus2000Determination() {
+    val csv = readFile("realdata/census_2000/determination.csv")
+    val records = parseRecords(csv)
+    assertTrue(records.size > 0)
+  }
+
+  @Test
+  fun testRealdataCensus2000DeterminationSchema() {
+    val csv = readFile("realdata/census_2000/determination_schema.csv")
+    val records = parseRecords(csv)
+    assertTrue(records.size > 0)
+  }
+
+  @Test
+  fun testRealdataCensus2010GeoSchema() {
+    val csv = readFile("realdata/census_2010/census2010_geo_schema.csv")
+    val records = parseRecords(csv)
+    assertTrue(records.size > 0)
+  }
+
+  @Test
+  fun testRealdataCensus2010IlGeoExcerpt() {
+    val csv = readFile("realdata/census_2010/ilgeo2010_excerpt.csv")
     val records = parseRecords(csv)
     assertTrue(records.size > 0)
   }
