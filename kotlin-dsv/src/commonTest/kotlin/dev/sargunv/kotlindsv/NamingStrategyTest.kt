@@ -40,4 +40,28 @@ class NamingStrategyTest {
       kotlinName = "foo-bar-baz",
       dsvName = "foo_bar_baz",
     )
+
+  @Test
+  fun testPascalCase() =
+    testCase(DsvNamingStrategy.PascalCase, kotlinName = "fooBarBaz", dsvName = "FooBarBaz")
+
+  @Test
+  fun testTitleCaseWords() =
+    testCase(DsvNamingStrategy.TitleCaseWords, kotlinName = "fooBarBaz", dsvName = "Foo Bar Baz")
+
+  @Test
+  fun testSentenceCaseWords() =
+    testCase(
+      DsvNamingStrategy.SentenceCaseWords,
+      kotlinName = "fooBarBaz",
+      dsvName = "Foo bar baz",
+    )
+
+  @Test
+  fun testLowercaseWords() =
+    testCase(DsvNamingStrategy.LowercaseWords, kotlinName = "fooBarBaz", dsvName = "foo bar baz")
+
+  @Test
+  fun testUppercaseWords() =
+    testCase(DsvNamingStrategy.UppercaseWords, kotlinName = "fooBarBaz", dsvName = "FOO BAR BAZ")
 }
