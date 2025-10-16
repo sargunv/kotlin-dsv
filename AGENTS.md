@@ -30,23 +30,12 @@
 - Use kotlinx.serialization annotations (e.g., `@Serializable`)
 - Error handling: throw `DsvParseException` for parsing errors
 - Naming: use `DsvNamingStrategy` for column name transformations
-- **IMPORTANT**: Always run the formatter before committing any changes using
-  `just format` or `pre-commit run --all-files --hook-stage manual`. This
-  formats code and dumps the ABI.
+- Format code and dump ABI with pre-commit hooks before committing
 
 ## Commit Guidelines
 
 Never make a commit unless explicitly asked to do so. Such permission only
 extends to that one commit, not to future commits in that session.
-
-**Before committing, ALWAYS run the formatter:**
-
-```bash
-just format
-```
-
-This will format all code files and dump the ABI. Do not skip this step as it is
-required for all commits.
 
 When making commits, always include a signoff in the commit message following
 this format:
