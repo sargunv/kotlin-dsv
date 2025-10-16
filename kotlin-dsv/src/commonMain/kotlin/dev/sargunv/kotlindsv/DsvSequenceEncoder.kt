@@ -53,9 +53,7 @@ internal class DsvSequenceEncoder(
     }
   }
 
-  /**
-   * Encoder for a single DSV record.
-   */
+  /** Encoder for a single DSV record. */
   private class RecordEncoder(
     private val format: DsvFormat,
     private val dsvWriter: DsvWriter,

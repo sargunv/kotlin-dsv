@@ -32,13 +32,13 @@ internal class DsvDecoder(source: Source, private val format: DsvFormat) : Abstr
         require(descriptor.kind == StructureKind.LIST) {
           "Top-level structure must be a list (got ${descriptor.kind})"
         }
-        
+
         // Validate element type
         val elementDescriptor = descriptor.elementDescriptors.first()
         require(elementDescriptor.kind == StructureKind.CLASS) {
           "List elements must be classes (got ${elementDescriptor.kind})"
         }
-        
+
         level++
         this
       }
@@ -61,7 +61,7 @@ internal class DsvDecoder(source: Source, private val format: DsvFormat) : Abstr
       // Return 0 to allow decodeSerializableElement to be called
       return 0
     }
-    
+
     // elements will be initialized after first decodeSerializableElement call
     if (elements == null) {
       return CompositeDecoder.DECODE_DONE
@@ -83,7 +83,7 @@ internal class DsvDecoder(source: Source, private val format: DsvFormat) : Abstr
       elements = sequenceDecoder.decodeSequence(typedDeserializer).toList()
       currentIndex = 0
     }
-    
+
     @Suppress("UNCHECKED_CAST")
     return elements!![currentIndex++] as T
   }

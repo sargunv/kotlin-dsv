@@ -17,10 +17,7 @@ import kotlinx.serialization.encoding.CompositeDecoder.Companion.UNKNOWN_NAME
  * allowing for lazy evaluation.
  */
 @OptIn(ExperimentalSerializationApi::class)
-internal class DsvSequenceDecoder(
-  source: Source,
-  private val format: DsvFormat,
-) {
+internal class DsvSequenceDecoder(source: Source, private val format: DsvFormat) {
   private val parser = DsvParser(source, format.scheme)
   private val table = parser.parseTable()
   private val originalHeader: List<String> = table.header
@@ -30,43 +27,42 @@ internal class DsvSequenceDecoder(
 
   private lateinit var recordDescriptor: SerialDescriptor
   private lateinit var nullHeaders: List<String>
-  
+
   fun hasRecords(): Boolean = records.hasNext()
 
-  fun <T> decodeSequence(deserializer: kotlinx.serialization.DeserializationStrategy<T>): Sequence<T> =
-    sequence {
-      // Initialize the record descriptor from the first decode
-      if (!::recordDescriptor.isInitialized) {
-        recordDescriptor = deserializer.descriptor
-        require(recordDescriptor.kind == StructureKind.CLASS) {
-          "Element type must be a class (got ${recordDescriptor.kind})"
-        }
+  fun <T> decodeSequence(
+    deserializer: kotlinx.serialization.DeserializationStrategy<T>
+  ): Sequence<T> = sequence {
+    // Initialize the record descriptor from the first decode
+    if (!::recordDescriptor.isInitialized) {
+      recordDescriptor = deserializer.descriptor
+      require(recordDescriptor.kind == StructureKind.CLASS) {
+        "Element type must be a class (got ${recordDescriptor.kind})"
+      }
 
-        nullHeaders =
-          if (format.treatMissingColumnsAsNull) {
-            val originalHeaderSet = originalHeader.toSet()
-            recordDescriptor.elementNames.filter { fieldName ->
-              !recordDescriptor.isElementOptional(recordDescriptor.getElementIndex(fieldName)) &&
-                !originalHeaderSet.contains(format.namingStrategy.toDsvName(fieldName))
-            }
-          } else {
-            emptyList()
+      nullHeaders =
+        if (format.treatMissingColumnsAsNull) {
+          val originalHeaderSet = originalHeader.toSet()
+          recordDescriptor.elementNames.filter { fieldName ->
+            !recordDescriptor.isElementOptional(recordDescriptor.getElementIndex(fieldName)) &&
+              !originalHeaderSet.contains(format.namingStrategy.toDsvName(fieldName))
           }
-      }
-
-      while (records.hasNext()) {
-        val record = records.next()
-        yield(
-          deserializer.deserialize(
-            RecordDecoder(record, originalHeader, mappedHeader, nullHeaders, format, recordDescriptor)
-          )
-        )
-      }
+        } else {
+          emptyList()
+        }
     }
 
-  /**
-   * Decoder for a single DSV record.
-   */
+    while (records.hasNext()) {
+      val record = records.next()
+      yield(
+        deserializer.deserialize(
+          RecordDecoder(record, originalHeader, mappedHeader, nullHeaders, format, recordDescriptor)
+        )
+      )
+    }
+  }
+
+  /** Decoder for a single DSV record. */
   private class RecordDecoder(
     private val record: List<String>,
     private val originalHeader: List<String>,

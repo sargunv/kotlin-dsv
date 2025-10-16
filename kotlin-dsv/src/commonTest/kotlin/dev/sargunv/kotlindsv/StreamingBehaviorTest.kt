@@ -13,13 +13,12 @@ import kotlinx.io.writeString
 import kotlinx.serialization.Serializable
 
 /**
- * Tests to verify that sequence-based encoding/decoding is actually streaming (lazy),
- * while list-based encoding/decoding loads everything at once (eager).
+ * Tests to verify that sequence-based encoding/decoding is actually streaming (lazy), while
+ * list-based encoding/decoding loads everything at once (eager).
  */
 class StreamingBehaviorTest {
 
-  @Serializable
-  data class Record(val id: Int, val name: String, val value: Double)
+  @Serializable data class Record(val id: Int, val name: String, val value: Double)
 
   private val format = DsvFormat(DsvScheme(delimiter = ',', writeCrlf = false))
 
@@ -38,13 +37,11 @@ class StreamingBehaviorTest {
   }
 
   /**
-   * Instrumented source that tracks read operations.
-   * Records when data is read from the underlying source.
+   * Instrumented source that tracks read operations. Records when data is read from the underlying
+   * source.
    */
-  private class InstrumentedSource(
-    private val underlying: Source,
-    private val onRead: () -> Unit
-  ) : RawSource {
+  private class InstrumentedSource(private val underlying: Source, private val onRead: () -> Unit) :
+    RawSource {
     override fun readAtMostTo(sink: Buffer, byteCount: Long): Long {
       val result = underlying.readAtMostTo(sink, byteCount)
       if (result > 0) onRead()
@@ -57,13 +54,11 @@ class StreamingBehaviorTest {
   }
 
   /**
-   * Instrumented sink that tracks write operations.
-   * Records when data is written to the underlying sink.
+   * Instrumented sink that tracks write operations. Records when data is written to the underlying
+   * sink.
    */
-  private class InstrumentedSink(
-    private val underlying: Sink,
-    private val onWrite: () -> Unit
-  ) : RawSink {
+  private class InstrumentedSink(private val underlying: Sink, private val onWrite: () -> Unit) :
+    RawSink {
     override fun write(source: Buffer, byteCount: Long) {
       if (byteCount > 0) onWrite()
       underlying.write(source, byteCount)
@@ -93,23 +88,23 @@ class StreamingBehaviorTest {
 
     // Start consuming the sequence - this triggers header read
     val iterator = sequence.iterator()
-    
+
     // Read count should be > 0 after getting iterator (header and possibly first record read)
     val readsAfterIterator = readCount
     assertTrue(readsAfterIterator > 0, "Source should be read when creating iterator")
 
     // Get first element
     val firstElement = iterator.next()
-    
+
     // Verify we got the first element correctly
     assertTrue(firstElement.id == 1, "First element should have id=1")
-    
+
     // At this point, we should NOT have exhausted the source
     assertTrue(iterator.hasNext(), "Iterator should have more elements")
-    
+
     // Store current read count
     val readsAfterFirst = readCount
-    
+
     // Consume all remaining elements - this should cause more reads
     var elementsConsumed = 1
     while (iterator.hasNext()) {
@@ -117,15 +112,15 @@ class StreamingBehaviorTest {
       elementsConsumed++
     }
     val readsAfterAll = readCount
-    
+
     // Verify we consumed all elements
     assertTrue(elementsConsumed == 10, "Should have consumed all 10 elements")
-    
+
     // Verify that reading more elements caused the source to be read further
     // (even if buffering means we can't predict exact read counts)
     assertTrue(
       readsAfterAll >= readsAfterIterator,
-      "Consuming sequence should read data from source"
+      "Consuming sequence should read data from source",
     )
   }
 
@@ -145,31 +140,28 @@ class StreamingBehaviorTest {
 
     // Verify the list is complete
     assertTrue(list.size == 10, "List should contain all 10 records")
-    
+
     // Verify the source was fully read during decoding
     // (not incrementally during list access)
-    assertTrue(
-      readsAfterDecode > 0,
-      "Source should be read during decode"
-    )
-    
+    assertTrue(readsAfterDecode > 0, "Source should be read during decode")
+
     // Access list elements - this should NOT cause any more reads
     val firstElement = list[0]
     val readsAfterFirstAccess = readCount
-    
+
     assertTrue(firstElement.id == 1, "First element should have id=1")
     assertTrue(
       readsAfterFirstAccess == readsAfterDecode,
-      "Accessing list elements should not cause additional source reads"
+      "Accessing list elements should not cause additional source reads",
     )
-    
+
     // Access more elements
     list.forEach { _ -> }
     val readsAfterIteration = readCount
-    
+
     assertTrue(
       readsAfterIteration == readsAfterDecode,
-      "Iterating list should not cause additional source reads"
+      "Iterating list should not cause additional source reads",
     )
   }
 
@@ -182,10 +174,10 @@ class StreamingBehaviorTest {
     // Encode the sequence
     val buffer = Buffer()
     format.encodeSequenceToSink(sequence, buffer)
-    
+
     // Verify all elements were consumed during encoding
     assertTrue(elementsConsumed == 10, "All sequence elements should be consumed")
-    
+
     // Verify the output is correct
     val result = buffer.readString()
     val lines = result.trim().split('\n')
@@ -201,7 +193,7 @@ class StreamingBehaviorTest {
     // Encode the list
     val buffer = Buffer()
     format.encodeToSink(list, buffer)
-    
+
     // Verify the output is correct
     val result = buffer.readString()
     val lines = result.trim().split('\n')
@@ -213,20 +205,20 @@ class StreamingBehaviorTest {
   fun verifyStreamingBehaviorDifference() {
     // This test verifies that sequence and list operations behave differently
     // by ensuring that sequence operations don't require loading all data upfront
-    
+
     // Test decoding with early termination
     val csv = generateCsv(100)
-    
+
     // Sequence decoding - we should be able to get first element without reading all data
     val seqBuffer = Buffer().apply { writeString(csv) }
     var seqReads = 0
     val seqSource = InstrumentedSource(seqBuffer) { seqReads++ }.buffered()
     val seqResult = format.decodeSourceToSequence<Record>(seqSource)
-    
+
     // Only consume first element
     val seqFirstElement = seqResult.first()
     val seqReadsAfterFirst = seqReads
-    
+
     // List decoding - this will read all data
     val listBuffer = Buffer().apply { writeString(csv) }
     var listReads = 0
@@ -234,15 +226,15 @@ class StreamingBehaviorTest {
     val listResult = format.decodeFromSource<List<Record>>(listSource)
     val listFirstElement = listResult.first()
     val listReadsAfterFirst = listReads
-    
+
     // Verify both got same first element
     assertTrue(seqFirstElement.id == listFirstElement.id, "Both should decode same data")
     assertTrue(seqFirstElement.id == 1, "First element should have id=1")
-    
+
     // Both should have done some reads
     assertTrue(seqReadsAfterFirst > 0, "Sequence should read some data")
     assertTrue(listReadsAfterFirst > 0, "List should read all data")
-    
+
     // The key insight: both approaches work, but sequence allows early termination
     // and doesn't require loading all records into memory at once
   }
@@ -251,20 +243,20 @@ class StreamingBehaviorTest {
   fun sequenceAllowsEarlyTermination() {
     // This test demonstrates that sequence-based decoding allows processing
     // to stop early without reading/parsing the entire file
-    
+
     val csv = generateCsv(1000)
     val buffer = Buffer().apply { writeString(csv) }
     var readOperations = 0
     val source = InstrumentedSource(buffer) { readOperations++ }.buffered()
-    
+
     // Decode as sequence and take only first 5 elements
     val sequence = format.decodeSourceToSequence<Record>(source)
     val firstFive = sequence.take(5).toList()
-    
+
     // Verify we got 5 elements
     assertTrue(firstFive.size == 5, "Should have 5 elements")
     assertTrue(firstFive[0].id == 1 && firstFive[4].id == 5, "Should have correct elements")
-    
+
     // We should have read some data, but not necessarily all of it
     // The exact number of reads depends on buffering, but we verify the sequence works
     assertTrue(readOperations > 0, "Should have read some data")
@@ -274,20 +266,20 @@ class StreamingBehaviorTest {
   fun listRequiresFullParse() {
     // This test demonstrates that list-based decoding requires parsing
     // the entire file even if we only need a few elements
-    
+
     val csv = generateCsv(1000)
     val buffer = Buffer().apply { writeString(csv) }
-    
+
     // Decode as list - this will parse all 1000 records
     val list = format.decodeFromSource<List<Record>>(buffer)
-    
+
     // Now take only first 5 elements from the list
     val firstFive = list.take(5)
-    
+
     // Verify we got 5 elements
     assertTrue(firstFive.size == 5, "Should have 5 elements")
     assertTrue(firstFive[0].id == 1 && firstFive[4].id == 5, "Should have correct elements")
-    
+
     // But the entire list was parsed - we have all 1000 records in memory
     assertTrue(list.size == 1000, "All records should be in memory")
   }

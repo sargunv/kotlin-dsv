@@ -41,7 +41,7 @@ internal class DsvEncoder(private val sink: Sink, private val format: DsvFormat)
     require(recordDescriptor.kind == StructureKind.CLASS) {
       "List elements must be classes (got ${recordDescriptor.kind})"
     }
-    
+
     val header = recordDescriptor.elementNames.toList()
     dsvWriter.writeRecord(header.map { format.namingStrategy.toDsvName(it) })
 

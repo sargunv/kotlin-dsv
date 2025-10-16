@@ -91,7 +91,7 @@ class SequenceEncoderDecoderTest {
       1,Item A,19.99,100,true,ACTIVE,First item
       2,Item B,29.99,,false,INACTIVE,
       3,Item C,39.99,50,true,PENDING,Third item
-      
+
       """
         .trimIndent()
 
@@ -169,14 +169,15 @@ class SequenceEncoderDecoderTest {
       1,"Item, with comma",19.99,,true,ACTIVE,"Quote: ""test""${""}"
       2,"Item
       with newline",29.99,,false,INACTIVE,Normal
-      
+
       """
         .trimIndent()
 
     assertEquals(expected, result)
 
     // Decode it back
-    val decoded = format.decodeSourceToSequence<Sample>(Buffer().apply { writeString(result) }).toList()
+    val decoded =
+      format.decodeSourceToSequence<Sample>(Buffer().apply { writeString(result) }).toList()
     assertEquals(samples.toList(), decoded)
   }
 
@@ -211,13 +212,16 @@ class SequenceEncoderDecoderTest {
       first_name,last_name,email_address,phone_number
       John,Doe,john@example.com,555-1234
       Jane,Smith,jane@example.com,
-      
+
       """
         .trimIndent()
 
     assertEquals(expected, result)
 
-    val decoded = formatSnakeCase.decodeSourceToSequence<CamelCaseSample>(Buffer().apply { writeString(result) }).toList()
+    val decoded =
+      formatSnakeCase
+        .decodeSourceToSequence<CamelCaseSample>(Buffer().apply { writeString(result) })
+        .toList()
     assertEquals(samples.toList(), decoded)
   }
 
@@ -236,13 +240,16 @@ class SequenceEncoderDecoderTest {
       """
       id,name,price,count,active,status,description
       1,Item,9.99,,true,2,
-      
+
       """
         .trimIndent()
 
     assertEquals(expected, result)
 
-    val decoded = formatByOrdinal.decodeSourceToSequence<Sample>(Buffer().apply { writeString(result) }).toList()
+    val decoded =
+      formatByOrdinal
+        .decodeSourceToSequence<Sample>(Buffer().apply { writeString(result) })
+        .toList()
     assertEquals(samples.toList(), decoded)
   }
 
