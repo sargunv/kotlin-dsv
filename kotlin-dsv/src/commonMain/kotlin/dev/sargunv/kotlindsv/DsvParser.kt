@@ -30,16 +30,16 @@ public class DsvParser(private val input: Source, private val scheme: DsvScheme)
         input.readAtMostTo(buffer, incompleteByteCount, buffer.size - incompleteByteCount)
       val numBytesInBuffer = incompleteByteCount + numBytesRead
 
-      for (numExcludedBytes in 0..3) {
+      for (numExcludedBytes in 0..MAX_UTF8_INCOMPLETE_BYTES) {
         val decoded =
           try {
             buffer.decodeToString(
               0,
               numBytesInBuffer - numExcludedBytes,
-              throwOnInvalidSequence = numExcludedBytes != 3,
+              throwOnInvalidSequence = numExcludedBytes != MAX_UTF8_INCOMPLETE_BYTES,
             )
           } catch (e: CharacterCodingException) {
-            if (numExcludedBytes == 3) throw e else continue
+            if (numExcludedBytes == MAX_UTF8_INCOMPLETE_BYTES) throw e else continue
           }
         incompleteByteCount = numExcludedBytes
         data.append(decoded)
@@ -203,5 +203,9 @@ public class DsvParser(private val input: Source, private val scheme: DsvScheme)
     if (!records.hasNext()) throw DsvParseException("Expected a header")
     val header = records.next()
     return DsvTable(header, records.asSequence())
+  }
+
+  private companion object {
+    private const val MAX_UTF8_INCOMPLETE_BYTES = 3
   }
 }

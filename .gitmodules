@@ -1,3 +1,6 @@
 [submodule "kotlin-dsv/src/fsTest/resources/csv-data"]
 	path = kotlin-dsv/src/fsTest/resources/csv-data
 	url = https://github.com/vincentlaucsb/csv-data.git
+[submodule "kotlin-dsv/src/fsTest/resources/china-city-subway-csv"]
+	path = kotlin-dsv/src/fsTest/resources/china-city-subway-csv
+	url = https://github.com/liwt31/china-city-subway-csv.git
