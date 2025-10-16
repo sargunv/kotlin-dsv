@@ -56,9 +56,9 @@ final class dev.sargunv.kotlindsv/DsvParser { // dev.sargunv.kotlindsv/DsvParser
 }
 
 final class dev.sargunv.kotlindsv/DsvScheme { // dev.sargunv.kotlindsv/DsvScheme|null[0]
-    constructor <init>(kotlin/Char, kotlin/Char = ..., kotlin/Boolean = ...) // dev.sargunv.kotlindsv/DsvScheme.<init>|<init>(kotlin.Char;kotlin.Char;kotlin.Boolean){}[0]
+    constructor <init>(kotlin/Char, kotlin/Char = ..., kotlin/Boolean = ..., kotlin/Boolean = ...) // dev.sargunv.kotlindsv/DsvScheme.<init>|<init>(kotlin.Char;kotlin.Char;kotlin.Boolean;kotlin.Boolean){}[0]
 
-    final fun copy(kotlin/Char = ..., kotlin/Char = ..., kotlin/Boolean = ...): dev.sargunv.kotlindsv/DsvScheme // dev.sargunv.kotlindsv/DsvScheme.copy|copy(kotlin.Char;kotlin.Char;kotlin.Boolean){}[0]
+    final fun copy(kotlin/Char = ..., kotlin/Char = ..., kotlin/Boolean = ..., kotlin/Boolean = ...): dev.sargunv.kotlindsv/DsvScheme // dev.sargunv.kotlindsv/DsvScheme.copy|copy(kotlin.Char;kotlin.Char;kotlin.Boolean;kotlin.Boolean){}[0]
     final fun equals(kotlin/Any?): kotlin/Boolean // dev.sargunv.kotlindsv/DsvScheme.equals|equals(kotlin.Any?){}[0]
     final fun hashCode(): kotlin/Int // dev.sargunv.kotlindsv/DsvScheme.hashCode|hashCode(){}[0]
     final fun toString(): kotlin/String // dev.sargunv.kotlindsv/DsvScheme.toString|toString(){}[0]

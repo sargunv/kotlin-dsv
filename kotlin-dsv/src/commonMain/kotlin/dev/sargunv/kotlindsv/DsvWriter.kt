@@ -21,7 +21,7 @@ public class DsvWriter(private val sink: Sink, private val scheme: DsvScheme) {
       field.any {
         it == scheme.delimiter ||
           it == scheme.quote ||
-          it == scheme.newline ||
+          it == scheme.lineFeed ||
           it == scheme.carriageReturn
       }
     ) {
@@ -49,7 +49,7 @@ public class DsvWriter(private val sink: Sink, private val scheme: DsvScheme) {
     }
 
     if (scheme.writeCrlf) sink.writeChar(scheme.carriageReturn)
-    sink.writeChar(scheme.newline)
+    sink.writeChar(scheme.lineFeed)
   }
 
   /** Writes a [DsvTable] including its header row. */

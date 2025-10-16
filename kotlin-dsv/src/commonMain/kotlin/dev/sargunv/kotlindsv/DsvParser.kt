@@ -66,7 +66,7 @@ public class DsvParser(private val input: Source, private val scheme: DsvScheme)
       when (c) {
         scheme.quote -> throw DsvParseException("Unexpected quote in non-quoted field")
         scheme.delimiter,
-        scheme.newline,
+        scheme.lineFeed,
         scheme.carriageReturn -> break
         else -> result.append(c)
       }
@@ -89,7 +89,7 @@ public class DsvParser(private val input: Source, private val scheme: DsvScheme)
       val c = charAt(cursor) ?: break
       when (c) {
         scheme.carriageReturn,
-        scheme.newline -> break
+        scheme.lineFeed -> break
         scheme.delimiter -> {
           cursor++
           val fieldResult = readNonEmptyField(cursor) ?: ReadResult("", cursor)
@@ -104,15 +104,18 @@ public class DsvParser(private val input: Source, private val scheme: DsvScheme)
   }
 
   private fun readEndOfLine(pos: Int): ReadResult<Unit>? {
-    val c = charAt(pos) ?: return ReadResult(Unit, pos)
-    return when (c) {
-      scheme.newline -> ReadResult(Unit, pos + 1)
-      scheme.carriageReturn -> {
-        if (charAt(pos + 1) == scheme.newline) ReadResult(Unit, pos + 2)
-        else ReadResult(Unit, pos + 1)
-      }
+    var c = charAt(pos) ?: return ReadResult(Unit, pos)
+    var pos = pos
 
-      else -> null
+    while (true) {
+      // eat: \r*\n
+      // because CRCRLF is apparently a thing
+      when (c) {
+        scheme.lineFeed -> return ReadResult(Unit, pos + 1)
+        scheme.carriageReturn -> pos += 1
+        else -> return null
+      }
+      c = charAt(pos) ?: return ReadResult(Unit, pos)
     }
   }
 
@@ -136,17 +139,21 @@ public class DsvParser(private val input: Source, private val scheme: DsvScheme)
 
       while (true) {
         val (record, newPos) = readRecord(cursor) ?: break
-        if (record.size != numColumns) {
-          throw DsvParseException(
-            "Expected $numColumns columns, got ${record.size} in record $record"
-          )
-        }
 
         cursor =
           readEndOfLine(newPos)?.newPos
             ?: throw DsvParseException("Expected end of line, got '${charAt(newPos)}'")
         data = StringBuilder(data.drop(cursor))
         cursor = 0
+
+        if (scheme.skipEmptyLines && (record.isEmpty() || record.size == 1 && record[0].isEmpty()))
+          continue
+
+        if (record.size != numColumns) {
+          throw DsvParseException(
+            "Expected $numColumns columns, got ${record.size} in record $record"
+          )
+        }
 
         yield(record)
       }
