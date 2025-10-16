@@ -30,6 +30,8 @@ internal class DsvSequenceDecoder(
 
   private lateinit var recordDescriptor: SerialDescriptor
   private lateinit var nullHeaders: List<String>
+  
+  fun hasRecords(): Boolean = records.hasNext()
 
   fun <T> decodeSequence(deserializer: kotlinx.serialization.DeserializationStrategy<T>): Sequence<T> =
     sequence {

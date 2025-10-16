@@ -106,7 +106,6 @@ public open class DsvFormat(
    *   type [T].
    * @throws [kotlinx.io.IOException] if an I/O error occurs and source can't be read from.
    */
-  @ExperimentalSerializationApi
   public fun <T> decodeSourceToSequence(
     source: Source,
     deserializer: DeserializationStrategy<T>,
@@ -129,7 +128,6 @@ public open class DsvFormat(
    *   type [T].
    * @throws [kotlinx.io.IOException] if an I/O error occurs and source can't be read from.
    */
-  @ExperimentalSerializationApi
   public inline fun <reified T> decodeSourceToSequence(source: Source): Sequence<T> =
     decodeSourceToSequence(source, serializersModule.serializer())
 
@@ -147,7 +145,6 @@ public open class DsvFormat(
    * @throws [SerializationException] if the value cannot be serialized.
    * @throws [kotlinx.io.IOException] if an I/O error occurs and sink can't be written to.
    */
-  @ExperimentalSerializationApi
   public fun <T> encodeSequenceToSink(
     serializer: SerializationStrategy<T>,
     sequence: Sequence<T>,
@@ -170,7 +167,6 @@ public open class DsvFormat(
    * @throws [SerializationException] if the value cannot be serialized.
    * @throws [kotlinx.io.IOException] if an I/O error occurs and sink can't be written to.
    */
-  @ExperimentalSerializationApi
   public inline fun <reified T> encodeSequenceToSink(sequence: Sequence<T>, sink: Sink) {
     encodeSequenceToSink(serializersModule.serializer(), sequence, sink)
   }

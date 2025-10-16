@@ -2,82 +2,77 @@ package dev.sargunv.kotlindsv
 
 import kotlinx.io.Sink
 import kotlinx.serialization.ExperimentalSerializationApi
+import kotlinx.serialization.SerializationStrategy
 import kotlinx.serialization.descriptors.SerialDescriptor
+import kotlinx.serialization.descriptors.StructureKind
 import kotlinx.serialization.descriptors.elementDescriptors
 import kotlinx.serialization.descriptors.elementNames
 import kotlinx.serialization.encoding.AbstractEncoder
 import kotlinx.serialization.encoding.CompositeEncoder
 
+/**
+ * Internal encoder for DSV that wraps [DsvSequenceEncoder] to encode lists.
+ *
+ * This encoder buffers list elements and delegates to [DsvSequenceEncoder] for the actual encoding.
+ */
 @OptIn(ExperimentalSerializationApi::class)
 internal class DsvEncoder(private val sink: Sink, private val format: DsvFormat) :
   AbstractEncoder() {
 
-  private val dsvWriter = DsvWriter(sink, format.scheme)
-  private var nextIndex: Int = -1
-  private var level = 0
-  private lateinit var header: List<String>
-  private lateinit var record: MutableList<String>
-  private lateinit var recordDescriptor: SerialDescriptor
-
   override val serializersModule = format.serializersModule
+
+  private val dsvWriter = DsvWriter(sink, format.scheme)
+  private var level = 0
+  private var elementSerializer: SerializationStrategy<Any?>? = null
+  private val elements = mutableListOf<Any?>()
+  private lateinit var recordDescriptor: SerialDescriptor
 
   override fun beginCollection(
     descriptor: SerialDescriptor,
     collectionSize: Int,
   ): CompositeEncoder {
     require(level == 0) { "Top-level structure must be a list of records" }
+    require(descriptor.kind == StructureKind.LIST) {
+      "Top-level structure must be a list (got ${descriptor.kind})"
+    }
 
-    require(!::recordDescriptor.isInitialized) { "beginCollection called twice" }
+    // Validate and write header immediately
     recordDescriptor = descriptor.elementDescriptors.first()
-    header = recordDescriptor.elementNames.toList()
+    require(recordDescriptor.kind == StructureKind.CLASS) {
+      "List elements must be classes (got ${recordDescriptor.kind})"
+    }
+    
+    val header = recordDescriptor.elementNames.toList()
     dsvWriter.writeRecord(header.map { format.namingStrategy.toDsvName(it) })
-    record = MutableList(header.size) { "" }
 
     level++
     return this
   }
 
-  override fun beginStructure(descriptor: SerialDescriptor): CompositeEncoder {
-    require(level == 1) { "Top-level structure must be a list of records" }
-    level++
-    require(descriptor === recordDescriptor) {
-      "All records must have the same structure (expected $recordDescriptor, got $descriptor)"
+  override fun <T> encodeSerializableElement(
+    descriptor: SerialDescriptor,
+    index: Int,
+    serializer: SerializationStrategy<T>,
+    value: T,
+  ) {
+    require(level == 1) { "Encoding elements must be at level 1" }
+    if (elementSerializer == null) {
+      @Suppress("UNCHECKED_CAST")
+      elementSerializer = serializer as SerializationStrategy<Any?>
     }
-    return this
+    elements.add(value)
   }
 
   override fun endStructure(descriptor: SerialDescriptor) {
     level--
     require(level >= 0) { "Unbalanced structure" }
-    when (level) {
-      1 -> {
-        dsvWriter.writeRecord(record)
-        record.fill("")
+    if (level == 0) {
+      // Encode all buffered elements using the sequence encoder logic
+      if (elementSerializer != null && elements.isNotEmpty()) {
+        val sequenceEncoder = DsvSequenceEncoder(sink, format, dsvWriter, recordDescriptor)
+        sequenceEncoder.encodeSequence(elementSerializer!!, elements.asSequence())
       }
-      0 -> sink.close()
+      sink.close()
     }
   }
-
-  override fun encodeElement(descriptor: SerialDescriptor, index: Int): Boolean =
-    when (level) {
-      1 -> true
-      2 -> {
-        nextIndex = index
-        true
-      }
-      else -> throw IllegalStateException("Invalid level $level")
-    }
-
-  override fun encodeString(value: String) {
-    record[nextIndex] = value
-    nextIndex = -1
-  }
-
-  override fun encodeValue(value: Any) = encodeString(value.toString())
-
-  override fun encodeNull() = encodeString("")
-
-  override fun encodeEnum(enumDescriptor: SerialDescriptor, index: Int) =
-    if (format.writeEnumsByName) encodeString(enumDescriptor.getElementName(index))
-    else encodeInt(index)
 }

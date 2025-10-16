@@ -46,7 +46,6 @@ class DocsTest {
   }
 
   @Test
-  @OptIn(kotlinx.serialization.ExperimentalSerializationApi::class)
   fun lazyStreaming() {
     @Serializable data class Product(val id: Int, val name: String, val price: Double)
 

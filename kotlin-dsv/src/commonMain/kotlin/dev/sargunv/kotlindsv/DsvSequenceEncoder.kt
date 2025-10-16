@@ -19,32 +19,38 @@ import kotlinx.serialization.encoding.CompositeEncoder
 internal class DsvSequenceEncoder(
   private val sink: Sink,
   private val format: DsvFormat,
+  private val dsvWriter: DsvWriter? = null,
+  private val recordDescriptor: SerialDescriptor? = null,
 ) {
-  private val dsvWriter = DsvWriter(sink, format.scheme)
-  private var headerWritten = false
+  private val writer = dsvWriter ?: DsvWriter(sink, format.scheme)
+  private var headerWritten = recordDescriptor != null
   private lateinit var header: List<String>
-  private lateinit var recordDescriptor: SerialDescriptor
+  private lateinit var descriptor: SerialDescriptor
+
+  init {
+    if (recordDescriptor != null) {
+      descriptor = recordDescriptor
+      header = descriptor.elementNames.toList()
+    }
+  }
 
   fun <T> encodeSequence(serializer: SerializationStrategy<T>, sequence: Sequence<T>) {
     for (element in sequence) {
       if (!headerWritten) {
         // Write header on first element
-        recordDescriptor = serializer.descriptor
-        require(recordDescriptor.kind == StructureKind.CLASS) {
-          "Element type must be a class (got ${recordDescriptor.kind})"
+        descriptor = serializer.descriptor
+        require(descriptor.kind == StructureKind.CLASS) {
+          "Element type must be a class (got ${descriptor.kind})"
         }
-        header = recordDescriptor.elementNames.toList()
-        dsvWriter.writeRecord(header.map { format.namingStrategy.toDsvName(it) })
+        header = descriptor.elementNames.toList()
+        writer.writeRecord(header.map { format.namingStrategy.toDsvName(it) })
         headerWritten = true
       }
 
-      val recordEncoder = RecordEncoder(format, dsvWriter, header, recordDescriptor)
+      val recordEncoder = RecordEncoder(format, writer, header, descriptor)
       serializer.serialize(recordEncoder, element)
       recordEncoder.finishRecord()
     }
-
-    // If no elements were encoded, still write the header if we have a descriptor
-    // This is handled by the caller checking if the sequence is empty
   }
 
   /**

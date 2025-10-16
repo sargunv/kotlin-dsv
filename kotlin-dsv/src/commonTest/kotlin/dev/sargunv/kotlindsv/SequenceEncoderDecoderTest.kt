@@ -6,10 +6,8 @@ import kotlin.test.assertTrue
 import kotlinx.io.Buffer
 import kotlinx.io.readString
 import kotlinx.io.writeString
-import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.Serializable
 
-@OptIn(ExperimentalSerializationApi::class)
 class SequenceEncoderDecoderTest {
 
   @Serializable
