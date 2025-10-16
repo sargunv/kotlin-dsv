@@ -4,10 +4,10 @@ on:
     push:
         branches: [main]
         paths:
-            - .github/agents/setup.yml
+            - .github/workflows/test-agent-setup.yml
     pull_request:
         paths:
-            - .github/agents/setup.yml
+            - .github/workflows/test-agent-setup.yml
 
 permissions:
     contents: read
