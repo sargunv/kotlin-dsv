@@ -25,7 +25,7 @@ class EncoderDecoderTest {
     val description: String?,
   )
 
-  private val format = DsvFormat(DsvScheme(delimiter = ','))
+  private val format = DsvFormat(DsvScheme(delimiter = ',', writeCrlf = false))
 
   @Test
   fun encodeBasicList() {
@@ -112,7 +112,8 @@ class EncoderDecoderTest {
 
   @Test
   fun encodeEnumsByOrdinal() {
-    val formatByOrdinal = DsvFormat(DsvScheme(delimiter = ','), writeEnumsByName = false)
+    val formatByOrdinal =
+      DsvFormat(DsvScheme(delimiter = ',', writeCrlf = false), writeEnumsByName = false)
     val samples = listOf(Sample(1, "Item", 9.99, null, true, Status.PENDING, null))
 
     val result = formatByOrdinal.encodeToString(samples)
@@ -134,7 +135,10 @@ class EncoderDecoderTest {
   @Test
   fun encodeWithSnakeCaseNaming() {
     val formatSnakeCase =
-      DsvFormat(scheme = DsvScheme(delimiter = ','), namingStrategy = DsvNamingStrategy.SnakeCase)
+      DsvFormat(
+        scheme = DsvScheme(delimiter = ',', writeCrlf = false),
+        namingStrategy = DsvNamingStrategy.SnakeCase,
+      )
 
     @Serializable
     data class CamelCaseSample(
@@ -170,7 +174,10 @@ class EncoderDecoderTest {
   @Test
   fun treatMissingColumnsAsNull() {
     val formatWithOption =
-      DsvFormat(scheme = DsvScheme(delimiter = ','), treatMissingColumnsAsNull = true)
+      DsvFormat(
+        scheme = DsvScheme(delimiter = ',', writeCrlf = false),
+        treatMissingColumnsAsNull = true,
+      )
 
     @Serializable
     data class PartialSample(

@@ -8,6 +8,7 @@ import kotlinx.serialization.descriptors.StructureKind
 import kotlinx.serialization.descriptors.elementNames
 import kotlinx.serialization.encoding.AbstractDecoder
 import kotlinx.serialization.encoding.CompositeDecoder
+import kotlinx.serialization.encoding.CompositeDecoder.Companion.UNKNOWN_NAME
 
 @OptIn(ExperimentalSerializationApi::class)
 internal class DsvDecoder(source: Source, private val format: DsvFormat) : AbstractDecoder() {
@@ -29,7 +30,7 @@ internal class DsvDecoder(source: Source, private val format: DsvFormat) : Abstr
   init {
     val table = DsvParser(source, format.scheme).parseTable()
     originalHeader = table.header
-    mappedHeader = table.header.map { format.namingStrategy.fromDsvName(it) }
+    mappedHeader = table.header.map { format.namingStrategy.fromDsvName(it.trim()) }
     records = table.records.iterator()
     record = if (records.hasNext()) records.next() else null
   }
@@ -109,7 +110,11 @@ internal class DsvDecoder(source: Source, private val format: DsvFormat) : Abstr
               else -> descriptor.getElementIndex(mappedHeader[col])
             }
           col++
-        } while (ret == CompositeDecoder.UNKNOWN_NAME && format.ignoreUnknownKeys)
+        } while (
+          ret == UNKNOWN_NAME &&
+            (format.ignoreUnknownKeys ||
+              throw SerializationException("Unknown column '${originalHeader[col - 1]}'"))
+        )
         col--
         ret
       }

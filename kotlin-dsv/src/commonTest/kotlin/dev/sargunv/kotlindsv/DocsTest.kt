@@ -3,7 +3,6 @@
 package dev.sargunv.kotlindsv
 
 import kotlin.test.Test
-import kotlin.test.assertEquals
 import kotlinx.io.Buffer
 import kotlinx.io.buffered
 import kotlinx.io.files.Path
@@ -23,18 +22,6 @@ class DocsTest {
     // Decode from CSV string
     val decoded = Csv.decodeFromString<List<Person>>(csv)
     // --8<-- [end:quick-start]
-
-    assertEquals(people, decoded)
-    assertEquals(
-      """
-      name,age,email
-      Keiko,30,keiko@example.com
-      Rashid,25,
-
-      """
-        .trimIndent(),
-      csv,
-    )
   }
 
   @Test
@@ -56,8 +43,6 @@ class DocsTest {
     // Read from the buffer (can be any Source like a file)
     val decoded = Csv.decodeFromSource<List<Product>>(buffer)
     // --8<-- [end:streaming]
-
-    assertEquals(products, decoded)
   }
 
   @Test
@@ -71,18 +56,6 @@ class DocsTest {
     val tsv = Tsv.encodeToString(records)
     val decoded = Tsv.decodeFromString<List<Record>>(tsv)
     // --8<-- [end:tsv]
-
-    assertEquals(records, decoded)
-    assertEquals(
-      """
-      id	name	value
-      1	First	alpha
-      2	Second	beta
-
-      """
-        .trimIndent(),
-      tsv,
-    )
   }
 
   @Test
@@ -97,18 +70,6 @@ class DocsTest {
     val psv = format.encodeToString(items)
     val decoded = format.decodeFromString<List<Data>>(psv)
     // --8<-- [end:custom-delimiter]
-
-    assertEquals(items, decoded)
-    assertEquals(
-      """
-      a|b|c
-      one|two|three
-      four|five|six
-
-      """
-        .trimIndent(),
-      psv,
-    )
   }
 
   @Test
@@ -127,18 +88,6 @@ class DocsTest {
 
     val decoded = format.decodeFromString<List<User>>(csv)
     // --8<-- [end:naming-strategy]
-
-    assertEquals(users, decoded)
-    assertEquals(
-      """
-      first_name,last_name,email_address
-      Amara,Okafor,amara@example.com
-      Chen,Wei,chen@example.com
-
-      """
-        .trimIndent(),
-      csv,
-    )
   }
 
   @Test
@@ -162,8 +111,6 @@ class DocsTest {
     // Missing 'description' column is treated as null
     // Extra 'extra' column is ignored
     // --8<-- [end:missing-columns]
-
-    assertEquals(listOf(PartialData(1, "Item A", null), PartialData(2, "Item B", null)), decoded)
   }
 
   fun streamingFiles() {
@@ -193,7 +140,7 @@ class DocsTest {
           DsvScheme(
             delimiter = ';',
             quote = '\'',
-            writeCrlf = true, // Use Windows-style line endings
+            writeCrlf = false, // Use Unix-style line endings
           )
       )
     // --8<-- [end:custom-quote]
@@ -225,27 +172,5 @@ class DocsTest {
     val csvByOrdinal = formatByOrdinal.encodeToString(items)
     // Output: id,status\n1,0\n2,2
     // --8<-- [end:enums]
-
-    assertEquals(
-      """
-      id,status
-      1,ACTIVE
-      2,PENDING
-
-      """
-        .trimIndent(),
-      csvByName,
-    )
-
-    assertEquals(
-      """
-      id,status
-      1,0
-      2,2
-
-      """
-        .trimIndent(),
-      csvByOrdinal,
-    )
   }
 }

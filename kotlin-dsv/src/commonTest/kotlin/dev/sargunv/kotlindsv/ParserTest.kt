@@ -9,10 +9,14 @@ import kotlinx.io.writeString
 
 class ParserTest {
 
-  private inline fun testCase(input: String, delimiter: Char = ',', block: DsvParser.() -> Unit) {
+  private inline fun testCase(
+    input: String,
+    scheme: DsvScheme = Csv.scheme,
+    block: DsvParser.() -> Unit,
+  ) {
     val buffer = Buffer()
     buffer.writeString(input)
-    val parser = DsvParser(buffer, DsvScheme(delimiter))
+    val parser = DsvParser(buffer, scheme)
     parser.block()
   }
 
@@ -25,7 +29,7 @@ class ParserTest {
         4|5|6
         """
           .trimIndent(),
-      delimiter = '|',
+      scheme = DsvScheme('|'),
     ) {
       assertEquals(
         sequenceOf(listOf("a", "b", "c"), listOf("1", "2", "3"), listOf("4", "5", "6")).toList(),
@@ -48,7 +52,7 @@ class ParserTest {
         4|5|6
         """
           .trimIndent(),
-      delimiter = '|',
+      scheme = DsvScheme('|'),
     ) {
       val (header, rows) = parseTable()
       assertEquals(listOf("a", "b", "c"), header)
@@ -95,6 +99,10 @@ class ParserTest {
     testCase("a\r\nb") { assertEquals(listOf(listOf("a"), listOf("b")), parseRecords().toList()) }
 
   @Test
+  fun singleColumnCrcrlf() =
+    testCase("a\r\r\nb") { assertEquals(listOf(listOf("a"), listOf("b")), parseRecords().toList()) }
+
+  @Test
   fun singleField() = testCase("a") { assertEquals(listOf(listOf("a")), parseRecords().toList()) }
 
   @Test
@@ -104,6 +112,16 @@ class ParserTest {
   @Test
   fun trailingNewline() =
     testCase("a,b,c\n") { assertEquals(listOf(listOf("a", "b", "c")), parseRecords().toList()) }
+
+  @Test
+  fun trailingNewline2() =
+    testCase("a,b,c\n\n") { assertFailsWith<DsvParseException> { parseRecords().toList() } }
+
+  @Test
+  fun trailingNewline2Skip() =
+    testCase("a,b,c\n\n", scheme = Csv.scheme.copy(skipEmptyLines = true)) {
+      assertEquals(listOf(listOf("a", "b", "c")), parseRecords().toList())
+    }
 
   @Test
   fun trailingNewlineCrlf() =

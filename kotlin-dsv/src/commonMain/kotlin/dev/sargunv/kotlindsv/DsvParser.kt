@@ -5,20 +5,49 @@ import kotlinx.io.Source
 /**
  * Low-level parser for [DSV][DsvFormat] data.
  *
- * Reads from a [Source] and parses according to the provided [DsvScheme]. For typical use cases,
- * prefer using [DsvFormat] instead.
+ * Reads from a UTF-8 [Source] and parses according to the provided [DsvScheme]. For typical use
+ * cases, prefer using [DsvFormat] instead.
  */
 public class DsvParser(private val input: Source, private val scheme: DsvScheme) {
   private var data = StringBuilder()
   private val buffer = ByteArray(4096)
+  private var incompleteByteCount = 0
 
   private data class ReadResult<T>(val value: T, val newPos: Int)
 
   private fun charAt(pos: Int): Char? {
     while (data.length <= pos) {
-      if (input.exhausted()) return null
-      val numBytesRead = input.readAtMostTo(buffer, 0, buffer.size)
-      data.append(buffer.decodeToString(0, numBytesRead))
+      if (input.exhausted()) {
+        if (incompleteByteCount > 0) {
+          val decoded = buffer.decodeToString(0, incompleteByteCount, throwOnInvalidSequence = true)
+          data.append(decoded)
+          incompleteByteCount = 0
+        }
+        return if (data.length <= pos) null else data[pos]
+      }
+
+      val numBytesRead =
+        input.readAtMostTo(buffer, incompleteByteCount, buffer.size - incompleteByteCount)
+      val numBytesInBuffer = incompleteByteCount + numBytesRead
+
+      for (numExcludedBytes in 0..MAX_UTF8_INCOMPLETE_BYTES) {
+        val decoded =
+          try {
+            buffer.decodeToString(
+              0,
+              numBytesInBuffer - numExcludedBytes,
+              throwOnInvalidSequence = numExcludedBytes != MAX_UTF8_INCOMPLETE_BYTES,
+            )
+          } catch (e: CharacterCodingException) {
+            if (numExcludedBytes == MAX_UTF8_INCOMPLETE_BYTES) throw e else continue
+          }
+        incompleteByteCount = numExcludedBytes
+        data.append(decoded)
+        break
+      }
+
+      if (incompleteByteCount > 0)
+        buffer.copyInto(buffer, 0, numBytesInBuffer - incompleteByteCount, numBytesInBuffer)
     }
     return data[pos]
   }
@@ -66,7 +95,7 @@ public class DsvParser(private val input: Source, private val scheme: DsvScheme)
       when (c) {
         scheme.quote -> throw DsvParseException("Unexpected quote in non-quoted field")
         scheme.delimiter,
-        scheme.newline,
+        scheme.lineFeed,
         scheme.carriageReturn -> break
         else -> result.append(c)
       }
@@ -89,7 +118,7 @@ public class DsvParser(private val input: Source, private val scheme: DsvScheme)
       val c = charAt(cursor) ?: break
       when (c) {
         scheme.carriageReturn,
-        scheme.newline -> break
+        scheme.lineFeed -> break
         scheme.delimiter -> {
           cursor++
           val fieldResult = readNonEmptyField(cursor) ?: ReadResult("", cursor)
@@ -104,15 +133,18 @@ public class DsvParser(private val input: Source, private val scheme: DsvScheme)
   }
 
   private fun readEndOfLine(pos: Int): ReadResult<Unit>? {
-    val c = charAt(pos) ?: return ReadResult(Unit, pos)
-    return when (c) {
-      scheme.newline -> ReadResult(Unit, pos + 1)
-      scheme.carriageReturn -> {
-        if (charAt(pos + 1) == scheme.newline) ReadResult(Unit, pos + 2)
-        else ReadResult(Unit, pos + 1)
-      }
+    var c = charAt(pos) ?: return ReadResult(Unit, pos)
+    var pos = pos
 
-      else -> null
+    while (true) {
+      // eat: \r*\n
+      // because CRCRLF is apparently a thing
+      when (c) {
+        scheme.lineFeed -> return ReadResult(Unit, pos + 1)
+        scheme.carriageReturn -> pos += 1
+        else -> return null
+      }
+      c = charAt(pos) ?: return ReadResult(Unit, pos)
     }
   }
 
@@ -136,17 +168,21 @@ public class DsvParser(private val input: Source, private val scheme: DsvScheme)
 
       while (true) {
         val (record, newPos) = readRecord(cursor) ?: break
-        if (record.size != numColumns) {
-          throw DsvParseException(
-            "Expected $numColumns columns, got ${record.size} in record $record"
-          )
-        }
 
         cursor =
           readEndOfLine(newPos)?.newPos
             ?: throw DsvParseException("Expected end of line, got '${charAt(newPos)}'")
         data = StringBuilder(data.drop(cursor))
         cursor = 0
+
+        if (scheme.skipEmptyLines && (record.isEmpty() || record.size == 1 && record[0].isEmpty()))
+          continue
+
+        if (record.size != numColumns) {
+          throw DsvParseException(
+            "Expected $numColumns columns, got ${record.size} in record $record"
+          )
+        }
 
         yield(record)
       }
@@ -167,5 +203,9 @@ public class DsvParser(private val input: Source, private val scheme: DsvScheme)
     if (!records.hasNext()) throw DsvParseException("Expected a header")
     val header = records.next()
     return DsvTable(header, records.asSequence())
+  }
+
+  private companion object {
+    private const val MAX_UTF8_INCOMPLETE_BYTES = 3
   }
 }
