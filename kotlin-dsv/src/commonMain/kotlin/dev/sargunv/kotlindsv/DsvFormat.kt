@@ -6,6 +6,7 @@ import kotlinx.io.Source
 import kotlinx.io.readString
 import kotlinx.io.writeString
 import kotlinx.serialization.DeserializationStrategy
+import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.SerializationStrategy
 import kotlinx.serialization.StringFormat
 import kotlinx.serialization.modules.EmptySerializersModule
@@ -87,4 +88,90 @@ public open class DsvFormat(
    */
   public fun <T> encodeToSink(serializer: SerializationStrategy<T>, value: T, sink: Sink): Unit =
     serializer.serialize(DsvEncoder(sink, this), value)
+
+  /**
+   * Transforms the given [source] into lazily deserialized sequence of elements of type [T] using
+   * UTF-8 encoding and [deserializer].
+   *
+   * Unlike [decodeFromSource], this method allows lazy evaluation of elements. Elements are parsed
+   * lazily when the resulting [Sequence] is evaluated. The resulting sequence is tied to the
+   * [source] and can be evaluated only once.
+   *
+   * **Resource caution:** this method neither closes the [source] when the parsing is finished nor
+   * provides a method to close it manually. It is the caller's responsibility to hold a reference
+   * to the [source] and close it. Moreover, because the source is parsed lazily, closing it before
+   * the returned sequence is fully evaluated will result in an exception.
+   *
+   * @throws [SerializationException] if the given DSV input cannot be deserialized to the value of
+   *   type [T].
+   * @throws [kotlinx.io.IOException] if an I/O error occurs and source can't be read from.
+   */
+  @ExperimentalSerializationApi
+  public fun <T> decodeSourceToSequence(
+    source: Source,
+    deserializer: DeserializationStrategy<T>,
+  ): Sequence<T> = DsvSequenceDecoder(source, this).decodeSequence(deserializer)
+
+  /**
+   * Transforms the given [source] into lazily deserialized sequence of elements of type [T] using
+   * UTF-8 encoding.
+   *
+   * Unlike [decodeFromSource], this method allows lazy evaluation of elements. Elements are parsed
+   * lazily when the resulting [Sequence] is evaluated. The resulting sequence is tied to the
+   * [source] and can be evaluated only once.
+   *
+   * **Resource caution:** this method neither closes the [source] when the parsing is finished nor
+   * provides a method to close it manually. It is the caller's responsibility to hold a reference
+   * to the [source] and close it. Moreover, because the source is parsed lazily, closing it before
+   * the returned sequence is fully evaluated will result in an exception.
+   *
+   * @throws [SerializationException] if the given DSV input cannot be deserialized to the value of
+   *   type [T].
+   * @throws [kotlinx.io.IOException] if an I/O error occurs and source can't be read from.
+   */
+  @ExperimentalSerializationApi
+  public inline fun <reified T> decodeSourceToSequence(source: Source): Sequence<T> =
+    decodeSourceToSequence(source, serializersModule.serializer())
+
+  /**
+   * Encodes the given [sequence] to the provided [sink] as UTF-8 text using the specified
+   * [serializer].
+   *
+   * Unlike [encodeToSink], this method allows lazy evaluation of elements. Elements are serialized
+   * lazily as the [sequence] is iterated. This is useful for streaming large datasets without
+   * loading everything into memory.
+   *
+   * The header row is written before the first element. If the sequence is empty, only the header
+   * row is written.
+   *
+   * @throws [SerializationException] if the value cannot be serialized.
+   * @throws [kotlinx.io.IOException] if an I/O error occurs and sink can't be written to.
+   */
+  @ExperimentalSerializationApi
+  public fun <T> encodeSequenceToSink(
+    serializer: SerializationStrategy<T>,
+    sequence: Sequence<T>,
+    sink: Sink,
+  ) {
+    val encoder = DsvSequenceEncoder(sink, this)
+    encoder.encodeSequence(serializer, sequence)
+  }
+
+  /**
+   * Encodes the given [sequence] to the provided [sink] as UTF-8 text.
+   *
+   * Unlike [encodeToSink], this method allows lazy evaluation of elements. Elements are serialized
+   * lazily as the [sequence] is iterated. This is useful for streaming large datasets without
+   * loading everything into memory.
+   *
+   * The header row is written before the first element. If the sequence is empty, only the header
+   * row is written.
+   *
+   * @throws [SerializationException] if the value cannot be serialized.
+   * @throws [kotlinx.io.IOException] if an I/O error occurs and sink can't be written to.
+   */
+  @ExperimentalSerializationApi
+  public inline fun <reified T> encodeSequenceToSink(sequence: Sequence<T>, sink: Sink) {
+    encodeSequenceToSink(serializersModule.serializer(), sequence, sink)
+  }
 }
