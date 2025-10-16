@@ -55,6 +55,16 @@ Available strategies:
   Converts `camelCase` to `snake_case`
 - [`DsvNamingStrategy.KebabCase`](./api/kotlin-dsv/dev.sargunv.kotlindsv/-dsv-naming-strategy/-kebab-case/index.html) -
   Converts `camelCase` to `kebab-case`
+- [`DsvNamingStrategy.PascalCase`](./api/kotlin-dsv/dev.sargunv.kotlindsv/-dsv-naming-strategy/-pascal-case/index.html) -
+  Converts `camelCase` to `PascalCase`
+- [`DsvNamingStrategy.TitleCaseWords`](./api/kotlin-dsv/dev.sargunv.kotlindsv/-dsv-naming-strategy/-title-case-words/index.html) -
+  Converts `camelCase` to `Title Case Words`
+- [`DsvNamingStrategy.SentenceCaseWords`](./api/kotlin-dsv/dev.sargunv.kotlindsv/-dsv-naming-strategy/-sentence-case-words/index.html) -
+  Converts `camelCase` to `Sentence case words`
+- [`DsvNamingStrategy.LowercaseWords`](./api/kotlin-dsv/dev.sargunv.kotlindsv/-dsv-naming-strategy/-lowercase-words/index.html) -
+  Converts `camelCase` to `lowercase words`
+- [`DsvNamingStrategy.UppercaseWords`](./api/kotlin-dsv/dev.sargunv.kotlindsv/-dsv-naming-strategy/-uppercase-words/index.html) -
+  Converts `camelCase` to `UPPERCASE WORDS`
 - [`DsvNamingStrategy.Composite`](./api/kotlin-dsv/dev.sargunv.kotlindsv/-dsv-naming-strategy/-composite/index.html) -
   Chain multiple strategies together
 

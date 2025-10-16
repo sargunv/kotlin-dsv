@@ -11,7 +11,6 @@ import kotlinx.io.buffered
 import kotlinx.io.files.Path
 import kotlinx.io.files.SystemFileSystem
 import kotlinx.io.readString
-import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 // Based on https://github.com/vincentlaucsb/csv-data/tree/master
@@ -79,28 +78,36 @@ class CsvDataTest {
   fun fake_delimiter() {
     @Serializable
     data class FakeUser(
-      @SerialName("Username") val username: String,
-      @SerialName("Identifier") val identifier: Int,
-      @SerialName("First name") val firstName: String,
-      @SerialName("Last name") val lastName: String,
+      val username: String,
+      val identifier: Int,
+      val firstName: String,
+      val lastName: String,
     )
 
-    encodeDecodeTestCase<FakeUser>("fake_data/delimeter.csv", 5, DsvFormat(DsvScheme(';')))
+    encodeDecodeTestCase<FakeUser>(
+      "fake_data/delimeter.csv",
+      5,
+      DsvFormat(DsvScheme(';'), namingStrategy = DsvNamingStrategy.SentenceCaseWords),
+    )
   }
 
   @Test
   fun mimesis_persons() {
     @Serializable
     data class MimesisPerson(
-      @SerialName("Id") val id: String,
-      @SerialName("Full Name") val fullName: String,
-      @SerialName("Age") val age: Int,
-      @SerialName("Occupation") val occupation: String,
-      @SerialName("Email") val email: String,
-      @SerialName("Telephone") val telephone: String,
-      @SerialName("Nationality") val nationality: String,
+      val id: String,
+      val fullName: String,
+      val age: Int,
+      val occupation: String,
+      val email: String,
+      val telephone: String,
+      val nationality: String,
     )
-    encodeDecodeTestCase<MimesisPerson>("mimesis_data/persons.csv", 50000)
+    encodeDecodeTestCase<MimesisPerson>(
+      "mimesis_data/persons.csv",
+      50000,
+      DsvFormat(Csv.scheme, namingStrategy = DsvNamingStrategy.TitleCaseWords),
+    )
   }
 
   @Test
