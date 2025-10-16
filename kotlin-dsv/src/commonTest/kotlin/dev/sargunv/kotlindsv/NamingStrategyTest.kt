@@ -51,11 +51,7 @@ class NamingStrategyTest {
 
   @Test
   fun testSentenceCaseWords() =
-    testCase(
-      DsvNamingStrategy.SentenceCaseWords,
-      kotlinName = "fooBarBaz",
-      dsvName = "Foo bar baz",
-    )
+    testCase(DsvNamingStrategy.SentenceCaseWords, kotlinName = "fooBarBaz", dsvName = "Foo bar baz")
 
   @Test
   fun testLowercaseWords() =
