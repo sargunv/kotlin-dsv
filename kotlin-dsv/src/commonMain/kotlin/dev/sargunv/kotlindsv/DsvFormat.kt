@@ -69,19 +69,22 @@ public open class DsvFormat(
   override fun <T> encodeToString(serializer: SerializationStrategy<T>, value: T): String =
     Buffer().also { encodeToSink(serializer, value, it) }.readString()
 
-  /** Decodes a value of type [T] from the given [Source]. */
+  /** Decodes a value of type [T] from the given UTF-8 [Source]. */
   public inline fun <reified T> decodeFromSource(source: Source): T =
     decodeFromSource(serializersModule.serializer(), source)
 
-  /** Encodes the given [value] to the provided [Sink]. */
+  /** Encodes the given [value] to the provided [Sink] as UTF-8 text. */
   public inline fun <reified T> encodeToSink(value: T, sink: Sink): Unit =
     encodeToSink(serializersModule.serializer(), value, sink)
 
-  /** Decodes a value from the given [Source] using the specified [deserializer]. */
+  /** Decodes a value from the given UTF-8 [Source] using the specified [deserializer]. */
   public fun <T> decodeFromSource(deserializer: DeserializationStrategy<T>, source: Source): T =
     deserializer.deserialize(DsvDecoder(source, this))
 
-  /** Encodes the given [value] to the provided [Sink] using the specified [serializer]. */
+  /**
+   * Encodes the given [value] to the provided [Sink] as UTF-8 text using the specified
+   * [serializer].
+   */
   public fun <T> encodeToSink(serializer: SerializationStrategy<T>, value: T, sink: Sink): Unit =
     serializer.serialize(DsvEncoder(sink, this), value)
 }

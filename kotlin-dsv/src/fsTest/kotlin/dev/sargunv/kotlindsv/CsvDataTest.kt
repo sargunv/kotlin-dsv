@@ -2,7 +2,6 @@
 
 package dev.sargunv.kotlindsv
 
-import kotlin.test.Ignore
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
@@ -169,7 +168,6 @@ class CsvDataTest {
   }
 
   @Test
-  @Ignore // Fails on emoji: 🤢
   fun real_aug15_sample() {
     @Serializable
     data class Tweet(

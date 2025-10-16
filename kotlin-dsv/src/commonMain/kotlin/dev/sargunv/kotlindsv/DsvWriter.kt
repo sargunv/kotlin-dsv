@@ -7,8 +7,9 @@ import kotlinx.io.writeString
 /**
  * Low-level writer for [DSV][DsvFormat] data.
  *
- * Writes to a [Sink] according to the provided [DsvScheme]. For typical use cases, prefer using
- * [DsvFormat] instead.
+ * Writes DSV data as UTF-8 text to a [Sink] according to the provided [DsvScheme].
+ *
+ * For type-safe mapping to Kotlin classes, use [DsvFormat] instead.
  */
 public class DsvWriter(private val sink: Sink, private val scheme: DsvScheme) {
   private var numColumns = -1

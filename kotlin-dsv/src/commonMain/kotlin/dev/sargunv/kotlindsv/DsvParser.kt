@@ -5,20 +5,49 @@ import kotlinx.io.Source
 /**
  * Low-level parser for [DSV][DsvFormat] data.
  *
- * Reads from a [Source] and parses according to the provided [DsvScheme]. For typical use cases,
- * prefer using [DsvFormat] instead.
+ * Reads from a UTF-8 [Source] and parses according to the provided [DsvScheme]. For typical use
+ * cases, prefer using [DsvFormat] instead.
  */
 public class DsvParser(private val input: Source, private val scheme: DsvScheme) {
   private var data = StringBuilder()
   private val buffer = ByteArray(4096)
+  private var incompleteByteCount = 0
 
   private data class ReadResult<T>(val value: T, val newPos: Int)
 
   private fun charAt(pos: Int): Char? {
     while (data.length <= pos) {
-      if (input.exhausted()) return null
-      val numBytesRead = input.readAtMostTo(buffer, 0, buffer.size)
-      data.append(buffer.decodeToString(0, numBytesRead))
+      if (input.exhausted()) {
+        if (incompleteByteCount > 0) {
+          val decoded = buffer.decodeToString(0, incompleteByteCount, throwOnInvalidSequence = true)
+          data.append(decoded)
+          incompleteByteCount = 0
+        }
+        return if (data.length <= pos) null else data[pos]
+      }
+
+      val numBytesRead =
+        input.readAtMostTo(buffer, incompleteByteCount, buffer.size - incompleteByteCount)
+      val numBytesInBuffer = incompleteByteCount + numBytesRead
+
+      for (numExcludedBytes in 0..3) {
+        val decoded =
+          try {
+            buffer.decodeToString(
+              0,
+              numBytesInBuffer - numExcludedBytes,
+              throwOnInvalidSequence = numExcludedBytes != 3,
+            )
+          } catch (e: CharacterCodingException) {
+            if (numExcludedBytes == 3) throw e else continue
+          }
+        incompleteByteCount = numExcludedBytes
+        data.append(decoded)
+        break
+      }
+
+      if (incompleteByteCount > 0)
+        buffer.copyInto(buffer, 0, numBytesInBuffer - incompleteByteCount, numBytesInBuffer)
     }
     return data[pos]
   }
