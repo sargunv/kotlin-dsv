@@ -1,0 +1,29 @@
+name: Setup Copilot Agent Environment
+
+on:
+    push:
+
+jobs:
+    setup:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+              with:
+                  fetch-depth: 0
+                  fetch-tags: true
+                  persist-credentials: false
+                  submodules: recursive
+            - uses: actions/setup-java@dded0888837ed1f317902acf8a20df0ad188d165 # v5.0.0
+              with:
+                  distribution: temurin
+                  java-version: 21
+            - uses: extractions/setup-just@dd310ad5a97d8e7b41793f8ef055398d51ad4de6 # v2.0.0
+            - uses: actions/setup-python@0a5c61591373683505ea898e09a3ea4f39ef2b9c # v5.0.0
+              with:
+                  python-version: 3.x
+            - name: Install pre-commit
+              run: pip install pre-commit
+            - name: Install pre-commit hooks
+              run: pre-commit install --install-hooks
+            - name: Fetch Gradle tools
+              run: ./gradlew tasks

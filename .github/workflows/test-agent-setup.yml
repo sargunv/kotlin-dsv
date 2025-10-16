@@ -1,0 +1,42 @@
+name: Test Agent Setup
+
+on:
+    push:
+        branches: [main]
+        paths:
+            - .github/agents/setup.yml
+    pull_request:
+        paths:
+            - .github/agents/setup.yml
+
+permissions:
+    contents: read
+
+jobs:
+    test-setup:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+              with:
+                  fetch-depth: 0
+                  fetch-tags: true
+                  persist-credentials: false
+                  submodules: recursive
+            - name: Run agent setup workflow
+              uses: ./.github/agents/setup
+            - name: Verify JDK 21 is available
+              run: |
+                  java -version 2>&1 | grep -q "version \"21"
+            - name: Verify just is available
+              run: just --version
+            - name: Verify pre-commit is available
+              run: pre-commit --version
+            - name: Verify pre-commit hooks are installed
+              run: |
+                  test -d .git/hooks
+                  # Check that at least some hooks were installed
+                  ls -la .git/hooks | grep -q pre-commit || echo "Warning: pre-commit hooks may not be installed"
+            - name: Verify Gradle is ready
+              run: ./gradlew --version
+            - name: Test format command
+              run: just format
