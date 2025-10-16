@@ -9,17 +9,14 @@ kotlin {
     }
     commonTest.dependencies { implementation(libs.kotlinx.serialization.json) }
 
-    // fsTest source set for filesystem-based tests
-    val fsTest by creating {
-      dependsOn(commonTest.get())
-    }
+    val fsTest by creating { dependsOn(commonTest.get()) }
 
-    // Configure fsTest for specific native targets that support filesystem access
     jvmTest { dependsOn(fsTest) }
-    targets.filter { it.name.startsWith("macos") || it.name.startsWith("linux") || it.name.startsWith("mingw") }
-      .forEach { target ->
-        target.compilations.getByName("test").defaultSourceSet.dependsOn(fsTest)
-      }
+    macosX64Test { dependsOn(fsTest) }
+    macosArm64Test { dependsOn(fsTest) }
+    linuxX64Test { dependsOn(fsTest) }
+    linuxArm64Test { dependsOn(fsTest) }
+    mingwX64Test { dependsOn(fsTest) }
   }
 }
 
