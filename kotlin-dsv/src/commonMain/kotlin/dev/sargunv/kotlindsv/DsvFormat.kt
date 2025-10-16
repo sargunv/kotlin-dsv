@@ -141,8 +141,8 @@ public open class DsvFormat(
    * lazily as the [sequence] is iterated. This is useful for streaming large datasets without
    * loading everything into memory.
    *
-   * The header row is written before the first element. If the sequence is empty, only the header
-   * row is written.
+   * The header row is written before the first element. If the sequence is empty, no output is
+   * produced.
    *
    * @throws [SerializationException] if the value cannot be serialized.
    * @throws [kotlinx.io.IOException] if an I/O error occurs and sink can't be written to.
@@ -164,8 +164,8 @@ public open class DsvFormat(
    * lazily as the [sequence] is iterated. This is useful for streaming large datasets without
    * loading everything into memory.
    *
-   * The header row is written before the first element. If the sequence is empty, only the header
-   * row is written.
+   * The header row is written before the first element. If the sequence is empty, no output is
+   * produced.
    *
    * @throws [SerializationException] if the value cannot be serialized.
    * @throws [kotlinx.io.IOException] if an I/O error occurs and sink can't be written to.
