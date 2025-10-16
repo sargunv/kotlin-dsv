@@ -17,6 +17,22 @@ This is particularly useful when working with large files:
 --8<-- "kotlin-dsv/src/commonTest/kotlin/dev/sargunv/kotlindsv/DocsTest.kt:streaming-files"
 ```
 
+### Lazy Streaming with Sequences
+
+For very large datasets, use sequences to lazily encode and decode records one at
+a time, minimizing memory usage:
+
+```kotlin
+--8<-- "kotlin-dsv/src/commonTest/kotlin/dev/sargunv/kotlindsv/DocsTest.kt:lazy-streaming"
+```
+
+This is ideal for:
+- Processing large files that don't fit in memory
+- Streaming data from databases or other sources
+- Transforming data on-the-fly without intermediate storage
+
+**Note:** The sequence-based APIs are marked as `@ExperimentalSerializationApi`.
+
 ## TSV Format
 
 Work with tab-separated values using the pre-configured `Tsv` format:

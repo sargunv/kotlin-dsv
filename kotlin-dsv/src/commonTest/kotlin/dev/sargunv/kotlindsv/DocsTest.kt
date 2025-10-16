@@ -46,6 +46,33 @@ class DocsTest {
   }
 
   @Test
+  @OptIn(kotlinx.serialization.ExperimentalSerializationApi::class)
+  fun lazyStreaming() {
+    @Serializable data class Product(val id: Int, val name: String, val price: Double)
+
+    // --8<-- [start:lazy-streaming]
+    // For very large datasets, use sequences for lazy evaluation
+    // Elements are processed one at a time, reducing memory usage
+
+    // Generate a sequence of products (could be from a database cursor, etc.)
+    val productSequence = generateSequence(1) { if (it < 1000000) it + 1 else null }
+      .map { Product(it, "Product $it", it * 9.99) }
+
+    // Write to a buffer lazily - elements are serialized as the sequence is iterated
+    val buffer = Buffer()
+    Csv.encodeSequenceToSink(productSequence, buffer)
+
+    // Read from the buffer lazily - elements are deserialized as the sequence is consumed
+    val decodedSequence = Csv.decodeSourceToSequence<Product>(buffer)
+
+    // Process each element without loading everything into memory
+    decodedSequence.take(10).forEach { product ->
+      // Process product...
+    }
+    // --8<-- [end:lazy-streaming]
+  }
+
+  @Test
   fun tsv() {
     @Serializable data class Record(val id: Int, val name: String, val value: String)
 
