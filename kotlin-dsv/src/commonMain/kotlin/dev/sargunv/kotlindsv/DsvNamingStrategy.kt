@@ -57,10 +57,7 @@ public interface DsvNamingStrategy {
   /** Title case words strategy that converts camelCase to "Title Case Words". */
   public data object TitleCaseWords : DsvNamingStrategy {
     override fun toDsvName(name: String): String =
-      name
-        .replace(Regex("([A-Z])")) { " ${it.value}" }
-        .trim()
-        .replaceFirstChar { it.uppercase() }
+      name.replace(Regex("([A-Z])")) { " ${it.value}" }.trim().replaceFirstChar { it.uppercase() }
 
     override fun fromDsvName(name: String): String =
       name
