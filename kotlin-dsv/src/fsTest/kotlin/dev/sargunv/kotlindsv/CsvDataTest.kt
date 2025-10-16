@@ -87,7 +87,7 @@ class CsvDataTest {
     encodeDecodeTestCase<FakeUser>(
       "fake_data/delimeter.csv",
       5,
-      DsvFormat(DsvScheme(';'), namingStrategy = DsvNamingStrategy.PascalCase),
+      DsvFormat(DsvScheme(';'), namingStrategy = DsvNamingStrategy.SentenceCaseWords),
     )
   }
 
