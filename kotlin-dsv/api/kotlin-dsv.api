@@ -57,8 +57,58 @@ public final class dev/sargunv/kotlindsv/DsvNamingStrategy$KebabCase : dev/sargu
 	public fun toString ()Ljava/lang/String;
 }
 
+public final class dev/sargunv/kotlindsv/DsvNamingStrategy$LowercaseWords : dev/sargunv/kotlindsv/DsvNamingStrategy {
+	public static final field INSTANCE Ldev/sargunv/kotlindsv/DsvNamingStrategy$LowercaseWords;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun fromDsvName (Ljava/lang/String;)Ljava/lang/String;
+	public fun hashCode ()I
+	public fun reversed ()Ldev/sargunv/kotlindsv/DsvNamingStrategy;
+	public fun toDsvName (Ljava/lang/String;)Ljava/lang/String;
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class dev/sargunv/kotlindsv/DsvNamingStrategy$PascalCase : dev/sargunv/kotlindsv/DsvNamingStrategy {
+	public static final field INSTANCE Ldev/sargunv/kotlindsv/DsvNamingStrategy$PascalCase;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun fromDsvName (Ljava/lang/String;)Ljava/lang/String;
+	public fun hashCode ()I
+	public fun reversed ()Ldev/sargunv/kotlindsv/DsvNamingStrategy;
+	public fun toDsvName (Ljava/lang/String;)Ljava/lang/String;
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class dev/sargunv/kotlindsv/DsvNamingStrategy$SentenceCaseWords : dev/sargunv/kotlindsv/DsvNamingStrategy {
+	public static final field INSTANCE Ldev/sargunv/kotlindsv/DsvNamingStrategy$SentenceCaseWords;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun fromDsvName (Ljava/lang/String;)Ljava/lang/String;
+	public fun hashCode ()I
+	public fun reversed ()Ldev/sargunv/kotlindsv/DsvNamingStrategy;
+	public fun toDsvName (Ljava/lang/String;)Ljava/lang/String;
+	public fun toString ()Ljava/lang/String;
+}
+
 public final class dev/sargunv/kotlindsv/DsvNamingStrategy$SnakeCase : dev/sargunv/kotlindsv/DsvNamingStrategy {
 	public static final field INSTANCE Ldev/sargunv/kotlindsv/DsvNamingStrategy$SnakeCase;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun fromDsvName (Ljava/lang/String;)Ljava/lang/String;
+	public fun hashCode ()I
+	public fun reversed ()Ldev/sargunv/kotlindsv/DsvNamingStrategy;
+	public fun toDsvName (Ljava/lang/String;)Ljava/lang/String;
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class dev/sargunv/kotlindsv/DsvNamingStrategy$TitleCaseWords : dev/sargunv/kotlindsv/DsvNamingStrategy {
+	public static final field INSTANCE Ldev/sargunv/kotlindsv/DsvNamingStrategy$TitleCaseWords;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun fromDsvName (Ljava/lang/String;)Ljava/lang/String;
+	public fun hashCode ()I
+	public fun reversed ()Ldev/sargunv/kotlindsv/DsvNamingStrategy;
+	public fun toDsvName (Ljava/lang/String;)Ljava/lang/String;
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class dev/sargunv/kotlindsv/DsvNamingStrategy$UppercaseWords : dev/sargunv/kotlindsv/DsvNamingStrategy {
+	public static final field INSTANCE Ldev/sargunv/kotlindsv/DsvNamingStrategy$UppercaseWords;
 	public fun equals (Ljava/lang/Object;)Z
 	public fun fromDsvName (Ljava/lang/String;)Ljava/lang/String;
 	public fun hashCode ()I

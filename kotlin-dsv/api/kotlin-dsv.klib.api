@@ -35,12 +35,52 @@ abstract interface dev.sargunv.kotlindsv/DsvNamingStrategy { // dev.sargunv.kotl
         final fun toString(): kotlin/String // dev.sargunv.kotlindsv/DsvNamingStrategy.KebabCase.toString|toString(){}[0]
     }
 
+    final object LowercaseWords : dev.sargunv.kotlindsv/DsvNamingStrategy { // dev.sargunv.kotlindsv/DsvNamingStrategy.LowercaseWords|null[0]
+        final fun equals(kotlin/Any?): kotlin/Boolean // dev.sargunv.kotlindsv/DsvNamingStrategy.LowercaseWords.equals|equals(kotlin.Any?){}[0]
+        final fun fromDsvName(kotlin/String): kotlin/String // dev.sargunv.kotlindsv/DsvNamingStrategy.LowercaseWords.fromDsvName|fromDsvName(kotlin.String){}[0]
+        final fun hashCode(): kotlin/Int // dev.sargunv.kotlindsv/DsvNamingStrategy.LowercaseWords.hashCode|hashCode(){}[0]
+        final fun toDsvName(kotlin/String): kotlin/String // dev.sargunv.kotlindsv/DsvNamingStrategy.LowercaseWords.toDsvName|toDsvName(kotlin.String){}[0]
+        final fun toString(): kotlin/String // dev.sargunv.kotlindsv/DsvNamingStrategy.LowercaseWords.toString|toString(){}[0]
+    }
+
+    final object PascalCase : dev.sargunv.kotlindsv/DsvNamingStrategy { // dev.sargunv.kotlindsv/DsvNamingStrategy.PascalCase|null[0]
+        final fun equals(kotlin/Any?): kotlin/Boolean // dev.sargunv.kotlindsv/DsvNamingStrategy.PascalCase.equals|equals(kotlin.Any?){}[0]
+        final fun fromDsvName(kotlin/String): kotlin/String // dev.sargunv.kotlindsv/DsvNamingStrategy.PascalCase.fromDsvName|fromDsvName(kotlin.String){}[0]
+        final fun hashCode(): kotlin/Int // dev.sargunv.kotlindsv/DsvNamingStrategy.PascalCase.hashCode|hashCode(){}[0]
+        final fun toDsvName(kotlin/String): kotlin/String // dev.sargunv.kotlindsv/DsvNamingStrategy.PascalCase.toDsvName|toDsvName(kotlin.String){}[0]
+        final fun toString(): kotlin/String // dev.sargunv.kotlindsv/DsvNamingStrategy.PascalCase.toString|toString(){}[0]
+    }
+
+    final object SentenceCaseWords : dev.sargunv.kotlindsv/DsvNamingStrategy { // dev.sargunv.kotlindsv/DsvNamingStrategy.SentenceCaseWords|null[0]
+        final fun equals(kotlin/Any?): kotlin/Boolean // dev.sargunv.kotlindsv/DsvNamingStrategy.SentenceCaseWords.equals|equals(kotlin.Any?){}[0]
+        final fun fromDsvName(kotlin/String): kotlin/String // dev.sargunv.kotlindsv/DsvNamingStrategy.SentenceCaseWords.fromDsvName|fromDsvName(kotlin.String){}[0]
+        final fun hashCode(): kotlin/Int // dev.sargunv.kotlindsv/DsvNamingStrategy.SentenceCaseWords.hashCode|hashCode(){}[0]
+        final fun toDsvName(kotlin/String): kotlin/String // dev.sargunv.kotlindsv/DsvNamingStrategy.SentenceCaseWords.toDsvName|toDsvName(kotlin.String){}[0]
+        final fun toString(): kotlin/String // dev.sargunv.kotlindsv/DsvNamingStrategy.SentenceCaseWords.toString|toString(){}[0]
+    }
+
     final object SnakeCase : dev.sargunv.kotlindsv/DsvNamingStrategy { // dev.sargunv.kotlindsv/DsvNamingStrategy.SnakeCase|null[0]
         final fun equals(kotlin/Any?): kotlin/Boolean // dev.sargunv.kotlindsv/DsvNamingStrategy.SnakeCase.equals|equals(kotlin.Any?){}[0]
         final fun fromDsvName(kotlin/String): kotlin/String // dev.sargunv.kotlindsv/DsvNamingStrategy.SnakeCase.fromDsvName|fromDsvName(kotlin.String){}[0]
         final fun hashCode(): kotlin/Int // dev.sargunv.kotlindsv/DsvNamingStrategy.SnakeCase.hashCode|hashCode(){}[0]
         final fun toDsvName(kotlin/String): kotlin/String // dev.sargunv.kotlindsv/DsvNamingStrategy.SnakeCase.toDsvName|toDsvName(kotlin.String){}[0]
         final fun toString(): kotlin/String // dev.sargunv.kotlindsv/DsvNamingStrategy.SnakeCase.toString|toString(){}[0]
+    }
+
+    final object TitleCaseWords : dev.sargunv.kotlindsv/DsvNamingStrategy { // dev.sargunv.kotlindsv/DsvNamingStrategy.TitleCaseWords|null[0]
+        final fun equals(kotlin/Any?): kotlin/Boolean // dev.sargunv.kotlindsv/DsvNamingStrategy.TitleCaseWords.equals|equals(kotlin.Any?){}[0]
+        final fun fromDsvName(kotlin/String): kotlin/String // dev.sargunv.kotlindsv/DsvNamingStrategy.TitleCaseWords.fromDsvName|fromDsvName(kotlin.String){}[0]
+        final fun hashCode(): kotlin/Int // dev.sargunv.kotlindsv/DsvNamingStrategy.TitleCaseWords.hashCode|hashCode(){}[0]
+        final fun toDsvName(kotlin/String): kotlin/String // dev.sargunv.kotlindsv/DsvNamingStrategy.TitleCaseWords.toDsvName|toDsvName(kotlin.String){}[0]
+        final fun toString(): kotlin/String // dev.sargunv.kotlindsv/DsvNamingStrategy.TitleCaseWords.toString|toString(){}[0]
+    }
+
+    final object UppercaseWords : dev.sargunv.kotlindsv/DsvNamingStrategy { // dev.sargunv.kotlindsv/DsvNamingStrategy.UppercaseWords|null[0]
+        final fun equals(kotlin/Any?): kotlin/Boolean // dev.sargunv.kotlindsv/DsvNamingStrategy.UppercaseWords.equals|equals(kotlin.Any?){}[0]
+        final fun fromDsvName(kotlin/String): kotlin/String // dev.sargunv.kotlindsv/DsvNamingStrategy.UppercaseWords.fromDsvName|fromDsvName(kotlin.String){}[0]
+        final fun hashCode(): kotlin/Int // dev.sargunv.kotlindsv/DsvNamingStrategy.UppercaseWords.hashCode|hashCode(){}[0]
+        final fun toDsvName(kotlin/String): kotlin/String // dev.sargunv.kotlindsv/DsvNamingStrategy.UppercaseWords.toDsvName|toDsvName(kotlin.String){}[0]
+        final fun toString(): kotlin/String // dev.sargunv.kotlindsv/DsvNamingStrategy.UppercaseWords.toString|toString(){}[0]
     }
 }
 

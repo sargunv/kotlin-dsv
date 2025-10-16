@@ -45,6 +45,76 @@ public interface DsvNamingStrategy {
       name.replace(Regex("-([a-z])")) { it.groupValues[1].uppercase() }
   }
 
+  /** PascalCase strategy that converts camelCase to PascalCase. */
+  public data object PascalCase : DsvNamingStrategy {
+    override fun toDsvName(name: String): String =
+      if (name.isEmpty()) name else name[0].uppercase() + name.substring(1)
+
+    override fun fromDsvName(name: String): String =
+      if (name.isEmpty()) name else name[0].lowercase() + name.substring(1)
+  }
+
+  /** Title case words strategy that converts camelCase to "Title Case Words". */
+  public data object TitleCaseWords : DsvNamingStrategy {
+    override fun toDsvName(name: String): String =
+      name.replace(Regex("([A-Z])")) { " ${it.value}" }.trim().replaceFirstChar { it.uppercase() }
+
+    override fun fromDsvName(name: String): String =
+      name
+        .split(Regex("\\s+"))
+        .mapIndexed { index, word ->
+          if (index == 0) word.lowercase() else word.replaceFirstChar { it.uppercase() }
+        }
+        .joinToString("")
+  }
+
+  /** Sentence case words strategy that converts camelCase to "Sentence case words". */
+  public data object SentenceCaseWords : DsvNamingStrategy {
+    override fun toDsvName(name: String): String =
+      name
+        .replace(Regex("([A-Z])")) { " ${it.value.lowercase()}" }
+        .trim()
+        .replaceFirstChar { it.uppercase() }
+
+    override fun fromDsvName(name: String): String =
+      name
+        .lowercase()
+        .split(Regex("\\s+"))
+        .mapIndexed { index, word ->
+          if (index == 0) word else word.replaceFirstChar { it.uppercase() }
+        }
+        .joinToString("")
+  }
+
+  /** Lowercase words strategy that converts camelCase to "lowercase words". */
+  public data object LowercaseWords : DsvNamingStrategy {
+    override fun toDsvName(name: String): String =
+      name.replace(Regex("([A-Z])")) { " ${it.value.lowercase()}" }.trim()
+
+    override fun fromDsvName(name: String): String =
+      name
+        .split(Regex("\\s+"))
+        .mapIndexed { index, word ->
+          if (index == 0) word else word.replaceFirstChar { it.uppercase() }
+        }
+        .joinToString("")
+  }
+
+  /** Uppercase words strategy that converts camelCase to "UPPERCASE WORDS". */
+  public data object UppercaseWords : DsvNamingStrategy {
+    override fun toDsvName(name: String): String =
+      name.replace(Regex("([A-Z])")) { " ${it.value}" }.trim().uppercase()
+
+    override fun fromDsvName(name: String): String =
+      name
+        .lowercase()
+        .split(Regex("\\s+"))
+        .mapIndexed { index, word ->
+          if (index == 0) word else word.replaceFirstChar { it.uppercase() }
+        }
+        .joinToString("")
+  }
+
   /** Composite strategy that applies multiple strategies in sequence. */
   public class Composite(private val strategies: List<DsvNamingStrategy>) : DsvNamingStrategy {
     public constructor(vararg strategies: DsvNamingStrategy) : this(strategies.toList())
