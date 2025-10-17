@@ -18,11 +18,18 @@ jobs:
             pull-requests: read
             issues: read
         steps:
-            - name: Checkout repository
-              uses: actions/checkout@v4
-
-            - name: Run opencode
-              uses: sst/opencode/github@latest
+            - uses: actions/checkout@v5
+              with:
+                  fetch-depth: 0
+                  fetch-tags: true
+                  persist-credentials: false
+                  submodules: recursive
+            - uses: actions/setup-java@v5
+              with:
+                  distribution: temurin
+                  java-version: 21
+            - run: pip install pre-commit
+            - uses: sst/opencode/github@latest
               env:
                   OPENCODE_API_KEY: ${{ secrets.OPENCODE_API_KEY }}
               with:
