@@ -1,90 +1,132 @@
 package dev.sargunv.kotlindsv
 
-import kotlinx.io.Source
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.descriptors.SerialDescriptor
-import kotlinx.serialization.descriptors.StructureKind
-import kotlinx.serialization.descriptors.elementDescriptors
+import kotlinx.serialization.descriptors.elementNames
 import kotlinx.serialization.encoding.AbstractDecoder
 import kotlinx.serialization.encoding.CompositeDecoder
 
-/**
- * Internal decoder for DSV that wraps [DsvSequenceDecoder] to decode lists.
- *
- * This decoder uses the sequence decoder to decode individual records and collects them into a
- * list.
- */
 @OptIn(ExperimentalSerializationApi::class)
-internal class DsvDecoder(source: Source, private val format: DsvFormat) : AbstractDecoder() {
-
-  private val sequenceDecoder = DsvSequenceDecoder(source, format)
-  private var elements: List<Any?>? = null
-  private var currentIndex = 0
-  private var level = 0
-  private var initialized = false
+internal class DsvDecoder(
+  private val format: DsvFormat,
+  private val table: DsvTable,
+  descriptor: SerialDescriptor,
+) : AbstractDecoder() {
 
   override val serializersModule = format.serializersModule
 
-  override fun beginStructure(descriptor: SerialDescriptor): CompositeDecoder =
-    when (level) {
-      0 -> {
-        require(descriptor.kind == StructureKind.LIST) {
-          "Top-level structure must be a list (got ${descriptor.kind})"
-        }
+  private val records: Iterator<List<String>> = table.records.iterator()
 
-        // Validate element type
-        val elementDescriptor = descriptor.elementDescriptors.first()
-        require(elementDescriptor.kind == StructureKind.CLASS) {
-          "List elements must be classes (got ${elementDescriptor.kind})"
-        }
-
-        level++
-        this
+  private val knownElementNames = table.header.map { format.namingStrategy.fromDsvName(it.trim()) }
+  private val implicitNullElementNames: List<String> =
+    if (format.treatMissingColumnsAsNull) {
+      val knownElementNames = knownElementNames.toSet()
+      descriptor.elementNames.filter { elementName ->
+        !descriptor.isElementOptional(descriptor.getElementIndex(elementName)) &&
+          !knownElementNames.contains(elementName)
       }
-      else -> throw SerializationException("Nested structures not supported at this level")
-    }
+    } else emptyList()
+
+  private var col = 0
+  private lateinit var record: List<String>
+  private var open = false
+
+  internal fun hasNext(): Boolean = records.hasNext()
+
+  override fun beginStructure(descriptor: SerialDescriptor): CompositeDecoder {
+    require(!open) { "Nested structures are not supported in DSV format" }
+    open = true
+    record = records.next()
+    return this
+  }
 
   override fun endStructure(descriptor: SerialDescriptor) {
-    level--
-    if (level < 0) throw SerializationException("Unbalanced structure")
+    require(open) { "No structure is open" }
+    col = 0
+    open = false
   }
 
   override fun decodeElementIndex(descriptor: SerialDescriptor): Int {
-    if (!initialized) {
-      // Mark as initialized so we don't keep returning 0
-      initialized = true
-      // Check if there are any records to decode
-      if (!sequenceDecoder.hasRecords()) {
-        return CompositeDecoder.DECODE_DONE
-      }
-      // Return 0 to allow decodeSerializableElement to be called
-      return 0
-    }
+    var index: Int
+    do {
+      index =
+        when {
+          // end of record
+          col >= record.size + implicitNullElementNames.size -> CompositeDecoder.DECODE_DONE
 
-    // elements will be initialized after first decodeSerializableElement call
-    if (elements == null) {
-      return CompositeDecoder.DECODE_DONE
-    }
+          // implicit null
+          col >= record.size ->
+            descriptor.getElementIndex(implicitNullElementNames[col - record.size])
 
-    return if (currentIndex < elements!!.size) currentIndex else CompositeDecoder.DECODE_DONE
+          // regular element
+          else -> descriptor.getElementIndex(knownElementNames[col])
+        }
+      col++
+    } while (
+      index == CompositeDecoder.UNKNOWN_NAME &&
+        (format.ignoreUnknownKeys ||
+          throw SerializationException("Unknown column '${table.header[col - 1]}'"))
+    )
+    col--
+    return index
   }
 
-  override fun <T> decodeSerializableElement(
-    descriptor: SerialDescriptor,
-    index: Int,
-    deserializer: kotlinx.serialization.DeserializationStrategy<T>,
-    previousValue: T?,
-  ): T {
-    if (elements == null) {
-      // First call - decode all elements
-      @Suppress("UNCHECKED_CAST")
-      val typedDeserializer = deserializer as kotlinx.serialization.DeserializationStrategy<Any?>
-      elements = sequenceDecoder.decodeSequence(typedDeserializer).toList()
-      currentIndex = 0
+  override fun decodeValue(): Any = decodeString()
+
+  override fun decodeString(): String = record[col].also { col += 1 }
+
+  override fun decodeNotNullMark(): Boolean =
+    if (col >= record.size) false // implicit null
+    else record[col] != ""
+
+  override fun decodeNull(): Nothing? {
+    if (col >= record.size) {
+      // implicit null
+      col++
+      return null
+    }
+    val value = decodeString()
+    if (value.isEmpty()) return null
+    throw SerializationException("Expected null, but got '$value'")
+  }
+
+  override fun decodeBoolean(): Boolean = decodeString().toBoolean()
+
+  override fun decodeByte(): Byte = decodeString().toByte()
+
+  override fun decodeShort(): Short = decodeString().toShort()
+
+  override fun decodeInt(): Int = decodeString().toInt()
+
+  override fun decodeLong(): Long = decodeString().toLong()
+
+  override fun decodeFloat(): Float = decodeString().toFloat()
+
+  override fun decodeDouble(): Double = decodeString().toDouble()
+
+  override fun decodeChar(): Char {
+    val str = decodeString()
+    require(str.length == 1) { "Expected Char, but got '$str'" }
+    return str[0]
+  }
+
+  override fun decodeEnum(enumDescriptor: SerialDescriptor): Int {
+    val value = decodeString()
+    val index = enumDescriptor.elementNames.indexOf(value)
+    if (index >= 0) return index
+
+    val ordinal =
+      try {
+        value.toInt()
+      } catch (_: NumberFormatException) {
+        throw IllegalArgumentException("Enum value '$value' not found in $enumDescriptor")
+      }
+
+    if (ordinal < 0 || ordinal >= enumDescriptor.elementsCount) {
+      throw IllegalArgumentException("Enum ordinal $ordinal not found in $enumDescriptor")
     }
 
-    @Suppress("UNCHECKED_CAST")
-    return elements!![currentIndex++] as T
+    return ordinal
   }
 }

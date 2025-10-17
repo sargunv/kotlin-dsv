@@ -18,13 +18,13 @@ class CsvSpectrumTest {
   ) {
     // Decode
     val expectedJson = Json.decodeFromString<JsonArray>(json)
-    val decoded = Csv.decodeFromString<List<T>>(csv)
+    val decoded = Csv.decodeFromString<T>(csv)
     val decodedJson = Json.encodeToJsonElement(decoded)
     assertEquals(expectedJson, decodedJson)
 
     // Round trip
     val encoded = Csv.encodeToString(decoded)
-    val decoded2 = Csv.decodeFromString<List<T>>(encoded)
+    val decoded2 = Csv.decodeFromString<T>(encoded)
     assertEquals(decoded, decoded2)
   }
 

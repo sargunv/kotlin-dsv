@@ -50,7 +50,7 @@ class EncoderDecoderTest {
 
     assertEquals(expected, result)
 
-    val decoded = format.decodeFromString<List<Sample>>(result)
+    val decoded = format.decodeFromString<Sample>(result)
     assertEquals(samples, decoded)
   }
 
@@ -60,7 +60,7 @@ class EncoderDecoderTest {
     val result = format.encodeToString(samples)
     assertEquals("id,name,price,count,active,status,description\n", result)
 
-    val decoded = format.decodeFromString<List<Sample>>(result)
+    val decoded = format.decodeFromString<Sample>(result)
     assertEquals(samples, decoded)
   }
 
@@ -80,7 +80,7 @@ class EncoderDecoderTest {
 
     assertEquals(expected, result)
 
-    val decoded = format.decodeFromString<List<Sample>>(result)
+    val decoded = format.decodeFromString<Sample>(result)
     assertEquals(samples, decoded)
   }
 
@@ -106,7 +106,7 @@ class EncoderDecoderTest {
 
     assertEquals(expected, result)
 
-    val decoded = format.decodeFromString<List<Sample>>(result)
+    val decoded = format.decodeFromString<Sample>(result)
     assertEquals(samples, decoded)
   }
 
@@ -128,7 +128,7 @@ class EncoderDecoderTest {
 
     assertEquals(expected, result)
 
-    val decoded = formatByOrdinal.decodeFromString<List<Sample>>(result)
+    val decoded = formatByOrdinal.decodeFromString<Sample>(result)
     assertEquals(samples, decoded)
   }
 
@@ -167,7 +167,7 @@ class EncoderDecoderTest {
 
     assertEquals(expected, result)
 
-    val decoded = formatSnakeCase.decodeFromString<List<CamelCaseSample>>(result)
+    val decoded = formatSnakeCase.decodeFromString<CamelCaseSample>(result)
     assertEquals(samples, decoded)
   }
 
@@ -197,7 +197,7 @@ class EncoderDecoderTest {
       """
         .trimIndent()
 
-    val decoded = formatWithOption.decodeFromString<List<PartialSample>>(csvWithMissingColumns)
+    val decoded = formatWithOption.decodeFromString<PartialSample>(csvWithMissingColumns)
     val expected =
       listOf(
         PartialSample(null, null, 25, 100, 4.5f, 'A'),
@@ -215,13 +215,6 @@ class EncoderDecoderTest {
       """
         .trimIndent()
     assertEquals(expectedEncoded, encoded)
-  }
-
-  @Test
-  fun encodeNonListFails() {
-    val sample = Sample(1, "Item", 9.99, null, true, Status.ACTIVE, null)
-    assertFailsWith<IllegalArgumentException> { format.encodeToString(sample) }
-    assertFailsWith<IllegalArgumentException> { format.decodeFromString<Sample>("") }
   }
 
   @Test
@@ -251,7 +244,7 @@ class EncoderDecoderTest {
     val people = listOf(Person("John", Address("Main St", "NYC")))
     assertFailsWith<IllegalArgumentException> { format.encodeToString(people) }
     assertFailsWith<IllegalArgumentException> {
-      format.decodeFromString<List<Person>>("name,address\nJohn,Main St")
+      format.decodeFromString<Person>("name,address\nJohn,Main St")
     }
   }
 
@@ -262,7 +255,7 @@ class EncoderDecoderTest {
     val orders = listOf(Order(1, listOf("item1", "item2")))
     assertFailsWith<IllegalArgumentException> { format.encodeToString(orders) }
     assertFailsWith<IllegalArgumentException> {
-      format.decodeFromString<List<Order>>("id,items\n1,item1")
+      format.decodeFromString<Order>("id,items\n1,item1")
     }
   }
 }

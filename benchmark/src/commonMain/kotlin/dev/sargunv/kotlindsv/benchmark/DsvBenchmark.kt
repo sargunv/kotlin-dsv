@@ -81,6 +81,6 @@ open class DsvBenchmark {
 
   @Benchmark
   fun deserialization() {
-    Csv.decodeFromString<List<SampleRecord>>(csvString)
+    Csv.decodeFromString<SampleRecord>(csvString)
   }
 }

@@ -6,8 +6,10 @@ import kotlinx.io.Source
 import kotlinx.io.readString
 import kotlinx.io.writeString
 import kotlinx.serialization.DeserializationStrategy
+import kotlinx.serialization.SerialFormat
 import kotlinx.serialization.SerializationStrategy
-import kotlinx.serialization.StringFormat
+import kotlinx.serialization.descriptors.StructureKind
+import kotlinx.serialization.descriptors.elementNames
 import kotlinx.serialization.modules.EmptySerializersModule
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.serializer
@@ -51,122 +53,92 @@ public open class DsvFormat(
   public val treatMissingColumnsAsNull: Boolean = false,
   public val ignoreUnknownKeys: Boolean = false,
   public val writeEnumsByName: Boolean = true,
-) : StringFormat {
-
-  /** Decodes a value of type [T] from the given DSV string. */
-  public inline fun <reified T> decodeFromString(@Language("csv") string: String): T =
-    decodeFromString(serializersModule.serializer(), string)
+) : SerialFormat {
 
   /** Encodes the given [value] to a DSV string. */
-  public inline fun <reified T> encodeToString(value: T): String =
+  public inline fun <reified T> encodeToString(value: List<T>): String =
     encodeToString(serializersModule.serializer(), value)
 
-  override fun <T> decodeFromString(
+  /** Decodes a value of type [T] from the given DSV string. */
+  public inline fun <reified T> decodeFromString(@Language("csv") string: String): List<T> =
+    decodeFromString(serializersModule.serializer(), string)
+
+  /** Encodes the given [value] to a DSV string using the specified [serializer]. */
+  public fun <T> encodeToString(serializer: SerializationStrategy<T>, value: List<T>): String {
+    val sink = Buffer()
+    encodeToSink(serializer, value.asSequence(), sink)
+    return sink.readString()
+  }
+
+  /** Decodes a value of type [T] from the given DSV string using the specified [serializer]. */
+  public fun <T> decodeFromString(
     deserializer: DeserializationStrategy<T>,
     @Language("csv") string: String,
-  ): T = decodeFromSource(deserializer, Buffer().apply { writeString(string) })
-
-  override fun <T> encodeToString(serializer: SerializationStrategy<T>, value: T): String =
-    Buffer().also { encodeToSink(serializer, value, it) }.readString()
-
-  /** Decodes a value of type [T] from the given UTF-8 [Source]. */
-  public inline fun <reified T> decodeFromSource(source: Source): T =
-    decodeFromSource(serializersModule.serializer(), source)
-
-  /** Encodes the given [value] to the provided [Sink] as UTF-8 text. */
-  public inline fun <reified T> encodeToSink(value: T, sink: Sink): Unit =
-    encodeToSink(serializersModule.serializer(), value, sink)
-
-  /** Decodes a value from the given UTF-8 [Source] using the specified [deserializer]. */
-  public fun <T> decodeFromSource(deserializer: DeserializationStrategy<T>, source: Source): T =
-    deserializer.deserialize(DsvDecoder(source, this))
-
-  /**
-   * Encodes the given [value] to the provided [Sink] as UTF-8 text using the specified
-   * [serializer].
-   */
-  public fun <T> encodeToSink(serializer: SerializationStrategy<T>, value: T, sink: Sink): Unit =
-    serializer.serialize(DsvEncoder(sink, this), value)
-
-  /**
-   * Transforms the given [source] into lazily deserialized sequence of elements of type [T] using
-   * UTF-8 encoding and [deserializer].
-   *
-   * Unlike [decodeFromSource], this method allows lazy evaluation of elements. Elements are parsed
-   * lazily when the resulting [Sequence] is evaluated. The resulting sequence is tied to the
-   * [source] and can be evaluated only once.
-   *
-   * **Resource caution:** this method neither closes the [source] when the parsing is finished nor
-   * provides a method to close it manually. It is the caller's responsibility to hold a reference
-   * to the [source] and close it. Moreover, because the source is parsed lazily, closing it before
-   * the returned sequence is fully evaluated will result in an exception.
-   *
-   * @throws [SerializationException] if the given DSV input cannot be deserialized to the value of
-   *   type [T].
-   * @throws [kotlinx.io.IOException] if an I/O error occurs and source can't be read from.
-   */
-  public fun <T> decodeSourceToSequence(
-    source: Source,
-    deserializer: DeserializationStrategy<T>,
-  ): Sequence<T> = DsvSequenceDecoder(source, this).decodeSequence(deserializer)
-
-  /**
-   * Transforms the given [source] into lazily deserialized sequence of elements of type [T] using
-   * UTF-8 encoding.
-   *
-   * Unlike [decodeFromSource], this method allows lazy evaluation of elements. Elements are parsed
-   * lazily when the resulting [Sequence] is evaluated. The resulting sequence is tied to the
-   * [source] and can be evaluated only once.
-   *
-   * **Resource caution:** this method neither closes the [source] when the parsing is finished nor
-   * provides a method to close it manually. It is the caller's responsibility to hold a reference
-   * to the [source] and close it. Moreover, because the source is parsed lazily, closing it before
-   * the returned sequence is fully evaluated will result in an exception.
-   *
-   * @throws [SerializationException] if the given DSV input cannot be deserialized to the value of
-   *   type [T].
-   * @throws [kotlinx.io.IOException] if an I/O error occurs and source can't be read from.
-   */
-  public inline fun <reified T> decodeSourceToSequence(source: Source): Sequence<T> =
-    decodeSourceToSequence(source, serializersModule.serializer())
+  ): List<T> {
+    val source = Buffer()
+    source.writeString(string)
+    return decodeFromSource(source, deserializer).toList()
+  }
 
   /**
    * Encodes the given [sequence] to the provided [sink] as UTF-8 text using the specified
    * [serializer].
-   *
-   * Unlike [encodeToSink], this method allows lazy evaluation of elements. Elements are serialized
-   * lazily as the [sequence] is iterated. This is useful for streaming large datasets without
-   * loading everything into memory.
-   *
-   * The header row is written before the first element. If the sequence is empty, no output is
-   * produced.
-   *
-   * @throws [SerializationException] if the value cannot be serialized.
-   * @throws [kotlinx.io.IOException] if an I/O error occurs and sink can't be written to.
    */
-  public fun <T> encodeSequenceToSink(
+  public inline fun <reified T> encodeToSink(sequence: Sequence<T>, sink: Sink) {
+    encodeToSink(serializersModule.serializer(), sequence, sink)
+  }
+
+  /**
+   * Transforms the given UTF-8 [source] into lazily deserialized [Sequence] of elements of type
+   * [T]. The resulting sequence is tied to the [source] and can be evaluated only once.
+   */
+  public inline fun <reified T> decodeFromSource(source: Source): Sequence<T> =
+    decodeFromSource(source, serializersModule.serializer())
+
+  /**
+   * Encodes the given [sequence] to the provided [sink] as UTF-8 text using the specified
+   * [serializer].
+   */
+  public fun <T> encodeToSink(
     serializer: SerializationStrategy<T>,
     sequence: Sequence<T>,
     sink: Sink,
   ) {
-    val encoder = DsvSequenceEncoder(sink, this)
-    encoder.encodeSequence(serializer, sequence)
+    val descriptor = serializer.descriptor
+    require(descriptor.kind == StructureKind.CLASS) {
+      "Element type must be a class (got ${descriptor.kind})"
+    }
+
+    val writer = DsvWriter(sink, scheme)
+    val header = descriptor.elementNames.map(namingStrategy::toDsvName)
+    writer.writeRecord(header)
+
+    val encoder = DsvEncoder(this, writer, descriptor)
+    sequence.forEach { record -> serializer.serialize(encoder, record) }
   }
 
   /**
-   * Encodes the given [sequence] to the provided [sink] as UTF-8 text.
-   *
-   * Unlike [encodeToSink], this method allows lazy evaluation of elements. Elements are serialized
-   * lazily as the [sequence] is iterated. This is useful for streaming large datasets without
-   * loading everything into memory.
-   *
-   * The header row is written before the first element. If the sequence is empty, no output is
-   * produced.
-   *
-   * @throws [SerializationException] if the value cannot be serialized.
-   * @throws [kotlinx.io.IOException] if an I/O error occurs and sink can't be written to.
+   * Transforms the given UTF-8 [source] into lazily deserialized [Sequence] of elements of type
+   * [T]. The resulting sequence is tied to the [source] and can be evaluated only once.
    */
-  public inline fun <reified T> encodeSequenceToSink(sequence: Sequence<T>, sink: Sink) {
-    encodeSequenceToSink(serializersModule.serializer(), sequence, sink)
+  public fun <T> decodeFromSource(
+    source: Source,
+    deserializer: DeserializationStrategy<T>,
+  ): Sequence<T> {
+    val descriptor = deserializer.descriptor
+    require(descriptor.kind == StructureKind.CLASS) {
+      "Element type must be a class (got ${descriptor.kind})"
+    }
+
+    val parser = DsvParser(source, scheme)
+    val table = parser.parseTable()
+
+    val decoder = DsvDecoder(this, table, descriptor)
+
+    return sequence {
+      while (decoder.hasNext()) {
+        yield(deserializer.deserialize(decoder))
+      }
+    }
   }
 }

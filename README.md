@@ -42,7 +42,7 @@ val people = listOf(
 val csv = Csv.encodeToString(people)
 
 // Decode from CSV string
-val decoded = Csv.decodeFromString<List<Person>>(csv)
+val decoded = Csv.decodeFromString<Person>(csv)
 ```
 
 See the [project site](https://sargunv.github.io/kotlin-dsv/) for more info and

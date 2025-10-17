@@ -20,7 +20,7 @@ class DocsTest {
     val csv = Csv.encodeToString(people)
 
     // Decode from CSV string
-    val decoded = Csv.decodeFromString<List<Person>>(csv)
+    val decoded = Csv.decodeFromString<Person>(csv)
     // --8<-- [end:quick-start]
   }
 
@@ -28,48 +28,22 @@ class DocsTest {
   fun streaming() {
     @Serializable data class Product(val id: Int, val name: String, val price: Double)
 
-    val products =
-      listOf(
-        Product(1, "Widget", 9.99),
-        Product(2, "Gadget", 19.99),
-        Product(3, "Doohickey", 29.99),
-      )
-
     // --8<-- [start:streaming]
-    // Write to a buffer (can be any Sink like a file)
-    val buffer = Buffer()
-    Csv.encodeToSink(products, buffer)
-
-    // Read from the buffer (can be any Source like a file)
-    val decoded = Csv.decodeFromSource<List<Product>>(buffer)
-    // --8<-- [end:streaming]
-  }
-
-  @Test
-  fun lazyStreaming() {
-    @Serializable data class Product(val id: Int, val name: String, val price: Double)
-
-    // --8<-- [start:lazy-streaming]
-    // For very large datasets, use sequences for lazy evaluation
-    // Elements are processed one at a time, reducing memory usage
-
     // Generate a sequence of products (could be from a database cursor, etc.)
     val productSequence =
       generateSequence(1) { if (it < 100) it + 1 else null }
         .map { Product(it, "Product $it", it * 9.99) }
 
-    // Write to a buffer lazily - elements are serialized as the sequence is iterated
+    // Write to a buffer - elements are serialized as the sequence is iterated
     val buffer = Buffer()
-    Csv.encodeSequenceToSink(productSequence, buffer)
+    Csv.encodeToSink(productSequence, buffer)
 
-    // Read from the buffer lazily - elements are deserialized as the sequence is consumed
-    val decodedSequence = Csv.decodeSourceToSequence<Product>(buffer)
-
-    // Process each element without loading everything into memory
-    decodedSequence.take(10).forEach { product ->
+    // Read from the buffer - elements are deserialized as the sequence is consumed
+    val decodedSequence = Csv.decodeFromSource<Product>(buffer)
+    decodedSequence.forEach { product ->
       // Process product...
     }
-    // --8<-- [end:lazy-streaming]
+    // --8<-- [end:streaming]
   }
 
   @Test
@@ -81,7 +55,7 @@ class DocsTest {
     // --8<-- [start:tsv]
     // TSV (tab-separated values) format
     val tsv = Tsv.encodeToString(records)
-    val decoded = Tsv.decodeFromString<List<Record>>(tsv)
+    val decoded = Tsv.decodeFromString<Record>(tsv)
     // --8<-- [end:tsv]
   }
 
@@ -95,7 +69,7 @@ class DocsTest {
     // Custom delimiter (pipe-separated values)
     val format = DsvFormat(scheme = DsvScheme(delimiter = '|'))
     val psv = format.encodeToString(items)
-    val decoded = format.decodeFromString<List<Data>>(psv)
+    val decoded = format.decodeFromString<Data>(psv)
     // --8<-- [end:custom-delimiter]
   }
 
@@ -113,7 +87,7 @@ class DocsTest {
     val csv = format.encodeToString(users)
     // CSV will have headers: first_name,last_name,email_address
 
-    val decoded = format.decodeFromString<List<User>>(csv)
+    val decoded = format.decodeFromString<User>(csv)
     // --8<-- [end:naming-strategy]
   }
 
@@ -134,7 +108,7 @@ class DocsTest {
       """
         .trimIndent()
 
-    val decoded = format.decodeFromString<List<PartialData>>(csv)
+    val decoded = format.decodeFromString<PartialData>(csv)
     // Missing 'description' column is treated as null
     // Extra 'extra' column is ignored
     // --8<-- [end:missing-columns]
@@ -142,7 +116,7 @@ class DocsTest {
 
   fun streamingFiles() {
     data class MyData(val id: Int, val name: String)
-    val myData = emptyList<MyData>()
+    val myData = emptySequence<MyData>()
 
     // --8<-- [start:streaming-files]
     // Write to file
@@ -153,7 +127,9 @@ class DocsTest {
     // Read from file
     val data =
       SystemFileSystem.source(Path("data.csv")).buffered().use { source ->
-        Csv.decodeFromSource<List<MyData>>(source)
+        Csv.decodeFromSource<MyData>(source).forEach { item ->
+          // Process item...
+        }
       }
     // --8<-- [end:streaming-files]
   }
