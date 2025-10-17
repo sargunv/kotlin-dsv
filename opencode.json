@@ -4,9 +4,9 @@
         "ktlint": {
             "disabled": true
         },
-        "kotlin-formatter": {
-            "command": ["ktfmt", "--ktfmt-style=google", "-w", "$FILE"],
-            "extensions": [".kt", ".kts"]
+        "pre-commit-formatter": {
+            "command": ["pre-commit", "run", "--files", "$FILE"],
+            "extensions": [".kt", ".kts", ".md", ".yml", ".yaml", ".json"]
         }
     }
 }
