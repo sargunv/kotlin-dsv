@@ -3,6 +3,7 @@ package dev.sargunv.kotlindsv
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 class EncoderDecoderTest {
@@ -168,6 +169,40 @@ class EncoderDecoderTest {
     assertEquals(expected, result)
 
     val decoded = formatSnakeCase.decodeFromString<CamelCaseSample>(result)
+    assertEquals(samples, decoded)
+  }
+
+  @Test
+  fun encodeSealedObjectsAsEnumLike() {
+    @Serializable
+    sealed interface Mode {
+      @Serializable
+      @SerialName("ONLINE")
+      data object Online : Mode
+
+      @Serializable
+      @SerialName("OFFLINE")
+      data object Offline : Mode
+    }
+
+    @Serializable data class ModeSample(val id: Int, val mode: Mode)
+
+    val samples = listOf(ModeSample(1, Mode.Online), ModeSample(2, Mode.Offline))
+
+    val result = format.encodeToString(samples)
+
+    val expected =
+      """
+      id,mode
+      1,ONLINE
+      2,OFFLINE
+
+      """
+        .trimIndent()
+
+    assertEquals(expected, result)
+
+    val decoded = format.decodeFromString<ModeSample>(result)
     assertEquals(samples, decoded)
   }
 
