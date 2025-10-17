@@ -55,7 +55,7 @@ class DocsTest {
 
     // Generate a sequence of products (could be from a database cursor, etc.)
     val productSequence =
-      generateSequence(1) { if (it < 1000000) it + 1 else null }
+      generateSequence(1) { if (it < 100) it + 1 else null }
         .map { Product(it, "Product $it", it * 9.99) }
 
     // Write to a buffer lazily - elements are serialized as the sequence is iterated
