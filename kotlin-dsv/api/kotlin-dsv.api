@@ -2,13 +2,13 @@ public final class dev/sargunv/kotlindsv/Csv : dev/sargunv/kotlindsv/DsvFormat {
 	public static final field INSTANCE Ldev/sargunv/kotlindsv/Csv;
 }
 
-public class dev/sargunv/kotlindsv/DsvFormat : kotlinx/serialization/StringFormat {
+public class dev/sargunv/kotlindsv/DsvFormat : kotlinx/serialization/SerialFormat {
 	public fun <init> (Ldev/sargunv/kotlindsv/DsvScheme;Lkotlinx/serialization/modules/SerializersModule;Ldev/sargunv/kotlindsv/DsvNamingStrategy;ZZZ)V
 	public synthetic fun <init> (Ldev/sargunv/kotlindsv/DsvScheme;Lkotlinx/serialization/modules/SerializersModule;Ldev/sargunv/kotlindsv/DsvNamingStrategy;ZZZILkotlin/jvm/internal/DefaultConstructorMarker;)V
-	public final fun decodeFromSource (Lkotlinx/serialization/DeserializationStrategy;Lkotlinx/io/Source;)Ljava/lang/Object;
-	public fun decodeFromString (Lkotlinx/serialization/DeserializationStrategy;Ljava/lang/String;)Ljava/lang/Object;
-	public final fun encodeToSink (Lkotlinx/serialization/SerializationStrategy;Ljava/lang/Object;Lkotlinx/io/Sink;)V
-	public fun encodeToString (Lkotlinx/serialization/SerializationStrategy;Ljava/lang/Object;)Ljava/lang/String;
+	public final fun decodeFromSource (Lkotlinx/io/Source;Lkotlinx/serialization/DeserializationStrategy;)Lkotlin/sequences/Sequence;
+	public final fun decodeFromString (Lkotlinx/serialization/DeserializationStrategy;Ljava/lang/String;)Ljava/util/List;
+	public final fun encodeToSink (Lkotlinx/serialization/SerializationStrategy;Lkotlin/sequences/Sequence;Lkotlinx/io/Sink;)V
+	public final fun encodeToString (Lkotlinx/serialization/SerializationStrategy;Ljava/util/List;)Ljava/lang/String;
 	public final fun getIgnoreUnknownKeys ()Z
 	public final fun getNamingStrategy ()Ldev/sargunv/kotlindsv/DsvNamingStrategy;
 	public final fun getScheme ()Ldev/sargunv/kotlindsv/DsvScheme;
@@ -159,6 +159,10 @@ public final class dev/sargunv/kotlindsv/DsvWriter {
 	public final fun writeTable (Ldev/sargunv/kotlindsv/DsvTable;)V
 	public final fun writeTable (Ljava/util/List;)V
 	public final fun writeTable (Lkotlin/sequences/Sequence;)V
+}
+
+public final class dev/sargunv/kotlindsv/Psv : dev/sargunv/kotlindsv/DsvFormat {
+	public static final field INSTANCE Ldev/sargunv/kotlindsv/Psv;
 }
 
 public final class dev/sargunv/kotlindsv/Tsv : dev/sargunv/kotlindsv/DsvFormat {

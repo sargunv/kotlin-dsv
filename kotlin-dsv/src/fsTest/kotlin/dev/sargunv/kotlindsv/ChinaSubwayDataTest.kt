@@ -25,13 +25,13 @@ class ChinaSubwayDataTest {
     format: DsvFormat = Csv,
   ) {
     val originalData = openFile(csvFilename)
-    val decodedData = format.decodeFromSource<List<T>>(originalData)
+    val decodedData = format.decodeFromSource<T>(originalData).toList()
     assertEquals(numRecordsExpected, decodedData.size)
 
     val encodedData = kotlinx.io.Buffer()
-    format.encodeToSink(decodedData, encodedData)
+    format.encodeToSink(decodedData.asSequence(), encodedData)
 
-    val decodedData2 = format.decodeFromSource<List<T>>(encodedData)
+    val decodedData2 = format.decodeFromSource<T>(encodedData).toList()
     decodedData.zip(decodedData2).forEachIndexed { i, (decoded1, decoded2) ->
       assertEquals(decoded1, decoded2, "Decoded data mismatch on record $i")
     }

@@ -1,143 +1,87 @@
 package dev.sargunv.kotlindsv
 
-import kotlinx.io.Source
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.descriptors.SerialDescriptor
-import kotlinx.serialization.descriptors.StructureKind
 import kotlinx.serialization.descriptors.elementNames
 import kotlinx.serialization.encoding.AbstractDecoder
 import kotlinx.serialization.encoding.CompositeDecoder
-import kotlinx.serialization.encoding.CompositeDecoder.Companion.UNKNOWN_NAME
 
 @OptIn(ExperimentalSerializationApi::class)
-internal class DsvDecoder(source: Source, private val format: DsvFormat) : AbstractDecoder() {
-
-  private val originalHeader: List<String>
-  private val mappedHeader: List<String>
-  private val records: Iterator<List<String>>
-
-  // current location of the decoder
-  private var level = 0
-  private var row = 0
-  private var record: List<String>? = null
-  private var col = 0
-
-  // initialized on first record
-  private lateinit var nullHeaders: List<String>
-  private lateinit var recordDescriptor: SerialDescriptor
-
-  init {
-    val table = DsvParser(source, format.scheme).parseTable()
-    originalHeader = table.header
-    mappedHeader = table.header.map { format.namingStrategy.fromDsvName(it.trim()) }
-    records = table.records.iterator()
-    record = if (records.hasNext()) records.next() else null
-  }
+internal class DsvDecoder(
+  private val format: DsvFormat,
+  private val table: DsvTable,
+  descriptor: SerialDescriptor,
+) : AbstractDecoder() {
 
   override val serializersModule = format.serializersModule
 
-  override fun beginStructure(descriptor: SerialDescriptor): CompositeDecoder =
-    when (level) {
-      0 -> {
-        require(descriptor.kind == StructureKind.LIST) {
-          "Top-level structure must be a list (got ${descriptor.kind})"
-        }
-        level++
-        this
+  private val records: Iterator<List<String>> = table.records.iterator()
+
+  private val knownElementNames = table.header.map { format.namingStrategy.fromDsvName(it.trim()) }
+  private val implicitNullElementNames: List<String> =
+    if (format.treatMissingColumnsAsNull) {
+      val knownElementNames = knownElementNames.toSet()
+      descriptor.elementNames.filter { elementName ->
+        !descriptor.isElementOptional(descriptor.getElementIndex(elementName)) &&
+          !knownElementNames.contains(elementName)
       }
+    } else emptyList()
 
-      1 -> {
-        require(descriptor.kind == StructureKind.CLASS) {
-          "Second-level structure must be a class (got ${descriptor.kind})"
-        }
+  private var col = 0
+  private lateinit var record: List<String>
+  private var open = false
 
-        if (!::recordDescriptor.isInitialized) {
-          recordDescriptor = descriptor
-        } else {
-          require(descriptor === recordDescriptor) {
-            "All records must have the same structure (expected $recordDescriptor, got $descriptor)"
-          }
-        }
+  internal fun hasNext(): Boolean = records.hasNext()
 
-        if (!::nullHeaders.isInitialized) {
-          nullHeaders =
-            if (format.treatMissingColumnsAsNull) {
-              val originalHeaderSet = originalHeader.toSet()
-              descriptor.elementNames.filter { fieldName ->
-                // fields required for decoding and not present in the CSV will be treated as null
-                !descriptor.isElementOptional(descriptor.getElementIndex(fieldName)) &&
-                  !originalHeaderSet.contains(format.namingStrategy.toDsvName(fieldName))
-              }
-            } else {
-              emptyList()
-            }
-        }
-
-        level++
-        this
-      }
-
-      else -> throw SerializationException("Structures within fields are not supported")
-    }
+  override fun beginStructure(descriptor: SerialDescriptor): CompositeDecoder {
+    require(!open) { "Nested structures are not supported in DSV format" }
+    open = true
+    record = records.next()
+    return this
+  }
 
   override fun endStructure(descriptor: SerialDescriptor) {
-    level--
-    if (level < 0) throw SerializationException("Unbalanced structure")
+    require(open) { "No structure is open" }
+    col = 0
+    open = false
   }
 
-  override fun decodeElementIndex(descriptor: SerialDescriptor): Int =
-    when (level) {
-      1 -> if (record == null) CompositeDecoder.DECODE_DONE else row
+  override fun decodeElementIndex(descriptor: SerialDescriptor): Int {
+    var index: Int
+    do {
+      index =
+        when {
+          // end of record
+          col >= record.size + implicitNullElementNames.size -> CompositeDecoder.DECODE_DONE
 
-      2 -> {
-        var ret: Int
-        do {
-          ret =
-            when {
-              // end of row
-              col >= record!!.size + nullHeaders.size -> {
-                row++
-                record = if (records.hasNext()) records.next() else null
-                col = 0
-                CompositeDecoder.DECODE_DONE
-              }
+          // implicit null
+          col >= record.size ->
+            descriptor.getElementIndex(implicitNullElementNames[col - record.size])
 
-              // implicit null
-              col >= record!!.size -> descriptor.getElementIndex(nullHeaders[col - record!!.size])
-
-              // regular element
-              else -> descriptor.getElementIndex(mappedHeader[col])
-            }
-          col++
-        } while (
-          ret == UNKNOWN_NAME &&
-            (format.ignoreUnknownKeys ||
-              throw SerializationException("Unknown column '${originalHeader[col - 1]}'"))
-        )
-        col--
-        ret
-      }
-
-      else ->
-        throw SerializationException("Fields must be within a list of objects (got level $level)")
-    }
-
-  override fun decodeValue(): Any {
-    require(level == 2) { "Fields must be within a list of objects (got level $level)" }
-    val ret = record!![col]
-    col++
-    return ret
+          // regular element
+          else -> descriptor.getElementIndex(knownElementNames[col])
+        }
+      col++
+    } while (
+      index == CompositeDecoder.UNKNOWN_NAME &&
+        (format.ignoreUnknownKeys ||
+          throw SerializationException("Unknown column '${table.header[col - 1]}'"))
+    )
+    col--
+    return index
   }
 
-  override fun decodeString(): String = decodeValue() as String
+  override fun decodeValue(): Any = decodeString()
+
+  override fun decodeString(): String = record[col].also { col += 1 }
 
   override fun decodeNotNullMark(): Boolean =
-    if (col >= record!!.size) false // implicit null
-    else record!![col] != ""
+    if (col >= record.size) false // implicit null
+    else record[col] != ""
 
   override fun decodeNull(): Nothing? {
-    if (col >= record!!.size) {
+    if (col >= record.size) {
       // implicit null
       col++
       return null

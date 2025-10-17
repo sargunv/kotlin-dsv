@@ -13,3 +13,10 @@ public object Csv : DsvFormat(scheme = DsvScheme(delimiter = ','))
  * @see [DsvFormat]
  */
 public object Tsv : DsvFormat(scheme = DsvScheme(delimiter = '\t'))
+
+/**
+ * Pre-configured Psv format with pipe delimiter.
+ *
+ * @see [DsvFormat]
+ */
+public object Psv : DsvFormat(scheme = DsvScheme(delimiter = '|'))

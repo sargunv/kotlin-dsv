@@ -27,7 +27,7 @@ class CsvDataTest {
     format: DsvFormat = Csv,
   ) {
     val originalCsv = openFile(csvFilename).use { it.readString() }
-    assertFailsWith<E> { format.decodeFromString<List<T>>(originalCsv) }
+    assertFailsWith<E> { format.decodeFromString<T>(originalCsv) }
   }
 
   private inline fun <reified T> encodeDecodeTestCase(
@@ -36,13 +36,13 @@ class CsvDataTest {
     format: DsvFormat = Csv,
   ) {
     val originalData = openFile(csvFilename)
-    val decodedData = format.decodeFromSource<List<T>>(originalData)
+    val decodedData = format.decodeFromSource<T>(originalData).toList()
     assertEquals(numRecordsExpected, decodedData.size)
 
-    val encodedData = Buffer()
-    format.encodeToSink(decodedData, encodedData)
+    val encodedData = kotlinx.io.Buffer()
+    format.encodeToSink(decodedData.asSequence(), encodedData)
 
-    val decodedData2 = format.decodeFromSource<List<T>>(encodedData)
+    val decodedData2 = format.decodeFromSource<T>(encodedData).toList()
     decodedData.zip(decodedData2).forEachIndexed { i, (decoded1, decoded2) ->
       assertEquals(decoded1, decoded2, "Decoded data mismatch on record $i")
     }

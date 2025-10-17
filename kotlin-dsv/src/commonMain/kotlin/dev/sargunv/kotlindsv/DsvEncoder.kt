@@ -1,81 +1,66 @@
 package dev.sargunv.kotlindsv
 
-import kotlinx.io.Sink
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.descriptors.SerialDescriptor
-import kotlinx.serialization.descriptors.elementDescriptors
-import kotlinx.serialization.descriptors.elementNames
 import kotlinx.serialization.encoding.AbstractEncoder
 import kotlinx.serialization.encoding.CompositeEncoder
 
 @OptIn(ExperimentalSerializationApi::class)
-internal class DsvEncoder(private val sink: Sink, private val format: DsvFormat) :
-  AbstractEncoder() {
-
-  private val dsvWriter = DsvWriter(sink, format.scheme)
-  private var nextIndex: Int = -1
-  private var level = 0
-  private lateinit var header: List<String>
-  private lateinit var record: MutableList<String>
-  private lateinit var recordDescriptor: SerialDescriptor
+internal class DsvEncoder(
+  private val format: DsvFormat,
+  private val writer: DsvWriter,
+  descriptor: SerialDescriptor,
+) : AbstractEncoder() {
 
   override val serializersModule = format.serializersModule
 
-  override fun beginCollection(
-    descriptor: SerialDescriptor,
-    collectionSize: Int,
-  ): CompositeEncoder {
-    require(level == 0) { "Top-level structure must be a list of records" }
+  private var nextIndex: Int = -1
+  private val record: MutableList<String> = MutableList(descriptor.elementsCount, init = { "" })
 
-    require(!::recordDescriptor.isInitialized) { "beginCollection called twice" }
-    recordDescriptor = descriptor.elementDescriptors.first()
-    header = recordDescriptor.elementNames.toList()
-    dsvWriter.writeRecord(header.map { format.namingStrategy.toDsvName(it) })
-    record = MutableList(header.size) { "" }
-
-    level++
-    return this
-  }
+  private var open = false
 
   override fun beginStructure(descriptor: SerialDescriptor): CompositeEncoder {
-    require(level == 1) { "Top-level structure must be a list of records" }
-    level++
-    require(descriptor === recordDescriptor) {
-      "All records must have the same structure (expected $recordDescriptor, got $descriptor)"
-    }
+    require(!open) { "Nested structures are not supported in DSV format" }
+    open = true
     return this
   }
 
   override fun endStructure(descriptor: SerialDescriptor) {
-    level--
-    require(level >= 0) { "Unbalanced structure" }
-    when (level) {
-      1 -> {
-        dsvWriter.writeRecord(record)
-        record.fill("")
-      }
-      0 -> sink.close()
-    }
+    require(open) { "No structure is open" }
+    writer.writeRecord(record)
+    record.fill("")
+    open = false
   }
 
-  override fun encodeElement(descriptor: SerialDescriptor, index: Int): Boolean =
-    when (level) {
-      1 -> true
-      2 -> {
-        nextIndex = index
-        true
-      }
-      else -> throw IllegalStateException("Invalid level $level")
-    }
-
-  override fun encodeString(value: String) {
-    record[nextIndex] = value
-    nextIndex = -1
+  override fun encodeElement(descriptor: SerialDescriptor, index: Int): Boolean {
+    nextIndex = index
+    return true
   }
 
   override fun encodeValue(value: Any) = encodeString(value.toString())
 
   override fun encodeNull() = encodeString("")
+
+  override fun encodeBoolean(value: Boolean): Unit = encodeString(value.toString())
+
+  override fun encodeByte(value: Byte): Unit = encodeString(value.toString())
+
+  override fun encodeShort(value: Short): Unit = encodeString(value.toString())
+
+  override fun encodeInt(value: Int): Unit = encodeString(value.toString())
+
+  override fun encodeLong(value: Long): Unit = encodeString(value.toString())
+
+  override fun encodeFloat(value: Float): Unit = encodeString(value.toString())
+
+  override fun encodeDouble(value: Double): Unit = encodeString(value.toString())
+
+  override fun encodeChar(value: Char): Unit = encodeString(value.toString())
+
+  override fun encodeString(value: String) {
+    record[nextIndex] = value
+    nextIndex = -1
+  }
 
   override fun encodeEnum(enumDescriptor: SerialDescriptor, index: Int) =
     if (format.writeEnumsByName) encodeString(enumDescriptor.getElementName(index))

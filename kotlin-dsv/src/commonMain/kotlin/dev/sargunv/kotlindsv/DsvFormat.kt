@@ -6,8 +6,10 @@ import kotlinx.io.Source
 import kotlinx.io.readString
 import kotlinx.io.writeString
 import kotlinx.serialization.DeserializationStrategy
+import kotlinx.serialization.SerialFormat
 import kotlinx.serialization.SerializationStrategy
-import kotlinx.serialization.StringFormat
+import kotlinx.serialization.descriptors.StructureKind
+import kotlinx.serialization.descriptors.elementNames
 import kotlinx.serialization.modules.EmptySerializersModule
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.serializer
@@ -51,40 +53,92 @@ public open class DsvFormat(
   public val treatMissingColumnsAsNull: Boolean = false,
   public val ignoreUnknownKeys: Boolean = false,
   public val writeEnumsByName: Boolean = true,
-) : StringFormat {
-
-  /** Decodes a value of type [T] from the given DSV string. */
-  public inline fun <reified T> decodeFromString(@Language("csv") string: String): T =
-    decodeFromString(serializersModule.serializer(), string)
+) : SerialFormat {
 
   /** Encodes the given [value] to a DSV string. */
-  public inline fun <reified T> encodeToString(value: T): String =
+  public inline fun <reified T> encodeToString(value: List<T>): String =
     encodeToString(serializersModule.serializer(), value)
 
-  override fun <T> decodeFromString(
+  /** Decodes a value of type [T] from the given DSV string. */
+  public inline fun <reified T> decodeFromString(@Language("csv") string: String): List<T> =
+    decodeFromString(serializersModule.serializer(), string)
+
+  /** Encodes the given [value] to a DSV string using the specified [serializer]. */
+  public fun <T> encodeToString(serializer: SerializationStrategy<T>, value: List<T>): String {
+    val sink = Buffer()
+    encodeToSink(serializer, value.asSequence(), sink)
+    return sink.readString()
+  }
+
+  /** Decodes a value of type [T] from the given DSV string using the specified [serializer]. */
+  public fun <T> decodeFromString(
     deserializer: DeserializationStrategy<T>,
     @Language("csv") string: String,
-  ): T = decodeFromSource(deserializer, Buffer().apply { writeString(string) })
-
-  override fun <T> encodeToString(serializer: SerializationStrategy<T>, value: T): String =
-    Buffer().also { encodeToSink(serializer, value, it) }.readString()
-
-  /** Decodes a value of type [T] from the given UTF-8 [Source]. */
-  public inline fun <reified T> decodeFromSource(source: Source): T =
-    decodeFromSource(serializersModule.serializer(), source)
-
-  /** Encodes the given [value] to the provided [Sink] as UTF-8 text. */
-  public inline fun <reified T> encodeToSink(value: T, sink: Sink): Unit =
-    encodeToSink(serializersModule.serializer(), value, sink)
-
-  /** Decodes a value from the given UTF-8 [Source] using the specified [deserializer]. */
-  public fun <T> decodeFromSource(deserializer: DeserializationStrategy<T>, source: Source): T =
-    deserializer.deserialize(DsvDecoder(source, this))
+  ): List<T> {
+    val source = Buffer()
+    source.writeString(string)
+    return decodeFromSource(source, deserializer).toList()
+  }
 
   /**
-   * Encodes the given [value] to the provided [Sink] as UTF-8 text using the specified
+   * Encodes the given [sequence] to the provided [sink] as UTF-8 text using the specified
    * [serializer].
    */
-  public fun <T> encodeToSink(serializer: SerializationStrategy<T>, value: T, sink: Sink): Unit =
-    serializer.serialize(DsvEncoder(sink, this), value)
+  public inline fun <reified T> encodeToSink(sequence: Sequence<T>, sink: Sink) {
+    encodeToSink(serializersModule.serializer(), sequence, sink)
+  }
+
+  /**
+   * Transforms the given UTF-8 [source] into lazily deserialized [Sequence] of elements of type
+   * [T]. The resulting sequence is tied to the [source] and can be evaluated only once.
+   */
+  public inline fun <reified T> decodeFromSource(source: Source): Sequence<T> =
+    decodeFromSource(source, serializersModule.serializer())
+
+  /**
+   * Encodes the given [sequence] to the provided [sink] as UTF-8 text using the specified
+   * [serializer].
+   */
+  public fun <T> encodeToSink(
+    serializer: SerializationStrategy<T>,
+    sequence: Sequence<T>,
+    sink: Sink,
+  ) {
+    val descriptor = serializer.descriptor
+    require(descriptor.kind == StructureKind.CLASS) {
+      "Element type must be a class (got ${descriptor.kind})"
+    }
+
+    val writer = DsvWriter(sink, scheme)
+    val header = descriptor.elementNames.map(namingStrategy::toDsvName)
+    writer.writeRecord(header)
+
+    val encoder = DsvEncoder(this, writer, descriptor)
+    sequence.forEach { record -> serializer.serialize(encoder, record) }
+  }
+
+  /**
+   * Transforms the given UTF-8 [source] into lazily deserialized [Sequence] of elements of type
+   * [T]. The resulting sequence is tied to the [source] and can be evaluated only once.
+   */
+  public fun <T> decodeFromSource(
+    source: Source,
+    deserializer: DeserializationStrategy<T>,
+  ): Sequence<T> {
+    val descriptor = deserializer.descriptor
+    require(descriptor.kind == StructureKind.CLASS) {
+      "Element type must be a class (got ${descriptor.kind})"
+    }
+
+    val parser = DsvParser(source, scheme)
+    val table = parser.parseTable()
+
+    val decoder = DsvDecoder(this, table, descriptor)
+
+    return sequence {
+      while (decoder.hasNext()) {
+        yield(deserializer.deserialize(decoder))
+      }
+    }
+  }
 }
