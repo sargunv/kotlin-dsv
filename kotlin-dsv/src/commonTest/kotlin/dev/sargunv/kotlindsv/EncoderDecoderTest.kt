@@ -26,6 +26,15 @@ class EncoderDecoderTest {
     val description: String?,
   )
 
+  @Serializable
+  sealed interface Mode {
+    @Serializable @SerialName("ONLINE") data object Online : Mode
+
+    @Serializable @SerialName("OFFLINE") data object Offline : Mode
+  }
+
+  @Serializable data class ModeSample(val id: Int, val mode: Mode)
+
   private val format = DsvFormat(DsvScheme(delimiter = ',', writeCrlf = false))
 
   @Test
@@ -174,19 +183,6 @@ class EncoderDecoderTest {
 
   @Test
   fun encodeSealedObjectsAsEnumLike() {
-    @Serializable
-    sealed interface Mode {
-      @Serializable
-      @SerialName("ONLINE")
-      data object Online : Mode
-
-      @Serializable
-      @SerialName("OFFLINE")
-      data object Offline : Mode
-    }
-
-    @Serializable data class ModeSample(val id: Int, val mode: Mode)
-
     val samples = listOf(ModeSample(1, Mode.Online), ModeSample(2, Mode.Offline))
 
     val result = format.encodeToString(samples)
