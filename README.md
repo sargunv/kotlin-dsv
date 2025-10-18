@@ -3,8 +3,8 @@
 [![Maven Central Version](https://img.shields.io/maven-central/v/dev.sargunv.kotlin-dsv/kotlin-dsv?label=Maven)](https://central.sonatype.com/artifact/dev.sargunv.kotlin-dsv/kotlin-dsv)
 [![License](https://img.shields.io/github/license/sargunv/kotlin-dsv?label=License)](https://github.com/sargunv/kotlin-dsv/blob/main/LICENSE)
 [![Kotlin Version](https://img.shields.io/badge/dynamic/toml?url=https%3A%2F%2Fraw.githubusercontent.com%2Fsargunv%2Fkotlin-dsv%2Frefs%2Fheads%2Fmain%2Fgradle%2Flibs.versions.toml&query=versions.kotlin&prefix=v&logo=kotlin&label=Kotlin)](./gradle/libs.versions.toml)
-[![Documentation](https://img.shields.io/badge/Documentation-blue?logo=MaterialForMkDocs&logoColor=white)](https://sargunv.github.io/kotlin-dsv/)
-[![API Reference](https://img.shields.io/badge/API_Reference-blue?logo=Kotlin&logoColor=white)](https://sargunv.github.io/kotlin-dsv/api/)
+[![Documentation](https://img.shields.io/badge/Documentation-blue?logo=MaterialForMkDocs&logoColor=white)](https://code.sargunv.dev/kotlin-dsv/)
+[![API Reference](https://img.shields.io/badge/API_Reference-blue?logo=Kotlin&logoColor=white)](https://code.sargunv.dev/kotlin-dsv/api/)
 
 ## Introduction
 
@@ -45,5 +45,5 @@ val csv = Csv.encodeToString(people)
 val decoded = Csv.decodeFromString<Person>(csv)
 ```
 
-See the [project site](https://sargunv.github.io/kotlin-dsv/) for more info and
+See the [project site](https://code.sargunv.dev/kotlin-dsv/) for more info and
 examples.
