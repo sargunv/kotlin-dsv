@@ -7,6 +7,7 @@ import kotlinx.io.Buffer
 import kotlinx.io.buffered
 import kotlinx.io.files.Path
 import kotlinx.io.files.SystemFileSystem
+import kotlinx.io.writeString
 import kotlinx.serialization.Serializable
 
 class DocsTest {
@@ -175,5 +176,34 @@ class DocsTest {
     val csvByOrdinal = formatByOrdinal.encodeToString(items)
     // Output: id,status\n1,0\n2,2
     // --8<-- [end:enums]
+  }
+
+  @Test
+  fun jaggedRows() {
+    // --8<-- [start:jagged-rows]
+    // Create a parser with allowJaggedRows enabled
+    val format = DsvFormat(scheme = Csv.scheme.copy(allowJaggedRows = true))
+
+    // CSV with inconsistent column counts
+    val csv =
+      """
+      name,age,city
+      Alice,30,NYC
+      Bob,25
+      Charlie,35,LA,Extra
+      """
+        .trimIndent()
+
+    // Parse the CSV - shorter rows are extended with empty values,
+    // longer rows are truncated to match the header
+    val buffer = Buffer()
+    buffer.writeString(csv)
+    val parser = DsvParser(buffer, format.scheme)
+    val records = parser.parseRecords().toList()
+    // records[0] = ["name", "age", "city"]
+    // records[1] = ["Alice", "30", "NYC"]
+    // records[2] = ["Bob", "25", ""] - extended with empty value
+    // records[3] = ["Charlie", "35", "LA"] - "Extra" truncated
+    // --8<-- [end:jagged-rows]
   }
 }
