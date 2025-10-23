@@ -151,7 +151,8 @@ public class DsvParser(private val input: Source, private val scheme: DsvScheme)
   /**
    * Parses all records from the input as a sequence of string lists.
    *
-   * Each list represents one record (row). All records must have the same number of fields.
+   * Each list represents one record (row). All records must have the same number of fields unless
+   * [DsvScheme.allowJaggedRows] is true.
    */
   public fun parseRecords(): Sequence<List<String>> = sequence {
     input.use {
@@ -178,13 +179,22 @@ public class DsvParser(private val input: Source, private val scheme: DsvScheme)
         if (scheme.skipEmptyLines && (record.isEmpty() || record.size == 1 && record[0].isEmpty()))
           continue
 
-        if (record.size != numColumns) {
-          throw DsvParseException(
-            "Expected $numColumns columns, got ${record.size} in record $record"
-          )
-        }
+        val adjustedRecord =
+          if (scheme.allowJaggedRows && record.size != numColumns) {
+            when {
+              record.size > numColumns -> record.take(numColumns) // truncate
+              else -> record + List(numColumns - record.size) { "" } // extend with empty values
+            }
+          } else {
+            if (record.size != numColumns) {
+              throw DsvParseException(
+                "Expected $numColumns columns, got ${record.size} in record $record"
+              )
+            }
+            record
+          }
 
-        yield(record)
+        yield(adjustedRecord)
       }
 
       if (cursor < data.length || !input.exhausted()) {
