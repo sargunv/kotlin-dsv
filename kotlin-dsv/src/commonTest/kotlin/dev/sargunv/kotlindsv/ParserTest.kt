@@ -156,4 +156,60 @@ class ParserTest {
     testCase("a,b,c\n1,2,3\nextra") {
       assertFailsWith<DsvParseException> { parseRecords().toList() }
     }
+
+  @Test
+  fun jaggedRowsShorter() =
+    testCase("a,b,c\n1,2", scheme = Csv.scheme.copy(allowJaggedRows = true)) {
+      assertEquals(listOf(listOf("a", "b", "c"), listOf("1", "2", "")), parseRecords().toList())
+    }
+
+  @Test
+  fun jaggedRowsLonger() =
+    testCase("a,b,c\n1,2,3,4", scheme = Csv.scheme.copy(allowJaggedRows = true)) {
+      assertEquals(listOf(listOf("a", "b", "c"), listOf("1", "2", "3")), parseRecords().toList())
+    }
+
+  @Test
+  fun jaggedRowsMixed() =
+    testCase("a,b,c\n1\n2,3,4,5\n6,7,8", scheme = Csv.scheme.copy(allowJaggedRows = true)) {
+      assertEquals(
+        listOf(
+          listOf("a", "b", "c"),
+          listOf("1", "", ""),
+          listOf("2", "3", "4"),
+          listOf("6", "7", "8"),
+        ),
+        parseRecords().toList(),
+      )
+    }
+
+  @Test
+  fun jaggedRowsSingleColumn() =
+    testCase("a\n1,2", scheme = Csv.scheme.copy(allowJaggedRows = true)) {
+      assertEquals(listOf(listOf("a"), listOf("1")), parseRecords().toList())
+    }
+
+  @Test
+  fun jaggedRowsWithQuotes() =
+    testCase(
+      "\"a\",\"b\",\"c\"\n\"1\"\n\"2\",\"3\",\"4\",\"5\"",
+      scheme = Csv.scheme.copy(allowJaggedRows = true),
+    ) {
+      assertEquals(
+        listOf(listOf("a", "b", "c"), listOf("1", "", ""), listOf("2", "3", "4")),
+        parseRecords().toList(),
+      )
+    }
+
+  @Test
+  fun jaggedRowsDisabledShorter() =
+    testCase("a,b,c\n1,2", scheme = Csv.scheme.copy(allowJaggedRows = false)) {
+      assertFailsWith<DsvParseException> { parseRecords().toList() }
+    }
+
+  @Test
+  fun jaggedRowsDisabledLonger() =
+    testCase("a,b,c\n1,2,3,4", scheme = Csv.scheme.copy(allowJaggedRows = false)) {
+      assertFailsWith<DsvParseException> { parseRecords().toList() }
+    }
 }
