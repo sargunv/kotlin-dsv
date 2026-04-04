@@ -8,8 +8,8 @@
 
 ## Introduction
 
-Kotlin DSV is a library for working with delimiter-separated values (CSV, TSV,
-and custom formats) in Kotlin Multiplatform projects.
+Kotlin DSV is a library for working with delimiter-separated values (CSV, TSV, and custom formats)
+in Kotlin Multiplatform projects.
 
 Features:
 
@@ -45,5 +45,4 @@ val csv = Csv.encodeToString(people)
 val decoded = Csv.decodeFromString<Person>(csv)
 ```
 
-See the [project site](https://code.sargunv.dev/kotlin-dsv/) for more info and
-examples.
+See the [project site](https://code.sargunv.dev/kotlin-dsv/) for more info and examples.

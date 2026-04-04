@@ -15,18 +15,15 @@
 ## Architecture
 
 - Kotlin Multiplatform library for delimiter-separated values (CSV/TSV)
-- Main module: `kotlin-dsv/` - Core library with DSV parsing, writing,
-  encoding/decoding
+- Main module: `kotlin-dsv/` - Core library with DSV parsing, writing, encoding/decoding
 - Subprojects: `benchmark/` (performance benchmarks)
-- Uses kotlinx.serialization for type-safe serialization and kotlinx.io for
-  streaming
+- Uses kotlinx.serialization for type-safe serialization and kotlinx.io for streaming
 - Package: `dev.sargunv.kotlindsv`
 
 ## Code Style
 
 - Indent: 2 spaces for Kotlin, 4 spaces for other files
-- All public APIs must be documented (detekt enforces
-  UndocumentedPublicClass/Function/Property)
+- All public APIs must be documented (detekt enforces UndocumentedPublicClass/Function/Property)
 - Use kotlinx.serialization annotations (e.g., `@Serializable`)
 - Error handling: throw `DsvParseException` for parsing errors
 - Naming: use `DsvNamingStrategy` for column name transformations
@@ -34,11 +31,10 @@
 
 ## Commit Guidelines
 
-Never make a commit unless explicitly asked to do so. Such permission only
-extends to that one commit, not to future commits in that session.
+Never make a commit unless explicitly asked to do so. Such permission only extends to that one
+commit, not to future commits in that session.
 
-When making commits, always include a signoff in the commit message following
-this format:
+When making commits, always include a signoff in the commit message following this format:
 
 ```
 🤖 Generated with [Agent Name](https://agent-url)
@@ -52,8 +48,6 @@ Examples:
   `Co-Authored-By: Claude <noreply@anthropic.com>`
 - OpenCode: `🤖 Generated with [OpenCode](https://opencode.ai)` and
   `Co-Authored-By: OpenCode <noreply@opencode.ai>`
-- Amp: `🤖 Generated with [Amp](https://ampcode.com)` and
-  `Co-Authored-By: Amp <amp@ampcode.com>`
+- Amp: `🤖 Generated with [Amp](https://ampcode.com)` and `Co-Authored-By: Amp <amp@ampcode.com>`
 
-Each coding agent should use their own Author and URL but maintain the same
-format.
+Each coding agent should use their own Author and URL but maintain the same format.
