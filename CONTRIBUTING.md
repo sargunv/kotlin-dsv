@@ -11,7 +11,7 @@ Alternatively, check `mise.toml` for the list of required tools and install them
 
 ## IDE
 
-Install the [dprint](https://plugins.jetbrains.com/plugin/18492-dprint) plugin for format-on-save
+Install the [dprint](https://plugins.jetbrains.com/plugin/18192-dprint) plugin for format-on-save
 support.
 
 ## Formatting
