@@ -5,12 +5,11 @@ on:
         inputs:
             scope:
                 type: choice
-                description: "https://github.com/JavierSegoviaCordoba/semver-gradle-plugin?tab=readme-ov-file#scopes"
+                description: "Version bump scope"
                 options:
                     - major
                     - minor
                     - patch
-                    - auto
                 required: true
 
 permissions:
@@ -19,6 +18,8 @@ permissions:
 jobs:
     publish-maven:
         runs-on: ubuntu-latest
+        permissions:
+            contents: write
         environment:
             name: maven-central
             url: https://central.sonatype.com/namespace/dev.sargunv.kotlin-dsv
@@ -28,8 +29,10 @@ jobs:
                   fetch-depth: 0
                   fetch-tags: true
             - uses: jdx/mise-action@1648a7812b9aeae629881980618f079932869151 # v4.0.1
+            - name: Create release tag
+              run: mise run tag -- ${{ github.event.inputs.scope }}
             - run: |
-                  ./gradlew publishAndReleaseToMavenCentral -Psemver.stage=final -Psemver.scope=${{ github.event.inputs.scope }}
+                  ./gradlew publishAndReleaseToMavenCentral
               env:
                   ORG_GRADLE_PROJECT_mavenCentralUsername:
                       ${{ secrets.MAVEN_CENTRAL_USERNAME }}
@@ -55,24 +58,9 @@ jobs:
                   fetch-tags: true
             - uses: jdx/mise-action@1648a7812b9aeae629881980618f079932869151 # v4.0.1
             - run: |
-                  ./gradlew :mkdocsBuild -Psemver.stage=final -Psemver.scope=${{ github.event.inputs.scope }}
+                  ./gradlew :mkdocsBuild
             - uses: actions/upload-pages-artifact@7b1f4a764d45c48632c6b24a0339c27f5614fb0b # v4.0.0
               with:
                   path: build/mkdocs
             - uses: actions/deploy-pages@d6db90164ac5ed86f2b6aed7e0febac5b3c0c03e # v4.0.5
               id: deploy-pages
-
-    tag:
-        runs-on: ubuntu-latest
-        needs: [publish-maven, publish-pages]
-        permissions:
-            contents: write
-        steps:
-            - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
-              with:
-                  fetch-depth: 0
-                  fetch-tags: true
-            - uses: jdx/mise-action@1648a7812b9aeae629881980618f079932869151 # v4.0.1
-            - run: |
-                  ./gradlew :createSemverTag -Psemver.stage=final -Psemver.scope=${{ github.event.inputs.scope }}
-            - run: git push --follow-tags

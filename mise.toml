@@ -48,6 +48,25 @@ run = "hk check --all"
 description = "Auto-fix formatting issues"
 run = "hk fix --all"
 
+[tasks.tag]
+description = "Create a release tag and push it"
+usage = 'arg "<scope>" help="Version bump scope" {choices = ["major", "minor", "patch"]}'
+run = '''
+#!/usr/bin/env bash
+set -euo pipefail
+LAST=$(git describe --tags --abbrev=0)
+CLEAN=${LAST#v}
+IFS='.' read -r MAJOR MINOR PATCH <<< "$CLEAN"
+case "$1" in
+  major) NEW="$((MAJOR+1)).0.0" ;;
+  minor) NEW="${MAJOR}.$((MINOR+1)).0" ;;
+  patch) NEW="${MAJOR}.${MINOR}.$((PATCH+1))" ;;
+  *) echo "scope must be major, minor, or patch" >&2; exit 1 ;;
+esac
+git tag -a "v${NEW}" -m "Release v${NEW}"
+echo "Created tag v${NEW}. Run: git push --follow-tags"
+'''
+
 [tasks._ktfmt]
 description = "Called by dprint.json"
 hide = true

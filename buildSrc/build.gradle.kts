@@ -12,7 +12,7 @@ dependencies {
   implementation(libs.gradle.publish)
   implementation(libs.gradle.benchmark)
   implementation(libs.gradle.kover)
-  implementation(libs.gradle.semver)
+  implementation(libs.gradle.palantir.git.version)
   implementation(libs.gradle.mkdocs.build)
   implementation(libs.gradle.detekt)
 }
