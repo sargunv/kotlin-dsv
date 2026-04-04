@@ -21,8 +21,8 @@ A pre-commit hook (via [hk](https://hk.jdx.dev/)) auto-formats staged files befo
 - `mise run fix` — format all files
 - `mise run check` — check formatting without modifying files
 
-## Running Tests
+## Building and Running Tests
 
-- `./gradlew check` — run all checks and tests
+- `mise run build` — build and run all checks and tests
 - `mise run test` — run all tests (JVM, JS Node, WASM JS Node, native)
 - `mise run test:jvm` — run JVM tests only
