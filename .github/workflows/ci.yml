@@ -18,10 +18,7 @@ jobs:
                   fetch-tags: true
                   persist-credentials: false
                   submodules: recursive
-            - uses: actions/setup-java@dded0888837ed1f317902acf8a20df0ad188d165 # v5.0.0
-              with:
-                  distribution: temurin
-                  java-version: 21
+            - uses: jdx/mise-action@1648a7812b9aeae629881980618f079932869151 # v4.0.1
             - run: ./gradlew build
 
     benchmark:
@@ -32,10 +29,7 @@ jobs:
                   fetch-depth: 0
                   fetch-tags: true
                   persist-credentials: false
-            - uses: actions/setup-java@dded0888837ed1f317902acf8a20df0ad188d165 # v5.0.0
-              with:
-                  distribution: temurin
-                  java-version: 21
+            - uses: jdx/mise-action@1648a7812b9aeae629881980618f079932869151 # v4.0.1
             - name: Run benchmark
               run: |
                   echo '## Benchmark' >> $GITHUB_STEP_SUMMARY
@@ -49,10 +43,7 @@ jobs:
                   fetch-depth: 0
                   fetch-tags: true
                   persist-credentials: false
-            - uses: actions/setup-java@dded0888837ed1f317902acf8a20df0ad188d165 # v5.0.0
-              with:
-                  distribution: temurin
-                  java-version: 21
+            - uses: jdx/mise-action@1648a7812b9aeae629881980618f079932869151 # v4.0.1
             - run: ./gradlew :mkdocsBuild
             - uses: actions/upload-pages-artifact@7b1f4a764d45c48632c6b24a0339c27f5614fb0b # v4.0.0
               with:
