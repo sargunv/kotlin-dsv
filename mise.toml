@@ -11,6 +11,7 @@ dprint = "0.53.2"
 hk = "1.40.0"
 pkl = "0.30.2"
 "aqua:facebook/ktfmt" = "0.62"
+python = "latest"
 
 [tasks.build]
 description = "Build and check all targets"

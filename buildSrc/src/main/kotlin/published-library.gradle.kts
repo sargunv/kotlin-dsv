@@ -52,7 +52,9 @@ dokka {
 
 mavenPublishing {
   publishToMavenCentral(automaticRelease = true)
-  signAllPublications()
+  if (providers.gradleProperty("signingInMemoryKey").isPresent) {
+    signAllPublications()
+  }
 
   pom {
     url = "https://github.com/sargunv/kotlin-dsv/"
