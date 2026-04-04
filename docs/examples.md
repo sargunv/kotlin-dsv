@@ -4,8 +4,8 @@ This page demonstrates common use cases for kotlin-dsv.
 
 ## Streaming Large Files
 
-Use `encodeToSink` and `decodeFromSource` to work with streams instead of
-loading everything into memory:
+Use `encodeToSink` and `decodeFromSource` to work with streams instead of loading everything into
+memory:
 
 ```kotlin
 --8<-- "kotlin-dsv/src/commonTest/kotlin/dev/sargunv/kotlindsv/DocsTest.kt:streaming"

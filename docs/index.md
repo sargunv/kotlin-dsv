@@ -1,7 +1,7 @@
 # Kotlin DSV
 
-Kotlin Multiplatform library for working with delimiter-separated values (CSV,
-TSV, and custom formats).
+Kotlin Multiplatform library for working with delimiter-separated values (CSV, TSV, and custom
+formats).
 
 ## Features
 
