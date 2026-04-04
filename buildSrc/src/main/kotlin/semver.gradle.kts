@@ -2,8 +2,8 @@ import com.palantir.gradle.gitversion.VersionDetails
 
 plugins { id("com.palantir.git-version") }
 
-val versionDetailsFn: groovy.lang.Closure<VersionDetails> by extra
-val versionDetails = versionDetailsFn()
+@Suppress("UNCHECKED_CAST")
+val versionDetails = (extra["versionDetails"] as groovy.lang.Closure<VersionDetails>)()
 
 val semverStage = project.findProperty("semver.stage") as String?
 val semverScope = project.findProperty("semver.scope") as String?
