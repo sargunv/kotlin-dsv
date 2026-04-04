@@ -13,68 +13,68 @@ import kotlinx.serialization.Serializable
 // Based on https://github.com/liwt31/china-city-subway-csv
 
 class ChinaSubwayDataTest {
-    private val samplesPath = "src/fsTest/resources/china-city-subway-csv"
+  private val samplesPath = "src/fsTest/resources/china-city-subway-csv"
 
-    private fun openFile(filename: String): Source {
-        return SystemFileSystem.source(Path("$samplesPath/$filename")).buffered()
+  private fun openFile(filename: String): Source {
+    return SystemFileSystem.source(Path("$samplesPath/$filename")).buffered()
+  }
+
+  private inline fun <reified T> encodeDecodeTestCase(
+    csvFilename: String,
+    numRecordsExpected: Int,
+    format: DsvFormat = Csv,
+  ) {
+    val originalData = openFile(csvFilename)
+    val decodedData = format.decodeFromSource<T>(originalData).toList()
+    assertEquals(numRecordsExpected, decodedData.size)
+
+    val encodedData = kotlinx.io.Buffer()
+    format.encodeToSink(decodedData.asSequence(), encodedData)
+
+    val decodedData2 = format.decodeFromSource<T>(encodedData).toList()
+    decodedData.zip(decodedData2).forEachIndexed { i, (decoded1, decoded2) ->
+      assertEquals(decoded1, decoded2, "Decoded data mismatch on record $i")
     }
+  }
 
-    private inline fun <reified T> encodeDecodeTestCase(
-        csvFilename: String,
-        numRecordsExpected: Int,
-        format: DsvFormat = Csv,
-    ) {
-        val originalData = openFile(csvFilename)
-        val decodedData = format.decodeFromSource<T>(originalData).toList()
-        assertEquals(numRecordsExpected, decodedData.size)
+  @Serializable
+  private data class City(
+    val id: Int,
+    val cn_name: String,
+    val en_name: String,
+    val code: Int,
+    val pre: String,
+    val created_at: String,
+    val updated_at: String,
+  )
 
-        val encodedData = kotlinx.io.Buffer()
-        format.encodeToSink(decodedData.asSequence(), encodedData)
+  @Serializable
+  private data class Line(
+    val id: Int,
+    val name: String,
+    val uid: String,
+    val pair_uid: String,
+    val city_id: Int,
+    val created_at: String,
+    val updated_at: String,
+  )
 
-        val decodedData2 = format.decodeFromSource<T>(encodedData).toList()
-        decodedData.zip(decodedData2).forEachIndexed { i, (decoded1, decoded2) ->
-            assertEquals(decoded1, decoded2, "Decoded data mismatch on record $i")
-        }
-    }
+  @Serializable
+  private data class Step(
+    val id: Int,
+    val name: String,
+    val uid: String,
+    val lat: Double,
+    val lng: Double,
+    val is_practical: Int,
+    val line_id: Int,
+    val created_at: String,
+    val updated_at: String,
+  )
 
-    @Serializable
-    private data class City(
-        val id: Int,
-        val cn_name: String,
-        val en_name: String,
-        val code: Int,
-        val pre: String,
-        val created_at: String,
-        val updated_at: String,
-    )
+  @Test fun china_subway_cities() = encodeDecodeTestCase<City>("cities.csv", 33)
 
-    @Serializable
-    private data class Line(
-        val id: Int,
-        val name: String,
-        val uid: String,
-        val pair_uid: String,
-        val city_id: Int,
-        val created_at: String,
-        val updated_at: String,
-    )
+  @Test fun china_subway_lines() = encodeDecodeTestCase<Line>("lines.csv", 385)
 
-    @Serializable
-    private data class Step(
-        val id: Int,
-        val name: String,
-        val uid: String,
-        val lat: Double,
-        val lng: Double,
-        val is_practical: Int,
-        val line_id: Int,
-        val created_at: String,
-        val updated_at: String,
-    )
-
-    @Test fun china_subway_cities() = encodeDecodeTestCase<City>("cities.csv", 33)
-
-    @Test fun china_subway_lines() = encodeDecodeTestCase<Line>("lines.csv", 385)
-
-    @Test fun china_subway_steps() = encodeDecodeTestCase<Step>("steps.csv", 7335)
+  @Test fun china_subway_steps() = encodeDecodeTestCase<Step>("steps.csv", 7335)
 }

@@ -8,8 +8,8 @@ package dev.sargunv.kotlindsv
  *   support streaming large files.
  */
 public data class DsvTable(val header: List<String>, val records: Sequence<List<String>>) {
-    /** Converts records to a sequence of maps, using header values as keys. */
-    public fun recordsAsMaps(): Sequence<Map<String, String>> = records.map { record ->
-        header.zip(record).toMap()
-    }
+  /** Converts records to a sequence of maps, using header values as keys. */
+  public fun recordsAsMaps(): Sequence<Map<String, String>> = records.map { record ->
+    header.zip(record).toMap()
+  }
 }

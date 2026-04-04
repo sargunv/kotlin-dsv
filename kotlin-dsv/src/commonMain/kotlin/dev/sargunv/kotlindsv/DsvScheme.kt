@@ -13,22 +13,22 @@ import kotlin.jvm.JvmOverloads
 public data class DsvScheme
 @JvmOverloads
 constructor(
-    internal val delimiter: Char,
-    internal val quote: Char = '"',
-    internal val writeCrlf: Boolean = true,
-    internal val skipEmptyLines: Boolean = false,
+  internal val delimiter: Char,
+  internal val quote: Char = '"',
+  internal val writeCrlf: Boolean = true,
+  internal val skipEmptyLines: Boolean = false,
 ) {
-    // line delimiters prob shouldn't be configurable
-    internal val lineFeed: Char = '\n'
-    internal val carriageReturn: Char = '\r'
+  // line delimiters prob shouldn't be configurable
+  internal val lineFeed: Char = '\n'
+  internal val carriageReturn: Char = '\r'
 
-    init {
-        require(quote != delimiter) { "Quote and delimiter must be different characters" }
-        require(quote != lineFeed && quote != carriageReturn) {
-            "Quote must not be a newline character"
-        }
-        require(delimiter != lineFeed && delimiter != carriageReturn) {
-            "Delimiter must not be a newline character"
-        }
+  init {
+    require(quote != delimiter) { "Quote and delimiter must be different characters" }
+    require(quote != lineFeed && quote != carriageReturn) {
+      "Quote must not be a newline character"
     }
+    require(delimiter != lineFeed && delimiter != carriageReturn) {
+      "Delimiter must not be a newline character"
+    }
+  }
 }
