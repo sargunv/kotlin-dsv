@@ -50,7 +50,10 @@ run = "hk fix --all"
 
 [tasks.tag]
 description = "Create a release tag and push it"
-usage = 'arg "<scope>" help="Version bump scope" {choices = ["major", "minor", "patch"]}'
+usage = '''
+arg "<scope>" help="Version bump scope" {choices = ["major", "minor", "patch"]}
+flag "--dry-run" help="Print the tag that would be created without creating it"
+'''
 run = '''
 #!/usr/bin/env bash
 set -euo pipefail
@@ -63,8 +66,12 @@ case "$1" in
   patch) NEW="${MAJOR}.${MINOR}.$((PATCH+1))" ;;
   *) echo "scope must be major, minor, or patch" >&2; exit 1 ;;
 esac
-git tag -a "v${NEW}" -m "Release v${NEW}"
-echo "Created tag v${NEW}. Run: git push --follow-tags"
+if [[ "${usage_dry_run:-}" == "true" ]]; then
+  echo "Would create tag: v${NEW}"
+else
+  git tag -a "v${NEW}" -m "Release v${NEW}"
+  echo "Created tag v${NEW}. Run: git push --follow-tags"
+fi
 '''
 
 [tasks._ktfmt]
