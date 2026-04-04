@@ -12,7 +12,7 @@
     "exec": {
         "commands": [
             {
-                "command": "mise run _ktfmt --kotlinlang-style - --stdin-name={{file_path}}",
+                "command": "mise run _ktfmt --google-style - --stdin-name={{file_path}}",
                 "exts": ["kt", "kts"]
             }
         ]
