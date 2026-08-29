@@ -1,16 +1,51 @@
+# https://mise.jdx.dev
+min_version = "2026.7.15"
+
 [settings]
 experimental = true
 pin = true
+lockfile = true
+lockfile_platforms = [
+  "linux-x64",
+  "linux-arm64",
+  "macos-arm64",
+  "windows-x64",
+  "windows-arm64",
+]
+minimum_release_age = "3d"
 
 [hooks]
 postinstall = ["hk install --mise"]
 
+[vars]
+actionlint_version = "1.7.12"
+dprint_version = "0.55.2"
+hk_version = "1.54.1"
+java_version = "21.0.2"
+ktfmt_version = "0.64"
+node_version = "24.19.0"
+pkl_version = "0.30.2"
+python_version = "3.14.7"
+shellcheck_version = "0.11.0"
+xcodes_version = "2.0.3"
+
 [tools]
-java = "21.0.2"
-dprint = "0.53.2"
-hk = "1.40.0"
-pkl = "0.30.2"
-"aqua:facebook/ktfmt" = "0.62"
+"core:java" = "{{vars.java_version}}"
+"aqua:dprint/dprint" = "{{vars.dprint_version}}"
+"aqua:jdx/hk" = "{{vars.hk_version}}"
+"aqua:apple/pkl" = "{{vars.pkl_version}}"
+"aqua:facebook/ktfmt" = "{{vars.ktfmt_version}}"
+"core:python" = "{{vars.python_version}}"
+"aqua:rhysd/actionlint" = "{{vars.actionlint_version}}"
+"aqua:koalaman/shellcheck" = "{{vars.shellcheck_version}}"
+
+# For tooling outside Gradle (also provides npm for the npm: backend below);
+# Kotlin/JS brings its own Node via Gradle.
+"core:node" = "{{vars.node_version}}"
+"npm:actions-up" = "1.18.0"
+
+# The CLI only; Xcode itself is installed via the xcode:* tasks. macOS-only.
+"aqua:XcodesOrg/xcodes" = { version = "{{vars.xcodes_version}}", os = ["macos"] }
 
 [tasks.build]
 description = "Build and check all targets"
@@ -30,7 +65,7 @@ run = "./gradlew wasmJsNodeTest"
 
 [tasks."test:native"]
 description = "Run native tests for the current platform"
-run = "./gradlew $( uname | grep -q Darwin && (uname -m | grep -q arm64 && echo macosArm64Test || echo macosX64Test) || echo linuxX64Test )"
+run = "./gradlew $( uname | grep -q Darwin && echo macosArm64Test || echo linuxX64Test )"
 
 [tasks.test]
 description = "Run all tests"
@@ -38,7 +73,73 @@ depends = ["test:jvm", "test:jsnode", "test:wasmjsnode", "test:native"]
 
 [tasks.docs]
 description = "Serve documentation locally"
-run = "./gradlew :mkdocsServe"
+run = ".mise/bin/gradle-with-version build :mkdocsServe"
+
+[tasks."build:docs"]
+description = "Build the documentation site and the Dokka API reference"
+run = ".mise/bin/gradle-with-version build :mkdocsBuild"
+
+[tasks."publish:snapshot"]
+description = "Publish a snapshot build to Maven Central."
+run = ".mise/bin/gradle-with-version snapshot publishToMavenCentral"
+
+[tasks."publish:release"]
+description = "Publish and release the current tag to Maven Central."
+run = ".mise/bin/gradle-with-version release publishAndReleaseToMavenCentral --no-configuration-cache"
+
+[tasks.version]
+description = "Print the version properties this checkout builds with."
+usage = '''
+arg "[mode]" default="build" {
+  choices "build" "snapshot" "release"
+}
+'''
+run = '.mise/bin/version-args "$usage_mode"'
+
+[tasks.actions-up]
+description = "Update and pin GitHub Actions steps."
+run = "actions-up"
+
+[tasks."xcode:select"]
+description = "Install and select the pinned Xcode version on macOS"
+run = """
+if ! [ "$(uname)" = "Darwin" ]; then
+  echo "xcode:select is only supported on macOS" >&2
+  exit 1
+fi
+
+version="$(tr -d '\\n' < .xcode-version)"
+if xcodes installed | grep -Fqx "$version"; then
+  xcodes select "$version"
+else
+  echo "Installing Xcode $version via xcodes. Apple ID credentials may be required." >&2
+  xcodes install "$version" --select
+fi
+"""
+
+[tasks."xcode:install-ios-simulator"]
+description = "Install the iOS simulator runtime required for Apple-native tests"
+run = """
+if ! [ "$(uname)" = "Darwin" ]; then
+  echo "xcode:install-ios-simulator is only supported on macOS" >&2
+  exit 1
+fi
+
+xcodebuild -downloadPlatform iOS
+"""
+
+[tasks."xcode:install-test-runtimes"]
+description = "Install the Apple simulator runtimes required for native test tasks"
+run = """
+if ! [ "$(uname)" = "Darwin" ]; then
+  echo "xcode:install-test-runtimes is only supported on macOS" >&2
+  exit 1
+fi
+
+xcodebuild -downloadPlatform iOS
+xcodebuild -downloadPlatform tvOS
+xcodebuild -downloadPlatform watchOS
+"""
 
 [tasks.check]
 description = "Run all linting and formatting checks"
@@ -49,6 +150,6 @@ description = "Auto-fix formatting issues"
 run = "hk fix --all"
 
 [tasks._ktfmt]
-description = "Called by dprint.json"
+description = "Called by dprint.jsonc"
 hide = true
 run = 'java -jar {{ tools["aqua:facebook/ktfmt"].path }}/ktfmt'

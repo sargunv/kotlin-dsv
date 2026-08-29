@@ -6,25 +6,22 @@ plugins {
   id("org.jetbrains.dokka")
   id("com.vanniktech.maven.publish")
   id("org.jetbrains.kotlinx.kover")
-  id("semver")
   id("dev.detekt")
 }
 
 group = "dev.sargunv.kotlin-dsv"
 
+version = providers.gradleProperty("kotlinDsvVersion").get()
+
 kotlin {
   explicitApi()
   compilerOptions {
-    freeCompilerArgs =
-      listOf(
-        // Will be the default soon: https://youtrack.jetbrains.com/issue/KT-11914
-        "-Xconsistent-data-class-copy-visibility"
-      )
+    freeCompilerArgs.add(
+      // Will be the default soon: https://youtrack.jetbrains.com/issue/KT-11914
+      "-Xconsistent-data-class-copy-visibility"
+    )
   }
-  abiValidation {
-    @OptIn(ExperimentalAbiValidation::class)
-    enabled = true
-  }
+  @OptIn(ExperimentalAbiValidation::class) abiValidation()
 }
 
 detekt {
@@ -39,7 +36,9 @@ dokka {
     configureEach {
       includes.from("MODULE.md")
       sourceLink {
-        remoteUrl("https://github.com/sargunv/kotlin-dsv/tree/v${project.version}/")
+        // Dokka appends the source path with a leading slash.
+        val sourceRef = providers.gradleProperty("kotlinDsvSourceRef").get()
+        remoteUrl("https://github.com/sargunv/kotlin-dsv/tree/$sourceRef")
         localDirectory = rootDir
       }
       externalDocumentationLinks {
@@ -52,7 +51,9 @@ dokka {
 
 mavenPublishing {
   publishToMavenCentral(automaticRelease = true)
-  signAllPublications()
+  if (providers.gradleProperty("signingInMemoryKey").isPresent) {
+    signAllPublications()
+  }
 
   pom {
     url = "https://github.com/sargunv/kotlin-dsv/"

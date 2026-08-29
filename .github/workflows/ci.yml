@@ -4,65 +4,81 @@ on:
     push:
         branches: [main]
     pull_request:
+    workflow_dispatch:
+
+concurrency:
+    group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+    cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 permissions:
     contents: read
 
 jobs:
     build:
-        runs-on: macos-latest # for the broadest test compatibility
+        timeout-minutes: 30
+        runs-on: ubuntu-latest
         steps:
-            - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+            - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
               with:
-                  fetch-depth: 0
-                  fetch-tags: true
                   persist-credentials: false
                   submodules: recursive
-            - uses: jdx/mise-action@1648a7812b9aeae629881980618f079932869151 # v4.0.1
+            - uses: jdx/mise-action@c2a87611a18de5b3828c5652fe268e992400cb5c # v4.3.0
             - run: ./gradlew build
 
     benchmark:
+        timeout-minutes: 30
         runs-on: ubuntu-latest
         steps:
-            - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+            - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
               with:
-                  fetch-depth: 0
-                  fetch-tags: true
                   persist-credentials: false
-            - uses: jdx/mise-action@1648a7812b9aeae629881980618f079932869151 # v4.0.1
+            - uses: jdx/mise-action@c2a87611a18de5b3828c5652fe268e992400cb5c # v4.3.0
             - name: Run benchmark
               run: |
-                  echo '## Benchmark' >> $GITHUB_STEP_SUMMARY
-                  ./gradlew -q benchmark -PbenchmarkIterations=1 >> $GITHUB_STEP_SUMMARY
+                  echo '## Benchmark' >> "$GITHUB_STEP_SUMMARY"
+                  ./gradlew -q benchmark -PbenchmarkIterations=1 >> "$GITHUB_STEP_SUMMARY"
 
     build-docs:
+        timeout-minutes: 30
         runs-on: ubuntu-latest
         steps:
-            - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+            - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
               with:
+                  # .mise/bin/version-args reads the release tag off the checkout.
                   fetch-depth: 0
-                  fetch-tags: true
                   persist-credentials: false
-            - uses: jdx/mise-action@1648a7812b9aeae629881980618f079932869151 # v4.0.1
-            - run: ./gradlew :mkdocsBuild
-            - uses: actions/upload-pages-artifact@7b1f4a764d45c48632c6b24a0339c27f5614fb0b # v4.0.0
+            - uses: jdx/mise-action@c2a87611a18de5b3828c5652fe268e992400cb5c # v4.3.0
+            - run: mise run build:docs
+            - uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5.0.0
               with:
                   path: build/mkdocs
 
     check-format:
+        timeout-minutes: 30
         runs-on: ubuntu-latest
         steps:
-            - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+            - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
               with:
-                  fetch-depth: 0
-                  fetch-tags: true
                   persist-credentials: false
-            - uses: jdx/mise-action@1648a7812b9aeae629881980618f079932869151 # v4.0.1
+            - uses: jdx/mise-action@c2a87611a18de5b3828c5652fe268e992400cb5c # v4.3.0
             - run: mise run check
 
-    # stub to use as a "required" check on github
+    # Branch protection requires this job. always() still runs it after a needed
+    # job fails; GitHub otherwise skips it and treats that skip as a passing check.
     all-good:
+        if: ${{ always() }}
         needs: [build, check-format, build-docs, benchmark]
+        timeout-minutes: 5
         runs-on: ubuntu-latest
         steps:
-            - run: echo 'All checks passed!'
+            - name: Check that every needed job succeeded
+              env:
+                  RESULTS: ${{ join(needs.*.result, ', ') }}
+                  ANY_BAD: ${{ contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled') }}
+              run: |
+                  echo "needed job results: ${RESULTS}"
+                  if [ "${ANY_BAD}" = true ]; then
+                    echo "a needed job did not succeed"
+                    exit 1
+                  fi
+                  echo 'All checks passed!'

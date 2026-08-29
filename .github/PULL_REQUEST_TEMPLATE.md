@@ -1,15 +1,17 @@
-<!-- Thanks for the PR! Please fill out the template below. -->
+<!--
+Thanks for the PR! Please fill out the template below.
+AI agents may write at most one plain sentence per section.
+Additional details, if needed, should be provided by the human driving the agent.
+-->
 
 ## Description
 
 <!-- Please include a summary of the change. -->
 
-## Checklist
+## Validation
 
-<!-- Feel free to add or remove items from the checklist. -->
+<!-- Have you tested the changes? How? On which platforms? -->
 
-- [ ] Briefly describe the changes in this PR.
-- [ ] Link to related issues.
-- [ ] Write tests for all new functionality.
-- [ ] Disclose if and to what extent an AI coding assistant was used.
-- [ ] Run `./gradlew updateLegacyAbi` to dump the public API for review.
+## AI assistance
+
+<!-- List the AI tools you used: model, harness, etc. -->
