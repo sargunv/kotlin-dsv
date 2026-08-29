@@ -9,6 +9,8 @@ import kotlin.jvm.JvmOverloads
  * @property quote The character used to quote fields containing special characters.
  * @property writeCrlf When true, writes CRLF line endings; otherwise uses LF.
  * @property skipEmptyLines When true, empty lines in the input are skipped during parsing.
+ * @property allowJaggedRows When true, later rows may have fewer or more fields than the first row.
+ *   Short rows are padded with empty strings; long rows are truncated.
  */
 public data class DsvScheme
 @JvmOverloads
@@ -17,6 +19,7 @@ constructor(
   internal val quote: Char = '"',
   internal val writeCrlf: Boolean = true,
   internal val skipEmptyLines: Boolean = false,
+  internal val allowJaggedRows: Boolean = false,
 ) {
   // line delimiters prob shouldn't be configurable
   internal val lineFeed: Char = '\n'
