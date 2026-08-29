@@ -155,7 +155,9 @@ public class DsvParser(private val input: Source, private val scheme: DsvScheme)
    */
   public fun parseRecords(): Sequence<List<String>> = sequence {
     input.use {
-      val (firstRecord, pos) = readRecord(0) ?: return@use
+      // UTF-8 BOM is an encoding prefix, not part of the first field
+      val start = if (charAt(0) == UTF8_BOM) 1 else 0
+      val (firstRecord, pos) = readRecord(start) ?: return@use
       var cursor =
         readEndOfLine(pos)?.newPos
           ?: throw DsvParseException("Expected end of line, got '${charAt(pos)}'")
@@ -207,5 +209,6 @@ public class DsvParser(private val input: Source, private val scheme: DsvScheme)
 
   private companion object {
     private const val MAX_UTF8_INCOMPLETE_BYTES = 3
+    private const val UTF8_BOM = '\uFEFF'
   }
 }

@@ -3,6 +3,7 @@ package dev.sargunv.kotlindsv
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 class EncoderDecoderTest {
@@ -215,6 +216,14 @@ class EncoderDecoderTest {
       """
         .trimIndent()
     assertEquals(expectedEncoded, encoded)
+  }
+
+  @Test
+  fun decodeLeadingUtf8Bom() {
+    @Serializable data class Row(@SerialName("agency_id") val agencyId: String)
+
+    val csv = "\uFEFFagency_id\nDTA\n"
+    assertEquals(listOf(Row("DTA")), format.decodeFromString<Row>(csv))
   }
 
   @Test
