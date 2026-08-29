@@ -151,22 +151,16 @@ public class DsvParser(private val input: Source, private val scheme: DsvScheme)
   /**
    * Parses all records from the input as a sequence of string lists.
    *
-   * Each list represents one record (row). All records must have the same number of fields.
+   * Each list represents one record (row). All records must have the same number of fields unless
+   * [DsvScheme.allowJaggedRows] is true, in which case later rows are truncated or padded with
+   * empty strings to match the first kept row. When [DsvScheme.skipEmptyLines] is true, empty lines
+   * are dropped before that width is chosen.
    */
   public fun parseRecords(): Sequence<List<String>> = sequence {
     input.use {
       // UTF-8 BOM is an encoding prefix, not part of the first field
-      val start = if (charAt(0) == UTF8_BOM) 1 else 0
-      val (firstRecord, pos) = readRecord(start) ?: return@use
-      var cursor =
-        readEndOfLine(pos)?.newPos
-          ?: throw DsvParseException("Expected end of line, got '${charAt(pos)}'")
-
-      data = StringBuilder(data.drop(cursor))
-      cursor = 0
-
-      val numColumns = firstRecord.size
-      yield(firstRecord)
+      var cursor = if (charAt(0) == UTF8_BOM) 1 else 0
+      var numColumns: Int? = null
 
       while (true) {
         val (record, newPos) = readRecord(cursor) ?: break
@@ -177,16 +171,27 @@ public class DsvParser(private val input: Source, private val scheme: DsvScheme)
         data = StringBuilder(data.drop(cursor))
         cursor = 0
 
-        if (scheme.skipEmptyLines && (record.isEmpty() || record.size == 1 && record[0].isEmpty()))
-          continue
+        if (scheme.skipEmptyLines && isEmptyRecord(record)) continue
 
-        if (record.size != numColumns) {
-          throw DsvParseException(
-            "Expected $numColumns columns, got ${record.size} in record $record"
-          )
+        val expectedColumns = numColumns
+        if (expectedColumns == null) {
+          numColumns = record.size
+          yield(record)
+          continue
         }
 
-        yield(record)
+        val normalized =
+          when {
+            record.size == expectedColumns -> record
+            !scheme.allowJaggedRows ->
+              throw DsvParseException(
+                "Expected $expectedColumns columns, got ${record.size} in record $record"
+              )
+            record.size > expectedColumns -> record.take(expectedColumns)
+            else -> record + List(expectedColumns - record.size) { "" }
+          }
+
+        yield(normalized)
       }
 
       if (cursor < data.length || !input.exhausted()) {
@@ -194,6 +199,9 @@ public class DsvParser(private val input: Source, private val scheme: DsvScheme)
       }
     }
   }
+
+  private fun isEmptyRecord(record: List<String>): Boolean =
+    record.isEmpty() || record.size == 1 && record[0].isEmpty()
 
   /**
    * Parses the input as a [DsvTable], treating the first record as a header row.
