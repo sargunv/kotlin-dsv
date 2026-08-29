@@ -114,6 +114,27 @@ class DocsTest {
     // --8<-- [end:missing-columns]
   }
 
+  @Test
+  fun jaggedRows() {
+    @Serializable data class Person(val name: String, val age: Int, val city: String?)
+
+    // --8<-- [start:jagged-rows]
+    val format = DsvFormat(scheme = Csv.scheme.copy(allowJaggedRows = true))
+
+    val csv =
+      """
+      name,age,city
+      Alice,30,NYC
+      Bob,25
+      Charlie,35,LA,Extra
+      """
+        .trimIndent()
+
+    val people = format.decodeFromString<Person>(csv)
+    // Bob's missing city becomes null; Charlie's extra field is discarded
+    // --8<-- [end:jagged-rows]
+  }
+
   fun streamingFiles() {
     data class MyData(val id: Int, val name: String)
     val myData = emptySequence<MyData>()

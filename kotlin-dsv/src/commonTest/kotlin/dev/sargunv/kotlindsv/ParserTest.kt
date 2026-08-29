@@ -194,4 +194,81 @@ class ParserTest {
     testCase("a,b\n\uFEFF1,2") {
       assertEquals(listOf(listOf("a", "b"), listOf("\uFEFF1", "2")), parseRecords().toList())
     }
+
+  @Test
+  fun jaggedRowsShorter() =
+    testCase("a,b,c\n1,2", scheme = Csv.scheme.copy(allowJaggedRows = true)) {
+      assertEquals(listOf(listOf("a", "b", "c"), listOf("1", "2", "")), parseRecords().toList())
+    }
+
+  @Test
+  fun jaggedRowsLonger() =
+    testCase("a,b,c\n1,2,3,4", scheme = Csv.scheme.copy(allowJaggedRows = true)) {
+      assertEquals(listOf(listOf("a", "b", "c"), listOf("1", "2", "3")), parseRecords().toList())
+    }
+
+  @Test
+  fun jaggedRowsMixed() =
+    testCase("a,b,c\n1\n2,3,4,5\n6,7,8", scheme = Csv.scheme.copy(allowJaggedRows = true)) {
+      assertEquals(
+        listOf(
+          listOf("a", "b", "c"),
+          listOf("1", "", ""),
+          listOf("2", "3", "4"),
+          listOf("6", "7", "8"),
+        ),
+        parseRecords().toList(),
+      )
+    }
+
+  @Test
+  fun jaggedRowsSingleColumn() =
+    testCase("a\n1,2", scheme = Csv.scheme.copy(allowJaggedRows = true)) {
+      assertEquals(listOf(listOf("a"), listOf("1")), parseRecords().toList())
+    }
+
+  @Test
+  fun jaggedRowsWithQuotes() =
+    testCase(
+      "\"a\",\"b\",\"c\"\n\"1\"\n\"2\",\"3\",\"4\",\"5\"",
+      scheme = Csv.scheme.copy(allowJaggedRows = true),
+    ) {
+      assertEquals(
+        listOf(listOf("a", "b", "c"), listOf("1", "", ""), listOf("2", "3", "4")),
+        parseRecords().toList(),
+      )
+    }
+
+  @Test
+  fun jaggedRowsDisabledLonger() =
+    testCase("a,b,c\n1,2,3,4") { assertFailsWith<DsvParseException> { parseRecords().toList() } }
+
+  @Test
+  fun jaggedRowsSkipEmptyLines() =
+    testCase(
+      "a,b,c\n1,2\n\n3,4,5,6",
+      scheme = Csv.scheme.copy(allowJaggedRows = true, skipEmptyLines = true),
+    ) {
+      assertEquals(
+        listOf(listOf("a", "b", "c"), listOf("1", "2", ""), listOf("3", "4", "5")),
+        parseRecords().toList(),
+      )
+    }
+
+  @Test
+  fun jaggedRowsWithBom() =
+    testCase("\uFEFFa,b,c\n1,2", scheme = Csv.scheme.copy(allowJaggedRows = true)) {
+      assertEquals(listOf(listOf("a", "b", "c"), listOf("1", "2", "")), parseRecords().toList())
+    }
+
+  @Test
+  fun jaggedRowsParseTable() =
+    testCase("a,b,c\n1\n2,3,4,5", scheme = Csv.scheme.copy(allowJaggedRows = true)) {
+      val table = parseTable()
+      assertEquals(listOf("a", "b", "c"), table.header)
+      assertEquals(
+        listOf(mapOf("a" to "1", "b" to "", "c" to ""), mapOf("a" to "2", "b" to "3", "c" to "4")),
+        table.recordsAsMaps().toList(),
+      )
+    }
 }

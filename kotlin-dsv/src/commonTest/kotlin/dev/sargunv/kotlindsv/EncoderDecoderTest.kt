@@ -227,6 +227,29 @@ class EncoderDecoderTest {
   }
 
   @Test
+  fun allowJaggedRows() {
+    val format =
+      DsvFormat(scheme = DsvScheme(delimiter = ',', writeCrlf = false, allowJaggedRows = true))
+
+    @Serializable data class Person(val name: String, val age: Int, val city: String?)
+
+    val csv =
+      """
+      name,age,city
+      Alice,30,NYC
+      Bob,25
+      Charlie,35,LA,Extra
+      """
+        .trimIndent()
+
+    val decoded = format.decodeFromString<Person>(csv)
+    assertEquals(
+      listOf(Person("Alice", 30, "NYC"), Person("Bob", 25, null), Person("Charlie", 35, "LA")),
+      decoded,
+    )
+  }
+
+  @Test
   fun encodeListOfMapsFails() {
     val maps = listOf(mapOf("a" to "1", "b" to "2"), mapOf("a" to "3", "b" to "4"))
     assertFailsWith<IllegalArgumentException> { format.encodeToString(maps) }

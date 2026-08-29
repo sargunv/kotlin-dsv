@@ -79,6 +79,19 @@ Handle CSVs with incomplete or extra columns:
 --8<-- "kotlin-dsv/src/commonTest/kotlin/dev/sargunv/kotlindsv/DocsTest.kt:missing-columns"
 ```
 
+## Jagged Rows
+
+Handle CSVs where data rows have fewer or more columns than the header. Short rows are padded with
+empty values; long rows are truncated to the header width:
+
+```kotlin
+--8<-- "kotlin-dsv/src/commonTest/kotlin/dev/sargunv/kotlindsv/DocsTest.kt:jagged-rows"
+```
+
+This is a parser-level option on
+[DsvScheme](./api/kotlin-dsv/dev.sargunv.kotlindsv/-dsv-scheme/index.html), separate from
+`treatMissingColumnsAsNull` / `ignoreUnknownKeys`, which apply to the header vs. the class shape.
+
 ## Enum Serialization
 
 Serialize enums by name or ordinal:
