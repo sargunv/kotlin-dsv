@@ -124,6 +124,18 @@ class ParserTest {
     }
 
   @Test
+  fun leadingEmptyLineSkip() =
+    testCase("\na,b\n1,2", scheme = Csv.scheme.copy(skipEmptyLines = true)) {
+      assertEquals(listOf(listOf("a", "b"), listOf("1", "2")), parseRecords().toList())
+    }
+
+  @Test
+  fun skipEmptyLinesOnlyEmptyInput() =
+    testCase("\n\n", scheme = Csv.scheme.copy(skipEmptyLines = true)) {
+      assertEquals(emptyList(), parseRecords().toList())
+    }
+
+  @Test
   fun trailingNewlineCrlf() =
     testCase("a,b,c\r\n") { assertEquals(listOf(listOf("a", "b", "c")), parseRecords().toList()) }
 
@@ -253,6 +265,21 @@ class ParserTest {
         listOf(listOf("a", "b", "c"), listOf("1", "2", ""), listOf("3", "4", "5")),
         parseRecords().toList(),
       )
+    }
+
+  @Test
+  fun jaggedRowsSkipLeadingEmptyLines() =
+    testCase(
+      "\n\na,b,c\n1,2",
+      scheme = Csv.scheme.copy(allowJaggedRows = true, skipEmptyLines = true),
+    ) {
+      assertEquals(listOf(listOf("a", "b", "c"), listOf("1", "2", "")), parseRecords().toList())
+    }
+
+  @Test
+  fun jaggedRowsLeadingEmptyLineWithoutSkip() =
+    testCase("\na,b\n1,2", scheme = Csv.scheme.copy(allowJaggedRows = true)) {
+      assertEquals(listOf(listOf(""), listOf("a"), listOf("1")), parseRecords().toList())
     }
 
   @Test
