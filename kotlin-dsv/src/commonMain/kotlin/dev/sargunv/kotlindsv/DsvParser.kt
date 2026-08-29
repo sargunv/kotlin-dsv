@@ -5,8 +5,9 @@ import kotlinx.io.Source
 /**
  * Low-level parser for [DSV][DsvFormat] data.
  *
- * Reads from a UTF-8 [Source] and parses according to the provided [DsvScheme]. For typical use
- * cases, prefer using [DsvFormat] instead.
+ * Reads from a UTF-8 [Source] and parses according to the provided [DsvScheme]. A leading UTF-8 BOM
+ * (U+FEFF) is skipped before the first field; BOM characters in later fields are preserved. For
+ * typical use cases, prefer using [DsvFormat] instead.
  */
 public class DsvParser(private val input: Source, private val scheme: DsvScheme) {
   private var data = StringBuilder()
@@ -155,7 +156,9 @@ public class DsvParser(private val input: Source, private val scheme: DsvScheme)
    */
   public fun parseRecords(): Sequence<List<String>> = sequence {
     input.use {
-      val (firstRecord, pos) = readRecord(0) ?: return@use
+      // UTF-8 BOM is an encoding prefix, not part of the first field
+      val start = if (charAt(0) == UTF8_BOM) 1 else 0
+      val (firstRecord, pos) = readRecord(start) ?: return@use
       var cursor =
         readEndOfLine(pos)?.newPos
           ?: throw DsvParseException("Expected end of line, got '${charAt(pos)}'")
@@ -207,5 +210,6 @@ public class DsvParser(private val input: Source, private val scheme: DsvScheme)
 
   private companion object {
     private const val MAX_UTF8_INCOMPLETE_BYTES = 3
+    private const val UTF8_BOM = '\uFEFF'
   }
 }

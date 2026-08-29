@@ -156,4 +156,42 @@ class ParserTest {
     testCase("a,b,c\n1,2,3\nextra") {
       assertFailsWith<DsvParseException> { parseRecords().toList() }
     }
+
+  @Test
+  fun leadingUtf8Bom() =
+    testCase("\uFEFFa,b,c") { assertEquals(listOf(listOf("a", "b", "c")), parseRecords().toList()) }
+
+  @Test
+  fun leadingUtf8BomTable() =
+    testCase("\uFEFFagency_id\nDTA") {
+      val (header, rows) = parseTable()
+      assertEquals(listOf("agency_id"), header)
+      assertEquals(listOf(listOf("DTA")), rows.toList())
+    }
+
+  @Test
+  fun leadingUtf8BomQuotedField() =
+    testCase("\uFEFF\"a,b\",c") {
+      assertEquals(listOf(listOf("a,b", "c")), parseRecords().toList())
+    }
+
+  @Test
+  fun bomInsideQuotedFirstFieldIsPreserved() =
+    testCase("\"\uFEFFa\",b") {
+      assertEquals(listOf(listOf("\uFEFFa", "b")), parseRecords().toList())
+    }
+
+  @Test fun bomOnly() = testCase("\uFEFF") { assertEquals(emptyList(), parseRecords().toList()) }
+
+  @Test
+  fun bomInLaterFieldIsPreserved() =
+    testCase("a,\uFEFFb,c") {
+      assertEquals(listOf(listOf("a", "\uFEFFb", "c")), parseRecords().toList())
+    }
+
+  @Test
+  fun bomInLaterRowIsPreserved() =
+    testCase("a,b\n\uFEFF1,2") {
+      assertEquals(listOf(listOf("a", "b"), listOf("\uFEFF1", "2")), parseRecords().toList())
+    }
 }
