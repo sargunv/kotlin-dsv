@@ -4,9 +4,10 @@ import ru.vyarus.gradle.plugin.mkdocs.task.MkdocsTask
 plugins {
   id("org.jetbrains.kotlinx.kover")
   id("org.jetbrains.dokka")
-  id("semver")
   id("ru.vyarus.mkdocs-build")
 }
+
+version = providers.gradleProperty("kotlinDsvVersion").get()
 
 dokka {
   moduleName = "kotlin-dsv"

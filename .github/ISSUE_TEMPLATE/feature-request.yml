@@ -1,0 +1,32 @@
+name: Feature request
+description: Suggest a feature or enhancement
+body:
+    - type: textarea
+      id: user-story
+      attributes:
+          label: User story
+          description: |
+              A one-sentence user story, such as:
+
+              As a &lt;role&gt; I can &lt;capability&gt;, so that &lt;receive benefit&gt;
+
+              See also: https://en.wikipedia.org/wiki/User_story#Common_templates
+      validations:
+          required: true
+    - type: textarea
+      id: rationale
+      attributes:
+          label: Rationale
+          description: |
+              - Why is this feature needed?
+              - What are some example use cases?
+              - Can it be done today? Is there a workaround?
+      validations:
+          required: true
+    - type: textarea
+      id: impact
+      attributes:
+          label: Impact
+          description: What if we do nothing? What is the impact to end-users if we don't implement this feature?
+      validations:
+          required: true

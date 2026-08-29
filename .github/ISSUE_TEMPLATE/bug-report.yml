@@ -1,0 +1,61 @@
+name: Bug report
+description: Report a bug
+type: bug
+body:
+    - type: markdown
+      attributes:
+          value: |
+              Thanks for contributing. For the fastest response:
+
+              - Make the issue title a succinct but specific description of the unexpected behavior.
+              - Reproduce the bug using the latest release.
+              - Only post to report a bug. For feature requests, use the feature request template.
+    - type: input
+      id: library-version
+      attributes:
+          label: Library version
+          placeholder: e.g. 0.4.0
+      validations:
+          required: true
+    - type: input
+      id: kotlin-version
+      attributes:
+          label: Kotlin version
+          placeholder: e.g. 2.4.10
+      validations:
+          required: true
+    - type: checkboxes
+      id: platform
+      attributes:
+          label: Kotlin platform
+          description: On which platforms have you seen this bug?
+          options:
+              - label: JVM
+              - label: JS
+              - label: WASM
+              - label: Native
+      validations:
+          required: true
+    - type: textarea
+      id: steps
+      attributes:
+          label: Steps to trigger behavior
+          placeholder: |
+              1.
+              2.
+              3.
+      validations:
+          required: true
+    - type: textarea
+      id: expected
+      attributes:
+          label: Expected behavior
+      validations:
+          required: true
+    - type: textarea
+      id: actual
+      attributes:
+          label: Actual behavior
+          description: Include any errors or stack traces if available.
+      validations:
+          required: true

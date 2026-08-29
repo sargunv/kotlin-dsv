@@ -1,3 +1,4 @@
+import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
@@ -26,4 +27,9 @@ kotlin {
       }
     }
   }
+}
+
+tasks.withType<AbstractTestTask>().configureEach {
+  // SHORT prints "Type at File:line" and drops the message. CI needs the message.
+  testLogging { exceptionFormat = TestExceptionFormat.FULL }
 }

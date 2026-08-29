@@ -1,28 +1,80 @@
-# Contributing
+## Dev Setup
 
-## Development Environment
+This project uses [mise](https://mise.jdx.dev/) to manage tools and tasks. Install mise, then from
+the repo root install all required tools:
 
-This project uses [mise](https://mise.jdx.dev/) for environment management.
+```sh
+mise install
+```
 
-1. Install mise: https://mise.jdx.dev/getting-started.html
-2. Run `mise install` in the project root — this installs all required tools and sets up git hooks.
+This installs the pinned versions of Java, dprint, hk, pkl, ktfmt, Python, actionlint, and
+shellcheck, and runs `hk install --mise` to set up the pre-commit hook.
 
-Alternatively, check `mise.toml` for the list of required tools and install them manually.
+Clone with `--recurse-submodules`, or initialize them after the fact:
 
-## IDE
+```sh
+git submodule update --init --recursive
+```
+
+The filesystem tests under `kotlin-dsv/src/fsTest` read fixtures from those submodules.
+
+## IDE Setup
 
 Install the [dprint](https://plugins.jetbrains.com/plugin/18192-dprint) plugin for format-on-save
-support.
+support. The project's `dprint.jsonc` configures all formatting rules.
 
 ## Formatting
 
-A pre-commit hook (via [hk](https://hk.jdx.dev/)) auto-formats staged files before each commit.
+Auto-fix formatting issues:
 
-- `mise run fix` — format all files
-- `mise run check` — check formatting without modifying files
+```sh
+mise run fix
+```
 
-## Building and Running Tests
+Check formatting without making changes:
 
-- `mise run build` — build and run all checks and tests
-- `mise run test` — run all tests (JVM, JS Node, WASM JS Node, native)
-- `mise run test:jvm` — run JVM tests only
+```sh
+mise run check
+```
+
+A pre-commit hook is managed by [hk](https://hk.jdx.dev/) and runs formatting checks automatically
+before each commit. It is installed as part of `mise install` via the `postinstall` hook.
+
+## Running Tests
+
+Run all tests:
+
+```sh
+mise run test
+```
+
+Run tests for a specific platform:
+
+```sh
+mise run test:jvm          # JVM tests
+mise run test:jsnode       # JS Node tests
+mise run test:wasmjsnode   # WASM JS Node tests
+mise run test:native       # Native tests for the current platform
+```
+
+Run a full build and check all targets:
+
+```sh
+mise run build
+```
+
+## Documentation
+
+Serve the documentation site locally. This passes the versions derived from Git tags, which the site
+prints as the coordinates to depend on:
+
+```sh
+mise run docs
+```
+
+## Releasing
+
+Releases are tagged `vMAJOR.MINOR.PATCH`. Pushing that tag runs `.github/workflows/release.yml`,
+which publishes to Maven Central and deploys the documentation site. Snapshots publish from
+`.github/workflows/daily.yml` when `main` has moved. Run `mise run version` to see the versions a
+checkout would publish.

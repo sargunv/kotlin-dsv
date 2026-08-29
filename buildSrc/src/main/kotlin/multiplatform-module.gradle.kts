@@ -1,14 +1,11 @@
 @file:OptIn(ExperimentalWasmDsl::class)
 
 import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
-import org.jetbrains.kotlin.gradle.internal.platform.wasm.WasmPlatforms.wasmJs
-import org.jetbrains.kotlin.gradle.internal.platform.wasm.WasmPlatforms.wasmWasi
-import org.jetbrains.kotlin.gradle.plugin.KotlinJsCompilerType
 
 plugins { id("base-module") }
 
 kotlin {
-  js(KotlinJsCompilerType.IR) {
+  js {
     browser()
     nodejs()
   }
@@ -27,17 +24,14 @@ kotlin {
   iosArm64()
 
   // native tier 2
-  macosX64()
-  iosX64()
   linuxX64()
   linuxArm64()
   watchosSimulatorArm64()
-  watchosX64()
   watchosArm32()
   watchosArm64()
   tvosSimulatorArm64()
-  tvosX64()
   tvosArm64()
+  iosX64()
 
   // native tier 3
   mingwX64()
