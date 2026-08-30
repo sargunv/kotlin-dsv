@@ -151,10 +151,9 @@ public class DsvParser(private val input: Source, private val scheme: DsvScheme)
   /**
    * Parses all records from the input as a sequence of string lists.
    *
-   * Each list represents one record (row). All records must have the same number of fields unless
-   * [DsvScheme.allowJaggedRows] is true, in which case later rows are truncated or padded with
-   * empty strings to match the first kept row. When [DsvScheme.skipEmptyLines] is true, empty lines
-   * are dropped before that width is chosen.
+   * Each list represents one record (row). Later short and long rows follow
+   * [DsvScheme.shortRowPolicy] and [DsvScheme.longRowPolicy]. When [DsvScheme.skipEmptyLines] is
+   * true, empty lines are dropped before the expected width is chosen.
    */
   public fun parseRecords(): Sequence<List<String>> = sequence {
     input.use {
@@ -180,18 +179,30 @@ public class DsvParser(private val input: Source, private val scheme: DsvScheme)
           continue
         }
 
-        val normalized =
-          when {
-            record.size == expectedColumns -> record
-            !scheme.allowJaggedRows ->
+        if (record.size == expectedColumns) {
+          yield(record)
+          continue
+        }
+
+        if (record.size < expectedColumns) {
+          when (scheme.shortRowPolicy) {
+            ShortRowPolicy.Reject ->
               throw DsvParseException(
                 "Expected $expectedColumns columns, got ${record.size} in record $record"
               )
-            record.size > expectedColumns -> record.take(expectedColumns)
-            else -> record + List(expectedColumns - record.size) { "" }
+            ShortRowPolicy.Skip -> continue
+            ShortRowPolicy.Pad -> yield(record + List(expectedColumns - record.size) { "" })
           }
-
-        yield(normalized)
+        } else {
+          when (scheme.longRowPolicy) {
+            LongRowPolicy.Reject ->
+              throw DsvParseException(
+                "Expected $expectedColumns columns, got ${record.size} in record $record"
+              )
+            LongRowPolicy.Skip -> continue
+            LongRowPolicy.Truncate -> yield(record.take(expectedColumns))
+          }
+        }
       }
 
       if (cursor < data.length || !input.exhausted()) {
