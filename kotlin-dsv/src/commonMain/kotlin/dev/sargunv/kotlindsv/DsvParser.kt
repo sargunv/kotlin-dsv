@@ -151,10 +151,9 @@ public class DsvParser(private val input: Source, private val scheme: DsvScheme)
   /**
    * Parses all records from the input as a sequence of string lists.
    *
-   * Each list represents one record (row). The first kept row sets the expected field count; later
-   * short rows follow [DsvScheme.shortRowPolicy] and later long rows follow
-   * [DsvScheme.longRowPolicy]. When [DsvScheme.skipEmptyLines] is true, empty lines are dropped
-   * before that width is chosen.
+   * Each list represents one record (row). Later short and long rows follow
+   * [DsvScheme.shortRowPolicy] and [DsvScheme.longRowPolicy]. When [DsvScheme.skipEmptyLines] is
+   * true, empty lines are dropped before the expected width is chosen.
    */
   public fun parseRecords(): Sequence<List<String>> = sequence {
     input.use {

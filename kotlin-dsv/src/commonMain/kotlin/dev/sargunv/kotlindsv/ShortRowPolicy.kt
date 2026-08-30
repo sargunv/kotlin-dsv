@@ -8,6 +8,6 @@ public enum class ShortRowPolicy {
   /** Omit the row. */
   Skip,
 
-  /** Append empty strings until the row matches the expected width. */
+  /** Pad with empty strings. */
   Pad,
 }

@@ -5,18 +5,12 @@ import kotlin.jvm.JvmOverloads
 /**
  * Defines the delimiters and quoting rules for a [DsvFormat].
  *
- * Later rows whose field count differs from the first kept row are handled by [shortRowPolicy] and
- * [longRowPolicy]. The first row that is not dropped by [skipEmptyLines] is always kept and becomes
- * the expected width.
- *
  * @property delimiter The character used to separate fields (e.g., ',' for CSV, '\t' for TSV).
  * @property quote The character used to quote fields containing special characters.
  * @property writeCrlf When true, writes CRLF line endings; otherwise uses LF.
  * @property skipEmptyLines When true, empty lines in the input are skipped during parsing.
  * @property shortRowPolicy How later rows with fewer fields than the first kept row are handled.
- *   Defaults to [ShortRowPolicy.Reject].
  * @property longRowPolicy How later rows with more fields than the first kept row are handled.
- *   Defaults to [LongRowPolicy.Reject].
  */
 public data class DsvScheme
 @JvmOverloads

@@ -8,6 +8,6 @@ public enum class LongRowPolicy {
   /** Omit the row. */
   Skip,
 
-  /** Drop extra fields until the row matches the expected width. */
+  /** Drop extra fields. */
   Truncate,
 }

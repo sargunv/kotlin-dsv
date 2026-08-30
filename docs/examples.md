@@ -81,13 +81,7 @@ Handle CSVs with incomplete or extra columns:
 
 ## Jagged Rows
 
-[DsvScheme](./api/kotlin-dsv/dev.sargunv.kotlindsv/-dsv-scheme/index.html) has two independent
-policies. Both default to reject. The first kept row sets the expected width.
-
-- [shortRowPolicy](./api/kotlin-dsv/dev.sargunv.kotlindsv/-dsv-scheme/index.html): fewer fields than
-  expected — `Reject`, `Skip`, or `Pad`
-- [longRowPolicy](./api/kotlin-dsv/dev.sargunv.kotlindsv/-dsv-scheme/index.html): more fields than
-  expected — `Reject`, `Skip`, or `Truncate`
+Handle rows with fewer or more fields than the first kept row:
 
 ```kotlin
 --8<-- "kotlin-dsv/src/commonTest/kotlin/dev/sargunv/kotlindsv/DocsTest.kt:jagged-rows-pad-truncate"
@@ -96,9 +90,6 @@ policies. Both default to reject. The first kept row sets the expected width.
 ```kotlin
 --8<-- "kotlin-dsv/src/commonTest/kotlin/dev/sargunv/kotlindsv/DocsTest.kt:jagged-rows-skip"
 ```
-
-These are parser-level options, separate from `treatMissingColumnsAsNull` / `ignoreUnknownKeys`,
-which apply to the header vs. the class shape.
 
 ## Enum Serialization
 
