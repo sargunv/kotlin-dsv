@@ -7,7 +7,13 @@ import kotlinx.io.Buffer
 import kotlinx.io.buffered
 import kotlinx.io.files.Path
 import kotlinx.io.files.SystemFileSystem
+import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.descriptors.PrimitiveKind
+import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor
+import kotlinx.serialization.descriptors.SerialDescriptor
+import kotlinx.serialization.encoding.Decoder
+import kotlinx.serialization.encoding.Encoder
 
 class DocsTest {
   @Test
@@ -196,5 +202,39 @@ class DocsTest {
     val csvByOrdinal = formatByOrdinal.encodeToString(items)
     // Output: id,status\n1,0\n2,2
     // --8<-- [end:enums]
+  }
+
+  // --8<-- [start:pipe-list-serializer]
+  object PipeListSerializer : KSerializer<List<String>> {
+    override val descriptor: SerialDescriptor =
+      PrimitiveSerialDescriptor("PipeList", PrimitiveKind.STRING)
+
+    override fun serialize(encoder: Encoder, value: List<String>) {
+      encoder.encodeString(value.joinToString("|"))
+    }
+
+    override fun deserialize(decoder: Decoder): List<String> {
+      val raw = decoder.decodeString()
+      return if (raw.isEmpty()) emptyList() else raw.split("|")
+    }
+  }
+
+  // --8<-- [end:pipe-list-serializer]
+
+  @Test
+  fun customCellSerializer() {
+    // --8<-- [start:custom-cell-serializer]
+    @Serializable
+    data class Order(
+      val id: Int,
+      @Serializable(with = PipeListSerializer::class) val items: List<String>,
+    )
+
+    val orders = listOf(Order(1, listOf("item1", "item2")))
+    val csv = Csv.encodeToString(orders)
+    // Output: id,items\n1,item1|item2
+
+    val decoded = Csv.decodeFromString<Order>(csv)
+    // --8<-- [end:custom-cell-serializer]
   }
 }

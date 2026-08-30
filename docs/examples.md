@@ -100,3 +100,19 @@ Serialize enums by name or ordinal:
 --8<-- "kotlin-dsv/src/commonTest/kotlin/dev/sargunv/kotlindsv/DocsTest.kt:enum-class"
 --8<-- "kotlin-dsv/src/commonTest/kotlin/dev/sargunv/kotlindsv/DocsTest.kt:enums"
 ```
+
+## Lists and maps in one cell
+
+When you do not want extra columns, put a list or a map in one CSV cell. `DsvFormat` keeps data
+classes flat. A property whose serializer writes one string uses one column.
+
+```kotlin
+--8<-- "kotlin-dsv/src/commonTest/kotlin/dev/sargunv/kotlindsv/DocsTest.kt:pipe-list-serializer"
+--8<-- "kotlin-dsv/src/commonTest/kotlin/dev/sargunv/kotlindsv/DocsTest.kt:custom-cell-serializer"
+```
+
+An empty cell on a nullable property decodes as null. If you write an empty list as `""` and the
+property is nullable, decode yields null.
+
+Maps work the same way. Write a `KSerializer` that emits one string, for example `key=value` pairs
+joined by `|`.
