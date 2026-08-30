@@ -3,8 +3,17 @@ package dev.sargunv.kotlindsv
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
+import kotlinx.serialization.Contextual
+import kotlinx.serialization.KSerializer
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.descriptors.PrimitiveKind
+import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor
+import kotlinx.serialization.descriptors.SerialDescriptor
+import kotlinx.serialization.encoding.Decoder
+import kotlinx.serialization.encoding.Encoder
+import kotlinx.serialization.modules.SerializersModule
+import kotlinx.serialization.modules.contextual
 
 class EncoderDecoderTest {
 
@@ -25,6 +34,55 @@ class EncoderDecoderTest {
     val status: Status,
     val description: String?,
   )
+
+  object PipeListSerializer : KSerializer<List<String>> {
+    override val descriptor: SerialDescriptor =
+      PrimitiveSerialDescriptor("PipeList", PrimitiveKind.STRING)
+
+    override fun serialize(encoder: Encoder, value: List<String>) {
+      encoder.encodeString(value.joinToString("|"))
+    }
+
+    override fun deserialize(decoder: Decoder): List<String> {
+      val raw = decoder.decodeString()
+      return if (raw.isEmpty()) emptyList() else raw.split("|")
+    }
+  }
+
+  object PipeMapSerializer : KSerializer<Map<String, String>> {
+    override val descriptor: SerialDescriptor =
+      PrimitiveSerialDescriptor("PipeMap", PrimitiveKind.STRING)
+
+    override fun serialize(encoder: Encoder, value: Map<String, String>) {
+      encoder.encodeString(value.entries.joinToString("|") { "${it.key}=${it.value}" })
+    }
+
+    override fun deserialize(decoder: Decoder): Map<String, String> {
+      val raw = decoder.decodeString()
+      if (raw.isEmpty()) return emptyMap()
+      return raw.split("|").associate {
+        val parts = it.split("=", limit = 2)
+        parts[0] to parts.getOrElse(1) { "" }
+      }
+    }
+  }
+
+  data class Token(val value: String)
+
+  object TokenAsStringSerializer : KSerializer<Token> {
+    override val descriptor: SerialDescriptor =
+      PrimitiveSerialDescriptor("Token", PrimitiveKind.STRING)
+
+    override fun serialize(encoder: Encoder, value: Token) {
+      encoder.encodeString(value.value)
+    }
+
+    override fun deserialize(decoder: Decoder): Token = Token(decoder.decodeString())
+  }
+
+  @Serializable data class NestedToken(val kind: String)
+
+  object NestedTokenSerializer : KSerializer<NestedToken> by NestedToken.serializer()
 
   private val format = DsvFormat(DsvScheme(delimiter = ',', writeCrlf = false))
 
@@ -289,5 +347,109 @@ class EncoderDecoderTest {
     assertFailsWith<IllegalArgumentException> {
       format.decodeFromString<Order>("id,items\n1,item1")
     }
+  }
+
+  @Test
+  fun customListSerializerRoundTrip() {
+    @Serializable
+    data class Order(
+      val id: Int,
+      @Serializable(with = PipeListSerializer::class) val items: List<String>,
+    )
+
+    val orders = listOf(Order(1, listOf("item1", "item2")))
+    val result = format.encodeToString(orders)
+
+    val expected =
+      """
+      id,items
+      1,item1|item2
+
+      """
+        .trimIndent()
+
+    assertEquals(expected, result)
+
+    val decoded = format.decodeFromString<Order>(result)
+    assertEquals(orders, decoded)
+  }
+
+  @Test
+  fun customMapSerializerRoundTrip() {
+    @Serializable
+    data class Attrs(
+      val id: Int,
+      @Serializable(with = PipeMapSerializer::class) val attrs: Map<String, String>,
+    )
+
+    val rows = listOf(Attrs(1, mapOf("k" to "v", "k2" to "v2")))
+    val result = format.encodeToString(rows)
+
+    val expected =
+      """
+      id,attrs
+      1,k=v|k2=v2
+
+      """
+        .trimIndent()
+
+    assertEquals(expected, result)
+
+    val decoded = format.decodeFromString<Attrs>(result)
+    assertEquals(rows, decoded)
+  }
+
+  @Test
+  fun contextualPrimitiveLike() {
+    val format =
+      DsvFormat(
+        scheme = DsvScheme(delimiter = ',', writeCrlf = false),
+        serializersModule = SerializersModule { contextual(TokenAsStringSerializer) },
+      )
+
+    @Serializable data class ContextualRow(@Contextual val token: Token)
+
+    val rows = listOf(ContextualRow(Token("abc")))
+    val result = format.encodeToString(rows)
+
+    val expected =
+      """
+      token
+      abc
+
+      """
+        .trimIndent()
+
+    assertEquals(expected, result)
+
+    val decoded = format.decodeFromString<ContextualRow>(result)
+    assertEquals(rows, decoded)
+  }
+
+  @Test
+  fun contextualNestedClassFails() {
+    val format =
+      DsvFormat(
+        scheme = DsvScheme(delimiter = ',', writeCrlf = false),
+        serializersModule = SerializersModule { contextual(NestedTokenSerializer) },
+      )
+
+    @Serializable data class ContextualNestedRow(@Contextual val token: NestedToken)
+
+    assertFailsWith<IllegalArgumentException> {
+      format.encodeToString(listOf(ContextualNestedRow(NestedToken("x"))))
+    }
+  }
+
+  @Test
+  fun emptyCustomListOnNullableIsNull() {
+    @Serializable
+    data class MaybeItems(
+      val id: Int,
+      @Serializable(with = PipeListSerializer::class) val items: List<String>?,
+    )
+
+    val decoded = format.decodeFromString<MaybeItems>("id,items\n1,\n")
+    assertEquals(listOf(MaybeItems(1, null)), decoded)
   }
 }
