@@ -39,6 +39,14 @@ You can also customize the quote character and line endings:
 --8<-- "kotlin-dsv/src/commonTest/kotlin/dev/sargunv/kotlindsv/DocsTest.kt:custom-quote"
 ```
 
+Use an exact [record delimiter](./api/kotlin-dsv/dev.sargunv.kotlindsv/-record-delimiter/index.html)
+for warehouse dialects such as MySQL `LINES TERMINATED BY`, Snowflake `RECORD_DELIMITER`, or Spark
+`lineSep`:
+
+```kotlin
+--8<-- "kotlin-dsv/src/commonTest/kotlin/dev/sargunv/kotlindsv/DocsTest.kt:custom-record-delimiter"
+```
+
 ## Naming Strategies
 
 Transform property names to match different naming conventions:

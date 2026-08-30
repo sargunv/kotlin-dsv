@@ -17,15 +17,17 @@ public class DsvWriter(private val sink: Sink, private val scheme: DsvScheme) {
 
   private fun Sink.writeChar(c: Char) = writeString(c.toString())
 
+  private fun fieldNeedsQuoting(field: String): Boolean {
+    if (field.any { it == scheme.delimiter || it == scheme.quote }) return true
+    return when (val delimiter = scheme.recordDelimiter) {
+      RecordDelimiter.Lf,
+      RecordDelimiter.CrLf -> field.any { it == '\n' || it == '\r' }
+      is RecordDelimiter.Exact -> field.contains(delimiter.value)
+    }
+  }
+
   private fun writeField(field: String) =
-    if (
-      field.any {
-        it == scheme.delimiter ||
-          it == scheme.quote ||
-          it == scheme.lineFeed ||
-          it == scheme.carriageReturn
-      }
-    ) {
+    if (fieldNeedsQuoting(field)) {
       sink.writeChar(scheme.quote)
       sink.writeString(
         field.replace(scheme.quote.toString(), scheme.quote.toString() + scheme.quote)
@@ -49,8 +51,7 @@ public class DsvWriter(private val sink: Sink, private val scheme: DsvScheme) {
       writeField(field)
     }
 
-    if (scheme.writeCrlf) sink.writeChar(scheme.carriageReturn)
-    sink.writeChar(scheme.lineFeed)
+    sink.writeString(scheme.recordDelimiter.value)
   }
 
   /** Writes a [DsvTable] including its header row. */
