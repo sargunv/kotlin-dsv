@@ -9,6 +9,17 @@ import kotlinx.io.writeString
 
 class ParserTest {
 
+  private fun jaggedScheme(
+    shortRowPolicy: ShortRowPolicy = ShortRowPolicy.Reject,
+    longRowPolicy: LongRowPolicy = LongRowPolicy.Reject,
+    skipEmptyLines: Boolean = false,
+  ) =
+    Csv.scheme.copy(
+      shortRowPolicy = shortRowPolicy,
+      longRowPolicy = longRowPolicy,
+      skipEmptyLines = skipEmptyLines,
+    )
+
   private inline fun testCase(
     input: String,
     scheme: DsvScheme = Csv.scheme,
@@ -208,25 +219,29 @@ class ParserTest {
     }
 
   @Test
-  fun jaggedRowsNormalizeShorter() =
-    testCase("a,b,c\n1,2", scheme = Csv.scheme.copy(jaggedRowPolicy = JaggedRowPolicy.Normalize)) {
+  fun shortRowPad() =
+    testCase(
+      "a,b,c\n1,2",
+      scheme = jaggedScheme(shortRowPolicy = ShortRowPolicy.Pad),
+    ) {
       assertEquals(listOf(listOf("a", "b", "c"), listOf("1", "2", "")), parseRecords().toList())
     }
 
   @Test
-  fun jaggedRowsNormalizeLonger() =
+  fun longRowTruncate() =
     testCase(
       "a,b,c\n1,2,3,4",
-      scheme = Csv.scheme.copy(jaggedRowPolicy = JaggedRowPolicy.Normalize),
+      scheme = jaggedScheme(longRowPolicy = LongRowPolicy.Truncate),
     ) {
       assertEquals(listOf(listOf("a", "b", "c"), listOf("1", "2", "3")), parseRecords().toList())
     }
 
   @Test
-  fun jaggedRowsNormalizeMixed() =
+  fun padShortAndTruncateLong() =
     testCase(
       "a,b,c\n1\n2,3,4,5\n6,7,8",
-      scheme = Csv.scheme.copy(jaggedRowPolicy = JaggedRowPolicy.Normalize),
+      scheme =
+        jaggedScheme(shortRowPolicy = ShortRowPolicy.Pad, longRowPolicy = LongRowPolicy.Truncate),
     ) {
       assertEquals(
         listOf(
@@ -240,16 +255,17 @@ class ParserTest {
     }
 
   @Test
-  fun jaggedRowsNormalizeSingleColumn() =
-    testCase("a\n1,2", scheme = Csv.scheme.copy(jaggedRowPolicy = JaggedRowPolicy.Normalize)) {
+  fun longRowTruncateSingleColumn() =
+    testCase("a\n1,2", scheme = jaggedScheme(longRowPolicy = LongRowPolicy.Truncate)) {
       assertEquals(listOf(listOf("a"), listOf("1")), parseRecords().toList())
     }
 
   @Test
-  fun jaggedRowsNormalizeWithQuotes() =
+  fun padAndTruncateWithQuotes() =
     testCase(
       "\"a\",\"b\",\"c\"\n\"1\"\n\"2\",\"3\",\"4\",\"5\"",
-      scheme = Csv.scheme.copy(jaggedRowPolicy = JaggedRowPolicy.Normalize),
+      scheme =
+        jaggedScheme(shortRowPolicy = ShortRowPolicy.Pad, longRowPolicy = LongRowPolicy.Truncate),
     ) {
       assertEquals(
         listOf(listOf("a", "b", "c"), listOf("1", "", ""), listOf("2", "3", "4")),
@@ -258,14 +274,19 @@ class ParserTest {
     }
 
   @Test
-  fun jaggedRowsRejectLonger() =
+  fun longRowReject() =
     testCase("a,b,c\n1,2,3,4") { assertFailsWith<DsvParseException> { parseRecords().toList() } }
 
   @Test
-  fun jaggedRowsNormalizeSkipEmptyLines() =
+  fun padAndTruncateSkipEmptyLines() =
     testCase(
       "a,b,c\n1,2\n\n3,4,5,6",
-      scheme = Csv.scheme.copy(jaggedRowPolicy = JaggedRowPolicy.Normalize, skipEmptyLines = true),
+      scheme =
+        jaggedScheme(
+          shortRowPolicy = ShortRowPolicy.Pad,
+          longRowPolicy = LongRowPolicy.Truncate,
+          skipEmptyLines = true,
+        ),
     ) {
       assertEquals(
         listOf(listOf("a", "b", "c"), listOf("1", "2", ""), listOf("3", "4", "5")),
@@ -274,37 +295,39 @@ class ParserTest {
     }
 
   @Test
-  fun jaggedRowsNormalizeSkipLeadingEmptyLines() =
+  fun padShortSkipLeadingEmptyLines() =
     testCase(
       "\n\na,b,c\n1,2",
-      scheme = Csv.scheme.copy(jaggedRowPolicy = JaggedRowPolicy.Normalize, skipEmptyLines = true),
+      scheme = jaggedScheme(shortRowPolicy = ShortRowPolicy.Pad, skipEmptyLines = true),
     ) {
       assertEquals(listOf(listOf("a", "b", "c"), listOf("1", "2", "")), parseRecords().toList())
     }
 
   @Test
-  fun jaggedRowsNormalizeLeadingEmptyLineWithoutSkip() =
+  fun padAndTruncateLeadingEmptyLineWithoutSkip() =
     testCase(
       "\na,b\n1,2",
-      scheme = Csv.scheme.copy(jaggedRowPolicy = JaggedRowPolicy.Normalize),
+      scheme =
+        jaggedScheme(shortRowPolicy = ShortRowPolicy.Pad, longRowPolicy = LongRowPolicy.Truncate),
     ) {
       assertEquals(listOf(listOf(""), listOf("a"), listOf("1")), parseRecords().toList())
     }
 
   @Test
-  fun jaggedRowsNormalizeWithBom() =
+  fun padShortWithBom() =
     testCase(
       "\uFEFFa,b,c\n1,2",
-      scheme = Csv.scheme.copy(jaggedRowPolicy = JaggedRowPolicy.Normalize),
+      scheme = jaggedScheme(shortRowPolicy = ShortRowPolicy.Pad),
     ) {
       assertEquals(listOf(listOf("a", "b", "c"), listOf("1", "2", "")), parseRecords().toList())
     }
 
   @Test
-  fun jaggedRowsNormalizeParseTable() =
+  fun padAndTruncateParseTable() =
     testCase(
       "a,b,c\n1\n2,3,4,5",
-      scheme = Csv.scheme.copy(jaggedRowPolicy = JaggedRowPolicy.Normalize),
+      scheme =
+        jaggedScheme(shortRowPolicy = ShortRowPolicy.Pad, longRowPolicy = LongRowPolicy.Truncate),
     ) {
       val table = parseTable()
       assertEquals(listOf("a", "b", "c"), table.header)
@@ -315,70 +338,116 @@ class ParserTest {
     }
 
   @Test
-  fun jaggedRowsSkipShorter() =
+  fun shortRowSkip() =
     testCase(
       "a,b,c\n1,2\n3,4,5",
-      scheme = Csv.scheme.copy(jaggedRowPolicy = JaggedRowPolicy.Skip),
+      scheme = jaggedScheme(shortRowPolicy = ShortRowPolicy.Skip),
     ) {
       assertEquals(listOf(listOf("a", "b", "c"), listOf("3", "4", "5")), parseRecords().toList())
     }
 
   @Test
-  fun jaggedRowsSkipLonger() =
+  fun longRowSkip() =
     testCase(
       "a,b,c\n1,2,3,4\n5,6,7",
-      scheme = Csv.scheme.copy(jaggedRowPolicy = JaggedRowPolicy.Skip),
+      scheme = jaggedScheme(longRowPolicy = LongRowPolicy.Skip),
     ) {
       assertEquals(listOf(listOf("a", "b", "c"), listOf("5", "6", "7")), parseRecords().toList())
     }
 
   @Test
-  fun jaggedRowsSkipMixed() =
+  fun skipShortAndLong() =
     testCase(
       "a,b,c\n1\n2,3,4,5\n6,7,8",
-      scheme = Csv.scheme.copy(jaggedRowPolicy = JaggedRowPolicy.Skip),
+      scheme =
+        jaggedScheme(shortRowPolicy = ShortRowPolicy.Skip, longRowPolicy = LongRowPolicy.Skip),
     ) {
       assertEquals(listOf(listOf("a", "b", "c"), listOf("6", "7", "8")), parseRecords().toList())
     }
 
   @Test
-  fun jaggedRowsSkipAllDataRows() =
+  fun skipAllDataRows() =
     testCase(
       "a,b,c\n1\n2,3,4,5",
-      scheme = Csv.scheme.copy(jaggedRowPolicy = JaggedRowPolicy.Skip),
+      scheme =
+        jaggedScheme(shortRowPolicy = ShortRowPolicy.Skip, longRowPolicy = LongRowPolicy.Skip),
     ) {
       assertEquals(listOf(listOf("a", "b", "c")), parseRecords().toList())
     }
 
   @Test
-  fun jaggedRowsSkipEmptyLineIsJagged() =
+  fun skipEmptyLineAsShortRow() =
     testCase(
       "a,b,c\n1,2\n\n3,4,5",
-      scheme = Csv.scheme.copy(jaggedRowPolicy = JaggedRowPolicy.Skip),
+      scheme = jaggedScheme(shortRowPolicy = ShortRowPolicy.Skip),
     ) {
       assertEquals(listOf(listOf("a", "b", "c"), listOf("3", "4", "5")), parseRecords().toList())
     }
 
   @Test
-  fun jaggedRowsSkipAndSkipEmptyLines() =
+  fun skipShortAndLongAndEmptyLines() =
     testCase(
       "a,b,c\n1,2\n\n3,4,5,6\n7,8,9",
-      scheme = Csv.scheme.copy(jaggedRowPolicy = JaggedRowPolicy.Skip, skipEmptyLines = true),
+      scheme =
+        jaggedScheme(
+          shortRowPolicy = ShortRowPolicy.Skip,
+          longRowPolicy = LongRowPolicy.Skip,
+          skipEmptyLines = true,
+        ),
     ) {
       assertEquals(listOf(listOf("a", "b", "c"), listOf("7", "8", "9")), parseRecords().toList())
     }
 
   @Test
-  fun jaggedRowsSkipParseTable() =
+  fun skipShortAndLongParseTable() =
     testCase(
       "a,b,c\n1\n2,3,4\n5,6,7,8",
-      scheme = Csv.scheme.copy(jaggedRowPolicy = JaggedRowPolicy.Skip),
+      scheme =
+        jaggedScheme(shortRowPolicy = ShortRowPolicy.Skip, longRowPolicy = LongRowPolicy.Skip),
     ) {
       val table = parseTable()
       assertEquals(listOf("a", "b", "c"), table.header)
       assertEquals(
         listOf(mapOf("a" to "2", "b" to "3", "c" to "4")),
         table.recordsAsMaps().toList(),
+      )
+    }
+
+  @Test
+  fun padShortStillRejectsLong() =
+    testCase("a,b,c\n1,2\n3,4,5,6", scheme = jaggedScheme(shortRowPolicy = ShortRowPolicy.Pad)) {
+      assertFailsWith<DsvParseException> { parseRecords().toList() }
+    }
+
+  @Test
+  fun truncateLongStillRejectsShort() =
+    testCase("a,b,c\n1,2,3,4\n5,6", scheme = jaggedScheme(longRowPolicy = LongRowPolicy.Truncate)) {
+      assertFailsWith<DsvParseException> { parseRecords().toList() }
+    }
+
+  @Test
+  fun padShortAndSkipLong() =
+    testCase(
+      "a,b,c\n1\n2,3,4,5\n6,7,8",
+      scheme =
+        jaggedScheme(shortRowPolicy = ShortRowPolicy.Pad, longRowPolicy = LongRowPolicy.Skip),
+    ) {
+      assertEquals(
+        listOf(listOf("a", "b", "c"), listOf("1", "", ""), listOf("6", "7", "8")),
+        parseRecords().toList(),
+      )
+    }
+
+  @Test
+  fun skipShortAndTruncateLong() =
+    testCase(
+      "a,b,c\n1\n2,3,4,5\n6,7,8",
+      scheme =
+        jaggedScheme(shortRowPolicy = ShortRowPolicy.Skip, longRowPolicy = LongRowPolicy.Truncate),
+    ) {
+      assertEquals(
+        listOf(listOf("a", "b", "c"), listOf("2", "3", "4"), listOf("6", "7", "8")),
+        parseRecords().toList(),
       )
     }
 }

@@ -6,16 +6,28 @@
 // - Show declarations: true
 
 // Library unique name: <dev.sargunv.kotlin-dsv:kotlin-dsv>
-final enum class dev.sargunv.kotlindsv/JaggedRowPolicy : kotlin/Enum<dev.sargunv.kotlindsv/JaggedRowPolicy> { // dev.sargunv.kotlindsv/JaggedRowPolicy|null[0]
-    enum entry Normalize // dev.sargunv.kotlindsv/JaggedRowPolicy.Normalize|null[0]
-    enum entry Reject // dev.sargunv.kotlindsv/JaggedRowPolicy.Reject|null[0]
-    enum entry Skip // dev.sargunv.kotlindsv/JaggedRowPolicy.Skip|null[0]
+final enum class dev.sargunv.kotlindsv/LongRowPolicy : kotlin/Enum<dev.sargunv.kotlindsv/LongRowPolicy> { // dev.sargunv.kotlindsv/LongRowPolicy|null[0]
+    enum entry Reject // dev.sargunv.kotlindsv/LongRowPolicy.Reject|null[0]
+    enum entry Skip // dev.sargunv.kotlindsv/LongRowPolicy.Skip|null[0]
+    enum entry Truncate // dev.sargunv.kotlindsv/LongRowPolicy.Truncate|null[0]
 
-    final val entries // dev.sargunv.kotlindsv/JaggedRowPolicy.entries|#static{}entries[0]
-        final fun <get-entries>(): kotlin.enums/EnumEntries<dev.sargunv.kotlindsv/JaggedRowPolicy> // dev.sargunv.kotlindsv/JaggedRowPolicy.entries.<get-entries>|<get-entries>#static(){}[0]
+    final val entries // dev.sargunv.kotlindsv/LongRowPolicy.entries|#static{}entries[0]
+        final fun <get-entries>(): kotlin.enums/EnumEntries<dev.sargunv.kotlindsv/LongRowPolicy> // dev.sargunv.kotlindsv/LongRowPolicy.entries.<get-entries>|<get-entries>#static(){}[0]
 
-    final fun valueOf(kotlin/String): dev.sargunv.kotlindsv/JaggedRowPolicy // dev.sargunv.kotlindsv/JaggedRowPolicy.valueOf|valueOf#static(kotlin.String){}[0]
-    final fun values(): kotlin/Array<dev.sargunv.kotlindsv/JaggedRowPolicy> // dev.sargunv.kotlindsv/JaggedRowPolicy.values|values#static(){}[0]
+    final fun valueOf(kotlin/String): dev.sargunv.kotlindsv/LongRowPolicy // dev.sargunv.kotlindsv/LongRowPolicy.valueOf|valueOf#static(kotlin.String){}[0]
+    final fun values(): kotlin/Array<dev.sargunv.kotlindsv/LongRowPolicy> // dev.sargunv.kotlindsv/LongRowPolicy.values|values#static(){}[0]
+}
+
+final enum class dev.sargunv.kotlindsv/ShortRowPolicy : kotlin/Enum<dev.sargunv.kotlindsv/ShortRowPolicy> { // dev.sargunv.kotlindsv/ShortRowPolicy|null[0]
+    enum entry Pad // dev.sargunv.kotlindsv/ShortRowPolicy.Pad|null[0]
+    enum entry Reject // dev.sargunv.kotlindsv/ShortRowPolicy.Reject|null[0]
+    enum entry Skip // dev.sargunv.kotlindsv/ShortRowPolicy.Skip|null[0]
+
+    final val entries // dev.sargunv.kotlindsv/ShortRowPolicy.entries|#static{}entries[0]
+        final fun <get-entries>(): kotlin.enums/EnumEntries<dev.sargunv.kotlindsv/ShortRowPolicy> // dev.sargunv.kotlindsv/ShortRowPolicy.entries.<get-entries>|<get-entries>#static(){}[0]
+
+    final fun valueOf(kotlin/String): dev.sargunv.kotlindsv/ShortRowPolicy // dev.sargunv.kotlindsv/ShortRowPolicy.valueOf|valueOf#static(kotlin.String){}[0]
+    final fun values(): kotlin/Array<dev.sargunv.kotlindsv/ShortRowPolicy> // dev.sargunv.kotlindsv/ShortRowPolicy.values|values#static(){}[0]
 }
 
 abstract interface dev.sargunv.kotlindsv/DsvNamingStrategy { // dev.sargunv.kotlindsv/DsvNamingStrategy|null[0]
@@ -108,9 +120,9 @@ final class dev.sargunv.kotlindsv/DsvParser { // dev.sargunv.kotlindsv/DsvParser
 }
 
 final class dev.sargunv.kotlindsv/DsvScheme { // dev.sargunv.kotlindsv/DsvScheme|null[0]
-    constructor <init>(kotlin/Char, kotlin/Char = ..., kotlin/Boolean = ..., kotlin/Boolean = ..., dev.sargunv.kotlindsv/JaggedRowPolicy = ...) // dev.sargunv.kotlindsv/DsvScheme.<init>|<init>(kotlin.Char;kotlin.Char;kotlin.Boolean;kotlin.Boolean;dev.sargunv.kotlindsv.JaggedRowPolicy){}[0]
+    constructor <init>(kotlin/Char, kotlin/Char = ..., kotlin/Boolean = ..., kotlin/Boolean = ..., dev.sargunv.kotlindsv/ShortRowPolicy = ..., dev.sargunv.kotlindsv/LongRowPolicy = ...) // dev.sargunv.kotlindsv/DsvScheme.<init>|<init>(kotlin.Char;kotlin.Char;kotlin.Boolean;kotlin.Boolean;dev.sargunv.kotlindsv.ShortRowPolicy;dev.sargunv.kotlindsv.LongRowPolicy){}[0]
 
-    final fun copy(kotlin/Char = ..., kotlin/Char = ..., kotlin/Boolean = ..., kotlin/Boolean = ..., dev.sargunv.kotlindsv/JaggedRowPolicy = ...): dev.sargunv.kotlindsv/DsvScheme // dev.sargunv.kotlindsv/DsvScheme.copy|copy(kotlin.Char;kotlin.Char;kotlin.Boolean;kotlin.Boolean;dev.sargunv.kotlindsv.JaggedRowPolicy){}[0]
+    final fun copy(kotlin/Char = ..., kotlin/Char = ..., kotlin/Boolean = ..., kotlin/Boolean = ..., dev.sargunv.kotlindsv/ShortRowPolicy = ..., dev.sargunv.kotlindsv/LongRowPolicy = ...): dev.sargunv.kotlindsv/DsvScheme // dev.sargunv.kotlindsv/DsvScheme.copy|copy(kotlin.Char;kotlin.Char;kotlin.Boolean;kotlin.Boolean;dev.sargunv.kotlindsv.ShortRowPolicy;dev.sargunv.kotlindsv.LongRowPolicy){}[0]
     final fun equals(kotlin/Any?): kotlin/Boolean // dev.sargunv.kotlindsv/DsvScheme.equals|equals(kotlin.Any?){}[0]
     final fun hashCode(): kotlin/Int // dev.sargunv.kotlindsv/DsvScheme.hashCode|hashCode(){}[0]
     final fun toString(): kotlin/String // dev.sargunv.kotlindsv/DsvScheme.toString|toString(){}[0]

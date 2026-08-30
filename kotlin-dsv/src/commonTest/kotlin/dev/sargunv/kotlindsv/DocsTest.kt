@@ -122,11 +122,18 @@ class DocsTest {
   }
 
   @Test
-  fun jaggedRowsNormalize() {
+  fun jaggedRowsPadAndTruncate() {
     @Serializable data class Person(val name: String, val age: Int, val city: String?)
 
-    // --8<-- [start:jagged-rows-normalize]
-    val format = DsvFormat(scheme = Csv.scheme.copy(jaggedRowPolicy = JaggedRowPolicy.Normalize))
+    // --8<-- [start:jagged-rows-pad-truncate]
+    val format =
+      DsvFormat(
+        scheme =
+          Csv.scheme.copy(
+            shortRowPolicy = ShortRowPolicy.Pad,
+            longRowPolicy = LongRowPolicy.Truncate,
+          )
+      )
 
     val csv =
       """
@@ -139,7 +146,7 @@ class DocsTest {
 
     val people = format.decodeFromString<Person>(csv)
     // Bob's missing city becomes null; Charlie's extra field is discarded
-    // --8<-- [end:jagged-rows-normalize]
+    // --8<-- [end:jagged-rows-pad-truncate]
     assertEquals(
       listOf(Person("Alice", 30, "NYC"), Person("Bob", 25, null), Person("Charlie", 35, "LA")),
       people,
@@ -151,7 +158,11 @@ class DocsTest {
     @Serializable data class Person(val name: String, val age: Int, val city: String?)
 
     // --8<-- [start:jagged-rows-skip]
-    val format = DsvFormat(scheme = Csv.scheme.copy(jaggedRowPolicy = JaggedRowPolicy.Skip))
+    val format =
+      DsvFormat(
+        scheme =
+          Csv.scheme.copy(shortRowPolicy = ShortRowPolicy.Skip, longRowPolicy = LongRowPolicy.Skip)
+      )
 
     val csv =
       """
