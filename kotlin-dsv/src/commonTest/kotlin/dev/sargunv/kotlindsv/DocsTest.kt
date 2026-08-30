@@ -3,6 +3,7 @@
 package dev.sargunv.kotlindsv
 
 import kotlin.test.Test
+import kotlin.test.assertEquals
 import kotlinx.io.Buffer
 import kotlinx.io.buffered
 import kotlinx.io.files.Path
@@ -121,11 +122,11 @@ class DocsTest {
   }
 
   @Test
-  fun jaggedRows() {
+  fun jaggedRowsNormalize() {
     @Serializable data class Person(val name: String, val age: Int, val city: String?)
 
-    // --8<-- [start:jagged-rows]
-    val format = DsvFormat(scheme = Csv.scheme.copy(allowJaggedRows = true))
+    // --8<-- [start:jagged-rows-normalize]
+    val format = DsvFormat(scheme = Csv.scheme.copy(jaggedRowPolicy = JaggedRowPolicy.Normalize))
 
     val csv =
       """
@@ -138,7 +139,34 @@ class DocsTest {
 
     val people = format.decodeFromString<Person>(csv)
     // Bob's missing city becomes null; Charlie's extra field is discarded
-    // --8<-- [end:jagged-rows]
+    // --8<-- [end:jagged-rows-normalize]
+    assertEquals(
+      listOf(Person("Alice", 30, "NYC"), Person("Bob", 25, null), Person("Charlie", 35, "LA")),
+      people,
+    )
+  }
+
+  @Test
+  fun jaggedRowsSkip() {
+    @Serializable data class Person(val name: String, val age: Int, val city: String?)
+
+    // --8<-- [start:jagged-rows-skip]
+    val format = DsvFormat(scheme = Csv.scheme.copy(jaggedRowPolicy = JaggedRowPolicy.Skip))
+
+    val csv =
+      """
+      name,age,city
+      Alice,30,NYC
+      Bob,25
+      Charlie,35,LA,Extra
+      Dana,40,SF
+      """
+        .trimIndent()
+
+    val people = format.decodeFromString<Person>(csv)
+    // Bob and Charlie are dropped; Alice and Dana are kept
+    // --8<-- [end:jagged-rows-skip]
+    assertEquals(listOf(Person("Alice", 30, "NYC"), Person("Dana", 40, "SF")), people)
   }
 
   fun streamingFiles() {

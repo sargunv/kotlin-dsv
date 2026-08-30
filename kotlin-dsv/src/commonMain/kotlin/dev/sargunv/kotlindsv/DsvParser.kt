@@ -151,10 +151,9 @@ public class DsvParser(private val input: Source, private val scheme: DsvScheme)
   /**
    * Parses all records from the input as a sequence of string lists.
    *
-   * Each list represents one record (row). All records must have the same number of fields unless
-   * [DsvScheme.allowJaggedRows] is true, in which case later rows are truncated or padded with
-   * empty strings to match the first kept row. When [DsvScheme.skipEmptyLines] is true, empty lines
-   * are dropped before that width is chosen.
+   * Each list represents one record (row). The first kept row sets the expected field count; later
+   * rows are handled according to [DsvScheme.jaggedRowPolicy]. When [DsvScheme.skipEmptyLines] is
+   * true, empty lines are dropped before that width is chosen.
    */
   public fun parseRecords(): Sequence<List<String>> = sequence {
     input.use {
@@ -180,18 +179,23 @@ public class DsvParser(private val input: Source, private val scheme: DsvScheme)
           continue
         }
 
-        val normalized =
-          when {
-            record.size == expectedColumns -> record
-            !scheme.allowJaggedRows ->
-              throw DsvParseException(
-                "Expected $expectedColumns columns, got ${record.size} in record $record"
-              )
-            record.size > expectedColumns -> record.take(expectedColumns)
-            else -> record + List(expectedColumns - record.size) { "" }
-          }
+        if (record.size == expectedColumns) {
+          yield(record)
+          continue
+        }
 
-        yield(normalized)
+        when (scheme.jaggedRowPolicy) {
+          JaggedRowPolicy.Reject ->
+            throw DsvParseException(
+              "Expected $expectedColumns columns, got ${record.size} in record $record"
+            )
+          JaggedRowPolicy.Skip -> continue
+          JaggedRowPolicy.Normalize ->
+            yield(
+              if (record.size > expectedColumns) record.take(expectedColumns)
+              else record + List(expectedColumns - record.size) { "" }
+            )
+        }
       }
 
       if (cursor < data.length || !input.exhausted()) {
