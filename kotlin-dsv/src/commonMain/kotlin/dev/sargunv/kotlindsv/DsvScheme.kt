@@ -10,7 +10,8 @@ import kotlin.jvm.JvmOverloads
  * @property writeCrlf When true, writes CRLF line endings; otherwise uses LF.
  * @property skipEmptyLines When true, empty lines in the input are skipped during parsing.
  * @property jaggedRowPolicy How later rows with a different field count than the first kept row are
- *   handled. Defaults to [JaggedRowPolicy.Reject].
+ *   handled. Defaults to [JaggedRowPolicy.Reject]. The first row that is not dropped by
+ *   [skipEmptyLines] is always kept and becomes the expected width.
  */
 public data class DsvScheme
 @JvmOverloads

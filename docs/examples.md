@@ -81,14 +81,13 @@ Handle CSVs with incomplete or extra columns:
 
 ## Jagged Rows
 
-By default the parser **rejects** later rows whose field count differs from the first kept row. Set
-[JaggedRowPolicy](./api/kotlin-dsv/dev.sargunv.kotlindsv/-jagged-row-policy/index.html) on
-[DsvScheme](./api/kotlin-dsv/dev.sargunv.kotlindsv/-dsv-scheme/index.html) to change that:
+[DsvScheme.jaggedRowPolicy](./api/kotlin-dsv/dev.sargunv.kotlindsv/-dsv-scheme/index.html) defaults
+to [Reject](./api/kotlin-dsv/dev.sargunv.kotlindsv/-jagged-row-policy/-reject/index.html). The first
+kept row sets the expected width; later uneven rows follow the policy:
 
-- `Reject` — throw `DsvParseException` (default)
+- `Reject` — throw `DsvParseException`
 - `Skip` — drop the uneven row
-- `Normalize` — pad short rows with empty values and truncate long rows to the first kept row's
-  width
+- `Normalize` — pad short rows with empty values and truncate long rows to the expected width
 
 ```kotlin
 --8<-- "kotlin-dsv/src/commonTest/kotlin/dev/sargunv/kotlindsv/DocsTest.kt:jagged-rows-normalize"
