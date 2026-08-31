@@ -41,8 +41,7 @@ You can also customize the quote character and line endings:
 
 Use
 [RecordDelimiter.Exact](./api/kotlin-dsv/dev.sargunv.kotlindsv/-record-delimiter/-exact/index.html)
-for warehouse dialects such as MySQL `LINES TERMINATED BY`, Snowflake `RECORD_DELIMITER`, or Spark
-`lineSep`. `Lf` and `CrLf` write one newline and read `\r*\n`:
+to write and read one specific string. `Lf` and `CrLf` write one newline and read `\r*\n`:
 
 ```kotlin
 --8<-- "kotlin-dsv/src/commonTest/kotlin/dev/sargunv/kotlindsv/DocsTest.kt:custom-record-delimiter"
