@@ -223,7 +223,9 @@ class DocsTest {
 
     // --8<-- [start:custom-record-delimiter]
     val mysqlOutfile =
-      DsvFormat(scheme = DsvScheme(delimiter = ',', recordDelimiter = RecordDelimiter("\n%%\n")))
+      DsvFormat(
+        scheme = DsvScheme(delimiter = ',', recordDelimiter = RecordDelimiter.Exact("\n%%\n"))
+      )
 
     val dumped = mysqlOutfile.encodeToString(rows)
     val decoded = mysqlOutfile.decodeFromString<Row>(dumped)

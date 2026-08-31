@@ -24,10 +24,10 @@ constructor(
 ) {
   init {
     require(quote != delimiter) { "Quote and delimiter must be different characters" }
-    require(recordDelimiter.strings().none { quote in it }) {
+    require(recordDelimiter.quoteNeedles().none { quote in it }) {
       "Quote must not appear in the record delimiter"
     }
-    require(recordDelimiter.strings().none { delimiter in it }) {
+    require(recordDelimiter.quoteNeedles().none { delimiter in it }) {
       "Delimiter must not appear in the record delimiter"
     }
   }

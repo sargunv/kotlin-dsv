@@ -108,6 +108,42 @@ abstract interface dev.sargunv.kotlindsv/DsvNamingStrategy { // dev.sargunv.kotl
     }
 }
 
+sealed interface dev.sargunv.kotlindsv/RecordDelimiter { // dev.sargunv.kotlindsv/RecordDelimiter|null[0]
+    abstract val value // dev.sargunv.kotlindsv/RecordDelimiter.value|{}value[0]
+        abstract fun <get-value>(): kotlin/String // dev.sargunv.kotlindsv/RecordDelimiter.value.<get-value>|<get-value>(){}[0]
+
+    final class Exact : dev.sargunv.kotlindsv/RecordDelimiter { // dev.sargunv.kotlindsv/RecordDelimiter.Exact|null[0]
+        constructor <init>(kotlin/String) // dev.sargunv.kotlindsv/RecordDelimiter.Exact.<init>|<init>(kotlin.String){}[0]
+
+        final val value // dev.sargunv.kotlindsv/RecordDelimiter.Exact.value|{}value[0]
+            final fun <get-value>(): kotlin/String // dev.sargunv.kotlindsv/RecordDelimiter.Exact.value.<get-value>|<get-value>(){}[0]
+
+        final fun component1(): kotlin/String // dev.sargunv.kotlindsv/RecordDelimiter.Exact.component1|component1(){}[0]
+        final fun copy(kotlin/String = ...): dev.sargunv.kotlindsv/RecordDelimiter.Exact // dev.sargunv.kotlindsv/RecordDelimiter.Exact.copy|copy(kotlin.String){}[0]
+        final fun equals(kotlin/Any?): kotlin/Boolean // dev.sargunv.kotlindsv/RecordDelimiter.Exact.equals|equals(kotlin.Any?){}[0]
+        final fun hashCode(): kotlin/Int // dev.sargunv.kotlindsv/RecordDelimiter.Exact.hashCode|hashCode(){}[0]
+        final fun toString(): kotlin/String // dev.sargunv.kotlindsv/RecordDelimiter.Exact.toString|toString(){}[0]
+    }
+
+    final object CrLf : dev.sargunv.kotlindsv/RecordDelimiter { // dev.sargunv.kotlindsv/RecordDelimiter.CrLf|null[0]
+        final val value // dev.sargunv.kotlindsv/RecordDelimiter.CrLf.value|{}value[0]
+            final fun <get-value>(): kotlin/String // dev.sargunv.kotlindsv/RecordDelimiter.CrLf.value.<get-value>|<get-value>(){}[0]
+
+        final fun equals(kotlin/Any?): kotlin/Boolean // dev.sargunv.kotlindsv/RecordDelimiter.CrLf.equals|equals(kotlin.Any?){}[0]
+        final fun hashCode(): kotlin/Int // dev.sargunv.kotlindsv/RecordDelimiter.CrLf.hashCode|hashCode(){}[0]
+        final fun toString(): kotlin/String // dev.sargunv.kotlindsv/RecordDelimiter.CrLf.toString|toString(){}[0]
+    }
+
+    final object Lf : dev.sargunv.kotlindsv/RecordDelimiter { // dev.sargunv.kotlindsv/RecordDelimiter.Lf|null[0]
+        final val value // dev.sargunv.kotlindsv/RecordDelimiter.Lf.value|{}value[0]
+            final fun <get-value>(): kotlin/String // dev.sargunv.kotlindsv/RecordDelimiter.Lf.value.<get-value>|<get-value>(){}[0]
+
+        final fun equals(kotlin/Any?): kotlin/Boolean // dev.sargunv.kotlindsv/RecordDelimiter.Lf.equals|equals(kotlin.Any?){}[0]
+        final fun hashCode(): kotlin/Int // dev.sargunv.kotlindsv/RecordDelimiter.Lf.hashCode|hashCode(){}[0]
+        final fun toString(): kotlin/String // dev.sargunv.kotlindsv/RecordDelimiter.Lf.toString|toString(){}[0]
+    }
+}
+
 final class dev.sargunv.kotlindsv/DsvParseException : kotlinx.serialization/SerializationException { // dev.sargunv.kotlindsv/DsvParseException|null[0]
     constructor <init>(kotlin/String) // dev.sargunv.kotlindsv/DsvParseException.<init>|<init>(kotlin.String){}[0]
 }
@@ -153,26 +189,6 @@ final class dev.sargunv.kotlindsv/DsvWriter { // dev.sargunv.kotlindsv/DsvWriter
     final fun write(kotlin.collections/List<kotlin.collections/Map<kotlin/String, kotlin/String>>) // dev.sargunv.kotlindsv/DsvWriter.write|write(kotlin.collections.List<kotlin.collections.Map<kotlin.String,kotlin.String>>){}[0]
     final fun write(kotlin.sequences/Sequence<kotlin.collections/List<kotlin/String>>) // dev.sargunv.kotlindsv/DsvWriter.write|write(kotlin.sequences.Sequence<kotlin.collections.List<kotlin.String>>){}[0]
     final fun write(kotlin.sequences/Sequence<kotlin.collections/Map<kotlin/String, kotlin/String>>) // dev.sargunv.kotlindsv/DsvWriter.write|write(kotlin.sequences.Sequence<kotlin.collections.Map<kotlin.String,kotlin.String>>){}[0]
-}
-
-final class dev.sargunv.kotlindsv/RecordDelimiter { // dev.sargunv.kotlindsv/RecordDelimiter|null[0]
-    constructor <init>(kotlin/String, kotlin.collections/List<kotlin/String> = ...) // dev.sargunv.kotlindsv/RecordDelimiter.<init>|<init>(kotlin.String;kotlin.collections.List<kotlin.String>){}[0]
-
-    final val read // dev.sargunv.kotlindsv/RecordDelimiter.read|{}read[0]
-        final fun <get-read>(): kotlin.collections/List<kotlin/String> // dev.sargunv.kotlindsv/RecordDelimiter.read.<get-read>|<get-read>(){}[0]
-    final val write // dev.sargunv.kotlindsv/RecordDelimiter.write|{}write[0]
-        final fun <get-write>(): kotlin/String // dev.sargunv.kotlindsv/RecordDelimiter.write.<get-write>|<get-write>(){}[0]
-
-    final fun equals(kotlin/Any?): kotlin/Boolean // dev.sargunv.kotlindsv/RecordDelimiter.equals|equals(kotlin.Any?){}[0]
-    final fun hashCode(): kotlin/Int // dev.sargunv.kotlindsv/RecordDelimiter.hashCode|hashCode(){}[0]
-    final fun toString(): kotlin/String // dev.sargunv.kotlindsv/RecordDelimiter.toString|toString(){}[0]
-
-    final object Companion { // dev.sargunv.kotlindsv/RecordDelimiter.Companion|null[0]
-        final val CrLf // dev.sargunv.kotlindsv/RecordDelimiter.Companion.CrLf|{}CrLf[0]
-            final fun <get-CrLf>(): dev.sargunv.kotlindsv/RecordDelimiter // dev.sargunv.kotlindsv/RecordDelimiter.Companion.CrLf.<get-CrLf>|<get-CrLf>(){}[0]
-        final val Lf // dev.sargunv.kotlindsv/RecordDelimiter.Companion.Lf|{}Lf[0]
-            final fun <get-Lf>(): dev.sargunv.kotlindsv/RecordDelimiter // dev.sargunv.kotlindsv/RecordDelimiter.Companion.Lf.<get-Lf>|<get-Lf>(){}[0]
-    }
 }
 
 open class dev.sargunv.kotlindsv/DsvFormat : kotlinx.serialization/SerialFormat { // dev.sargunv.kotlindsv/DsvFormat|null[0]
