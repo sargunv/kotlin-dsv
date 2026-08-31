@@ -45,9 +45,10 @@ class RecordDelimiterTest {
   }
 
   @Test
-  fun conventionalReadLeavesAThirdCrInField() {
+  fun conventionalReadAcceptsAnyNumberOfCrsBeforeLf() {
     val scheme = scheme(RecordDelimiter.CrLf)
-    assertEquals(listOf(listOf("a\r"), listOf("b")), parse("a\r\r\r\nb", scheme))
+    assertEquals(listOf(listOf("a"), listOf("b")), parse("a\r\r\r\nb", scheme))
+    assertEquals(listOf(listOf("a"), listOf("b")), parse("a" + "\r".repeat(8) + "\nb", scheme))
   }
 
   @Test
@@ -57,15 +58,9 @@ class RecordDelimiterTest {
   }
 
   @Test
-  fun lfIsWritePlusConventionalRead() {
-    assertEquals(
-      RecordDelimiter(write = "\n", read = listOf("\r\r\n", "\r\n", "\n")),
-      RecordDelimiter.Lf,
-    )
-    assertEquals(
-      RecordDelimiter(write = "\r\n", read = listOf("\r\r\n", "\r\n", "\n")),
-      RecordDelimiter.CrLf,
-    )
+  fun exactLfAndCrlfTokensDoNotEatExtraCrs() {
+    val scheme = scheme(RecordDelimiter(write = "\n", read = listOf("\r\n", "\n")))
+    assertEquals(listOf(listOf("a\r"), listOf("b")), parse("a\r\r\nb", scheme))
   }
 
   @Test
