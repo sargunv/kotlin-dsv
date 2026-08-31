@@ -39,6 +39,14 @@ You can also customize the quote character and line endings:
 --8<-- "kotlin-dsv/src/commonTest/kotlin/dev/sargunv/kotlindsv/DocsTest.kt:custom-quote"
 ```
 
+Use
+[RecordDelimiter.Exact](./api/kotlin-dsv/dev.sargunv.kotlindsv/-record-delimiter/-exact/index.html)
+to write and read one specific string. `Lf` and `CrLf` write one newline and read `\r*\n`:
+
+```kotlin
+--8<-- "kotlin-dsv/src/commonTest/kotlin/dev/sargunv/kotlindsv/DocsTest.kt:custom-record-delimiter"
+```
+
 ## Naming Strategies
 
 Transform property names to match different naming conventions:

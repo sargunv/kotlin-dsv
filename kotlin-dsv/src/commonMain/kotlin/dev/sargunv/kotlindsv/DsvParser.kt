@@ -92,11 +92,9 @@ public class DsvParser(private val input: Source, private val scheme: DsvScheme)
 
     while (true) {
       val c = charAt(cursor) ?: break
-      when (c) {
-        scheme.quote -> throw DsvParseException("Unexpected quote in non-quoted field")
-        scheme.delimiter,
-        scheme.lineFeed,
-        scheme.carriageReturn -> break
+      when {
+        c == scheme.quote -> throw DsvParseException("Unexpected quote in non-quoted field")
+        c == scheme.delimiter || atRecordBoundary(cursor) -> break
         else -> result.append(c)
       }
       cursor++
@@ -116,36 +114,30 @@ public class DsvParser(private val input: Source, private val scheme: DsvScheme)
 
     while (true) {
       val c = charAt(cursor) ?: break
-      when (c) {
-        scheme.carriageReturn,
-        scheme.lineFeed -> break
-        scheme.delimiter -> {
+      when {
+        atRecordBoundary(cursor) -> break
+        c == scheme.delimiter -> {
           cursor++
           val fieldResult = readNonEmptyField(cursor) ?: ReadResult("", cursor)
           fields.add(fieldResult.value)
           cursor = fieldResult.newPos
         }
-        else -> throw DsvParseException("Expected delimiter or end of line, got $c")
+        else -> throw DsvParseException("Expected delimiter or end of record, got $c")
       }
     }
 
     return ReadResult(fields, cursor)
   }
 
-  private fun readEndOfLine(pos: Int): ReadResult<Unit>? {
-    var c = charAt(pos) ?: return ReadResult(Unit, pos)
-    var pos = pos
+  private fun matchRecordDelimiter(pos: Int): Int? =
+    scheme.recordDelimiter.matchLength(::charAt, pos)
 
-    while (true) {
-      // eat: \r*\n
-      // because CRCRLF is apparently a thing
-      when (c) {
-        scheme.lineFeed -> return ReadResult(Unit, pos + 1)
-        scheme.carriageReturn -> pos += 1
-        else -> return null
-      }
-      c = charAt(pos) ?: return ReadResult(Unit, pos)
-    }
+  private fun atRecordBoundary(pos: Int): Boolean = matchRecordDelimiter(pos) != null
+
+  private fun readEndOfRecord(pos: Int): ReadResult<Unit>? {
+    if (charAt(pos) == null) return ReadResult(Unit, pos)
+    val length = matchRecordDelimiter(pos) ?: return null
+    return ReadResult(Unit, pos + length)
   }
 
   /**
@@ -165,8 +157,8 @@ public class DsvParser(private val input: Source, private val scheme: DsvScheme)
         val (record, newPos) = readRecord(cursor) ?: break
 
         cursor =
-          readEndOfLine(newPos)?.newPos
-            ?: throw DsvParseException("Expected end of line, got '${charAt(newPos)}'")
+          readEndOfRecord(newPos)?.newPos
+            ?: throw DsvParseException("Expected end of record, got '${charAt(newPos)}'")
         data = StringBuilder(data.drop(cursor))
         cursor = 0
 
@@ -228,6 +220,5 @@ public class DsvParser(private val input: Source, private val scheme: DsvScheme)
 
   private companion object {
     private const val MAX_UTF8_INCOMPLETE_BYTES = 3
-    private const val UTF8_BOM = '\uFEFF'
   }
 }

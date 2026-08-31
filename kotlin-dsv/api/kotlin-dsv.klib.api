@@ -108,6 +108,42 @@ abstract interface dev.sargunv.kotlindsv/DsvNamingStrategy { // dev.sargunv.kotl
     }
 }
 
+sealed interface dev.sargunv.kotlindsv/RecordDelimiter { // dev.sargunv.kotlindsv/RecordDelimiter|null[0]
+    abstract val value // dev.sargunv.kotlindsv/RecordDelimiter.value|{}value[0]
+        abstract fun <get-value>(): kotlin/String // dev.sargunv.kotlindsv/RecordDelimiter.value.<get-value>|<get-value>(){}[0]
+
+    final class Exact : dev.sargunv.kotlindsv/RecordDelimiter { // dev.sargunv.kotlindsv/RecordDelimiter.Exact|null[0]
+        constructor <init>(kotlin/String) // dev.sargunv.kotlindsv/RecordDelimiter.Exact.<init>|<init>(kotlin.String){}[0]
+
+        final val value // dev.sargunv.kotlindsv/RecordDelimiter.Exact.value|{}value[0]
+            final fun <get-value>(): kotlin/String // dev.sargunv.kotlindsv/RecordDelimiter.Exact.value.<get-value>|<get-value>(){}[0]
+
+        final fun component1(): kotlin/String // dev.sargunv.kotlindsv/RecordDelimiter.Exact.component1|component1(){}[0]
+        final fun copy(kotlin/String = ...): dev.sargunv.kotlindsv/RecordDelimiter.Exact // dev.sargunv.kotlindsv/RecordDelimiter.Exact.copy|copy(kotlin.String){}[0]
+        final fun equals(kotlin/Any?): kotlin/Boolean // dev.sargunv.kotlindsv/RecordDelimiter.Exact.equals|equals(kotlin.Any?){}[0]
+        final fun hashCode(): kotlin/Int // dev.sargunv.kotlindsv/RecordDelimiter.Exact.hashCode|hashCode(){}[0]
+        final fun toString(): kotlin/String // dev.sargunv.kotlindsv/RecordDelimiter.Exact.toString|toString(){}[0]
+    }
+
+    final object CrLf : dev.sargunv.kotlindsv/RecordDelimiter { // dev.sargunv.kotlindsv/RecordDelimiter.CrLf|null[0]
+        final val value // dev.sargunv.kotlindsv/RecordDelimiter.CrLf.value|{}value[0]
+            final fun <get-value>(): kotlin/String // dev.sargunv.kotlindsv/RecordDelimiter.CrLf.value.<get-value>|<get-value>(){}[0]
+
+        final fun equals(kotlin/Any?): kotlin/Boolean // dev.sargunv.kotlindsv/RecordDelimiter.CrLf.equals|equals(kotlin.Any?){}[0]
+        final fun hashCode(): kotlin/Int // dev.sargunv.kotlindsv/RecordDelimiter.CrLf.hashCode|hashCode(){}[0]
+        final fun toString(): kotlin/String // dev.sargunv.kotlindsv/RecordDelimiter.CrLf.toString|toString(){}[0]
+    }
+
+    final object Lf : dev.sargunv.kotlindsv/RecordDelimiter { // dev.sargunv.kotlindsv/RecordDelimiter.Lf|null[0]
+        final val value // dev.sargunv.kotlindsv/RecordDelimiter.Lf.value|{}value[0]
+            final fun <get-value>(): kotlin/String // dev.sargunv.kotlindsv/RecordDelimiter.Lf.value.<get-value>|<get-value>(){}[0]
+
+        final fun equals(kotlin/Any?): kotlin/Boolean // dev.sargunv.kotlindsv/RecordDelimiter.Lf.equals|equals(kotlin.Any?){}[0]
+        final fun hashCode(): kotlin/Int // dev.sargunv.kotlindsv/RecordDelimiter.Lf.hashCode|hashCode(){}[0]
+        final fun toString(): kotlin/String // dev.sargunv.kotlindsv/RecordDelimiter.Lf.toString|toString(){}[0]
+    }
+}
+
 final class dev.sargunv.kotlindsv/DsvParseException : kotlinx.serialization/SerializationException { // dev.sargunv.kotlindsv/DsvParseException|null[0]
     constructor <init>(kotlin/String) // dev.sargunv.kotlindsv/DsvParseException.<init>|<init>(kotlin.String){}[0]
 }
@@ -120,9 +156,9 @@ final class dev.sargunv.kotlindsv/DsvParser { // dev.sargunv.kotlindsv/DsvParser
 }
 
 final class dev.sargunv.kotlindsv/DsvScheme { // dev.sargunv.kotlindsv/DsvScheme|null[0]
-    constructor <init>(kotlin/Char, kotlin/Char = ..., kotlin/Boolean = ..., kotlin/Boolean = ..., dev.sargunv.kotlindsv/ShortRowPolicy = ..., dev.sargunv.kotlindsv/LongRowPolicy = ...) // dev.sargunv.kotlindsv/DsvScheme.<init>|<init>(kotlin.Char;kotlin.Char;kotlin.Boolean;kotlin.Boolean;dev.sargunv.kotlindsv.ShortRowPolicy;dev.sargunv.kotlindsv.LongRowPolicy){}[0]
+    constructor <init>(kotlin/Char, kotlin/Char = ..., dev.sargunv.kotlindsv/RecordDelimiter = ..., kotlin/Boolean = ..., dev.sargunv.kotlindsv/ShortRowPolicy = ..., dev.sargunv.kotlindsv/LongRowPolicy = ...) // dev.sargunv.kotlindsv/DsvScheme.<init>|<init>(kotlin.Char;kotlin.Char;dev.sargunv.kotlindsv.RecordDelimiter;kotlin.Boolean;dev.sargunv.kotlindsv.ShortRowPolicy;dev.sargunv.kotlindsv.LongRowPolicy){}[0]
 
-    final fun copy(kotlin/Char = ..., kotlin/Char = ..., kotlin/Boolean = ..., kotlin/Boolean = ..., dev.sargunv.kotlindsv/ShortRowPolicy = ..., dev.sargunv.kotlindsv/LongRowPolicy = ...): dev.sargunv.kotlindsv/DsvScheme // dev.sargunv.kotlindsv/DsvScheme.copy|copy(kotlin.Char;kotlin.Char;kotlin.Boolean;kotlin.Boolean;dev.sargunv.kotlindsv.ShortRowPolicy;dev.sargunv.kotlindsv.LongRowPolicy){}[0]
+    final fun copy(kotlin/Char = ..., kotlin/Char = ..., dev.sargunv.kotlindsv/RecordDelimiter = ..., kotlin/Boolean = ..., dev.sargunv.kotlindsv/ShortRowPolicy = ..., dev.sargunv.kotlindsv/LongRowPolicy = ...): dev.sargunv.kotlindsv/DsvScheme // dev.sargunv.kotlindsv/DsvScheme.copy|copy(kotlin.Char;kotlin.Char;dev.sargunv.kotlindsv.RecordDelimiter;kotlin.Boolean;dev.sargunv.kotlindsv.ShortRowPolicy;dev.sargunv.kotlindsv.LongRowPolicy){}[0]
     final fun equals(kotlin/Any?): kotlin/Boolean // dev.sargunv.kotlindsv/DsvScheme.equals|equals(kotlin.Any?){}[0]
     final fun hashCode(): kotlin/Int // dev.sargunv.kotlindsv/DsvScheme.hashCode|hashCode(){}[0]
     final fun toString(): kotlin/String // dev.sargunv.kotlindsv/DsvScheme.toString|toString(){}[0]

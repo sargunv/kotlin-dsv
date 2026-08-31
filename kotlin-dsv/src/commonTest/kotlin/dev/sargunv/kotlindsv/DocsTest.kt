@@ -209,10 +209,29 @@ class DocsTest {
           DsvScheme(
             delimiter = ';',
             quote = '\'',
-            writeCrlf = false, // Use Unix-style line endings
+            recordDelimiter = RecordDelimiter.Lf,
           )
       )
     // --8<-- [end:custom-quote]
+  }
+
+  @Test
+  fun customRecordDelimiter() {
+    @Serializable data class Row(val id: Int, val name: String)
+
+    val rows = listOf(Row(1, "Ada"), Row(2, "Grace"))
+
+    // --8<-- [start:custom-record-delimiter]
+    val mysqlOutfile =
+      DsvFormat(
+        scheme = DsvScheme(delimiter = ',', recordDelimiter = RecordDelimiter.Exact("\n%%\n"))
+      )
+
+    val dumped = mysqlOutfile.encodeToString(rows)
+    val decoded = mysqlOutfile.decodeFromString<Row>(dumped)
+    // --8<-- [end:custom-record-delimiter]
+    assertEquals(rows, decoded)
+    assertEquals("id,name\n%%\n1,Ada\n%%\n2,Grace\n%%\n", dumped)
   }
 
   // --8<-- [start:enum-class]

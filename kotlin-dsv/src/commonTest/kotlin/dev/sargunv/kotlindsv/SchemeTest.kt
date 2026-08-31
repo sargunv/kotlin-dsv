@@ -29,4 +29,34 @@ class SchemeTest {
   fun delimiterEqualsCarriageReturn() {
     assertFailsWith<IllegalArgumentException> { DsvScheme(delimiter = '\r') }
   }
+
+  @Test
+  fun emptyExactRecordDelimiter() {
+    assertFailsWith<IllegalArgumentException> { RecordDelimiter.Exact("") }
+  }
+
+  @Test
+  fun exactRecordDelimiterMustNotStartWithBom() {
+    assertFailsWith<IllegalArgumentException> { RecordDelimiter.Exact("\uFEFF") }
+    assertFailsWith<IllegalArgumentException> { RecordDelimiter.Exact("\uFEFFx") }
+  }
+
+  @Test
+  fun quoteInExactRecordDelimiter() {
+    assertFailsWith<IllegalArgumentException> {
+      DsvScheme(delimiter = ',', recordDelimiter = RecordDelimiter.Exact("\n\"\n"))
+    }
+  }
+
+  @Test
+  fun delimiterInExactRecordDelimiter() {
+    assertFailsWith<IllegalArgumentException> {
+      DsvScheme(delimiter = ',', recordDelimiter = RecordDelimiter.Exact(",\n"))
+    }
+  }
+
+  @Test
+  fun newlineFieldDelimiterWithCustomRecordDelimiter() {
+    DsvScheme(delimiter = '\n', recordDelimiter = RecordDelimiter.Exact("%%"))
+  }
 }

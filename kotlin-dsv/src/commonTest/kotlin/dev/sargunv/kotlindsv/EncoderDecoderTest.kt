@@ -84,7 +84,7 @@ class EncoderDecoderTest {
 
   object NestedTokenSerializer : KSerializer<NestedToken> by NestedToken.serializer()
 
-  private val format = DsvFormat(DsvScheme(delimiter = ',', writeCrlf = false))
+  private val format = DsvFormat(DsvScheme(delimiter = ',', recordDelimiter = RecordDelimiter.Lf))
 
   @Test
   fun encodeBasicList() {
@@ -172,7 +172,10 @@ class EncoderDecoderTest {
   @Test
   fun encodeEnumsByOrdinal() {
     val formatByOrdinal =
-      DsvFormat(DsvScheme(delimiter = ',', writeCrlf = false), writeEnumsByName = false)
+      DsvFormat(
+        DsvScheme(delimiter = ',', recordDelimiter = RecordDelimiter.Lf),
+        writeEnumsByName = false,
+      )
     val samples = listOf(Sample(1, "Item", 9.99, null, true, Status.PENDING, null))
 
     val result = formatByOrdinal.encodeToString(samples)
@@ -195,7 +198,7 @@ class EncoderDecoderTest {
   fun encodeWithSnakeCaseNaming() {
     val formatSnakeCase =
       DsvFormat(
-        scheme = DsvScheme(delimiter = ',', writeCrlf = false),
+        scheme = DsvScheme(delimiter = ',', recordDelimiter = RecordDelimiter.Lf),
         namingStrategy = DsvNamingStrategy.SnakeCase,
       )
 
@@ -234,7 +237,7 @@ class EncoderDecoderTest {
   fun treatMissingColumnsAsNull() {
     val formatWithOption =
       DsvFormat(
-        scheme = DsvScheme(delimiter = ',', writeCrlf = false),
+        scheme = DsvScheme(delimiter = ',', recordDelimiter = RecordDelimiter.Lf),
         treatMissingColumnsAsNull = true,
       )
 
@@ -291,7 +294,7 @@ class EncoderDecoderTest {
         scheme =
           DsvScheme(
             delimiter = ',',
-            writeCrlf = false,
+            recordDelimiter = RecordDelimiter.Lf,
             shortRowPolicy = ShortRowPolicy.Pad,
             longRowPolicy = LongRowPolicy.Truncate,
           )
@@ -322,7 +325,7 @@ class EncoderDecoderTest {
         scheme =
           DsvScheme(
             delimiter = ',',
-            writeCrlf = false,
+            recordDelimiter = RecordDelimiter.Lf,
             shortRowPolicy = ShortRowPolicy.Skip,
             longRowPolicy = LongRowPolicy.Skip,
           )
@@ -351,7 +354,7 @@ class EncoderDecoderTest {
         scheme =
           DsvScheme(
             delimiter = ',',
-            writeCrlf = false,
+            recordDelimiter = RecordDelimiter.Lf,
             shortRowPolicy = ShortRowPolicy.Pad,
             longRowPolicy = LongRowPolicy.Skip,
           )
@@ -487,7 +490,7 @@ class EncoderDecoderTest {
   fun contextualPrimitiveLike() {
     val format =
       DsvFormat(
-        scheme = DsvScheme(delimiter = ',', writeCrlf = false),
+        scheme = DsvScheme(delimiter = ',', recordDelimiter = RecordDelimiter.Lf),
         serializersModule = SerializersModule { contextual(TokenAsStringSerializer) },
       )
 
@@ -514,7 +517,7 @@ class EncoderDecoderTest {
   fun contextualNestedClassFails() {
     val format =
       DsvFormat(
-        scheme = DsvScheme(delimiter = ',', writeCrlf = false),
+        scheme = DsvScheme(delimiter = ',', recordDelimiter = RecordDelimiter.Lf),
         serializersModule = SerializersModule { contextual(NestedTokenSerializer) },
       )
 
