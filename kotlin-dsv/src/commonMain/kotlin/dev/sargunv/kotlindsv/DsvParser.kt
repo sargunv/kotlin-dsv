@@ -129,48 +129,15 @@ public class DsvParser(private val input: Source, private val scheme: DsvScheme)
     return ReadResult(fields, cursor)
   }
 
-  private fun atRecordBoundary(pos: Int): Boolean {
-    val c = charAt(pos) ?: return false
-    return when (val delimiter = scheme.recordDelimiter) {
-      RecordDelimiter.Lf,
-      RecordDelimiter.CrLf -> c == '\n' || c == '\r'
-      is RecordDelimiter.Exact -> matchesLiteral(pos, delimiter.value)
-    }
-  }
+  private fun matchRecordDelimiter(pos: Int): Int? =
+    scheme.recordDelimiter.matchLength(::charAt, pos)
 
-  private fun matchesLiteral(pos: Int, value: String): Boolean {
-    for (i in value.indices) {
-      if (charAt(pos + i) != value[i]) return false
-    }
-    return true
-  }
+  private fun atRecordBoundary(pos: Int): Boolean = matchRecordDelimiter(pos) != null
 
   private fun readEndOfRecord(pos: Int): ReadResult<Unit>? {
     if (charAt(pos) == null) return ReadResult(Unit, pos)
-    return when (val delimiter = scheme.recordDelimiter) {
-      RecordDelimiter.Lf,
-      RecordDelimiter.CrLf -> readConventionalNewline(pos)
-      is RecordDelimiter.Exact -> {
-        if (!matchesLiteral(pos, delimiter.value)) null
-        else ReadResult(Unit, pos + delimiter.value.length)
-      }
-    }
-  }
-
-  private fun readConventionalNewline(pos: Int): ReadResult<Unit>? {
-    var cursor = pos
-    var c = charAt(cursor) ?: return ReadResult(Unit, cursor)
-
-    while (true) {
-      // eat: \r*\n
-      // because CRCRLF is apparently a thing
-      when (c) {
-        '\n' -> return ReadResult(Unit, cursor + 1)
-        '\r' -> cursor += 1
-        else -> return null
-      }
-      c = charAt(cursor) ?: return ReadResult(Unit, cursor)
-    }
+    val length = matchRecordDelimiter(pos) ?: return null
+    return ReadResult(Unit, pos + length)
   }
 
   /**

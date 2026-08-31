@@ -31,26 +31,38 @@ class SchemeTest {
   }
 
   @Test
-  fun emptyExactRecordDelimiter() {
-    assertFailsWith<IllegalArgumentException> { RecordDelimiter.Exact("") }
+  fun emptyWriteRecordDelimiter() {
+    assertFailsWith<IllegalArgumentException> { RecordDelimiter("") }
+  }
+
+  @Test
+  fun emptyReadRecordDelimiter() {
+    assertFailsWith<IllegalArgumentException> { RecordDelimiter(write = "\n", read = emptyList()) }
+  }
+
+  @Test
+  fun emptyReadToken() {
+    assertFailsWith<IllegalArgumentException> {
+      RecordDelimiter(write = "\n", read = listOf("\n", ""))
+    }
   }
 
   @Test
   fun quoteInExactRecordDelimiter() {
     assertFailsWith<IllegalArgumentException> {
-      DsvScheme(delimiter = ',', recordDelimiter = RecordDelimiter.Exact("\n\"\n"))
+      DsvScheme(delimiter = ',', recordDelimiter = RecordDelimiter("\n\"\n"))
     }
   }
 
   @Test
   fun delimiterInExactRecordDelimiter() {
     assertFailsWith<IllegalArgumentException> {
-      DsvScheme(delimiter = ',', recordDelimiter = RecordDelimiter.Exact(",\n"))
+      DsvScheme(delimiter = ',', recordDelimiter = RecordDelimiter(",\n"))
     }
   }
 
   @Test
   fun newlineFieldDelimiterWithCustomRecordDelimiter() {
-    DsvScheme(delimiter = '\n', recordDelimiter = RecordDelimiter.Exact("%%"))
+    DsvScheme(delimiter = '\n', recordDelimiter = RecordDelimiter("%%"))
   }
 }

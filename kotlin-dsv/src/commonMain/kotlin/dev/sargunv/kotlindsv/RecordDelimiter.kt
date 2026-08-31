@@ -1,34 +1,71 @@
 package dev.sargunv.kotlindsv
 
+import kotlin.jvm.JvmOverloads
+
 /**
  * Separates records in a [DSV][DsvFormat] document.
  *
- * [Lf] and [CrLf] write that newline and, when reading, accept LF, CRLF, and extra CR bytes before
- * LF (including CRCRLF). [Exact] writes and reads one specific string, including multi-character
- * warehouse separators such as `\n%%\n`.
+ * [write] is emitted after every record. [read] is the set of strings that terminate a record when
+ * parsing. Matching uses the longest [read] string at the current position.
+ *
+ * [Lf] and [CrLf] write that newline and read LF, CRLF, and CRCRLF. A single-string constructor
+ * such as `RecordDelimiter("\n%%\n")` reads and writes that string exactly.
+ *
+ * @property write String written after each record.
+ * @property read Strings accepted as a record terminator when reading.
  */
-public sealed class RecordDelimiter {
-  /** String written after each record. */
-  public abstract val value: String
+public class RecordDelimiter
+@JvmOverloads
+constructor(write: String, read: List<String> = listOf(write)) {
+  public val write: String = write
+  public val read: List<String> = read.toList()
 
-  /** Writes LF. Reading accepts conventional newline forms. */
-  public data object Lf : RecordDelimiter() {
-    override val value: String = "\n"
+  internal val tokens: List<String>
+  internal val heads: Set<Char>
+
+  init {
+    require(write.isNotEmpty()) { "Record delimiter write string must not be empty" }
+    require(this.read.isNotEmpty()) { "Record delimiter must accept at least one read string" }
+    require(this.read.all { it.isNotEmpty() }) { "Record delimiter read strings must not be empty" }
+    tokens = this.read.distinct().sortedByDescending { it.length }
+    heads = tokens.mapTo(mutableSetOf()) { it.first() }
   }
 
-  /** Writes CRLF. Reading accepts conventional newline forms. */
-  public data object CrLf : RecordDelimiter() {
-    override val value: String = "\r\n"
-  }
-
-  /**
-   * Writes and reads [value] exactly.
-   *
-   * @throws IllegalArgumentException if [value] is empty.
-   */
-  public data class Exact(override val value: String) : RecordDelimiter() {
-    init {
-      require(value.isNotEmpty()) { "Record delimiter must not be empty" }
+  internal fun matchLength(charAt: (Int) -> Char?, pos: Int): Int? {
+    if (charAt(pos) !in heads) return null
+    for (token in tokens) {
+      if (matchesLiteral(charAt, pos, token)) return token.length
     }
+    return null
   }
+
+  override fun equals(other: Any?): Boolean =
+    other is RecordDelimiter && write == other.write && tokens.toSet() == other.tokens.toSet()
+
+  override fun hashCode(): Int = 31 * write.hashCode() + tokens.toSet().hashCode()
+
+  override fun toString(): String = "RecordDelimiter(write=$write, read=$read)"
+
+  internal fun strings(): Sequence<String> = sequence {
+    yield(write)
+    yieldAll(read)
+  }
+
+  /** Built-in newline delimiters. */
+  public companion object {
+    private val conventionalNewlines: List<String> = listOf("\r\r\n", "\r\n", "\n")
+
+    /** Writes LF. Reading accepts LF, CRLF, and CRCRLF. */
+    public val Lf: RecordDelimiter = RecordDelimiter(write = "\n", read = conventionalNewlines)
+
+    /** Writes CRLF. Reading accepts LF, CRLF, and CRCRLF. */
+    public val CrLf: RecordDelimiter = RecordDelimiter(write = "\r\n", read = conventionalNewlines)
+  }
+}
+
+private fun matchesLiteral(charAt: (Int) -> Char?, pos: Int, value: String): Boolean {
+  for (i in value.indices) {
+    if (charAt(pos + i) != value[i]) return false
+  }
+  return true
 }

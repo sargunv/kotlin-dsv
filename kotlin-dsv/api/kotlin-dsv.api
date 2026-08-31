@@ -176,35 +176,21 @@ public final class dev/sargunv/kotlindsv/Psv : dev/sargunv/kotlindsv/DsvFormat {
 	public static final field INSTANCE Ldev/sargunv/kotlindsv/Psv;
 }
 
-public abstract class dev/sargunv/kotlindsv/RecordDelimiter {
-	public abstract fun getValue ()Ljava/lang/String;
-}
-
-public final class dev/sargunv/kotlindsv/RecordDelimiter$CrLf : dev/sargunv/kotlindsv/RecordDelimiter {
-	public static final field INSTANCE Ldev/sargunv/kotlindsv/RecordDelimiter$CrLf;
-	public fun equals (Ljava/lang/Object;)Z
-	public fun getValue ()Ljava/lang/String;
-	public fun hashCode ()I
-	public fun toString ()Ljava/lang/String;
-}
-
-public final class dev/sargunv/kotlindsv/RecordDelimiter$Exact : dev/sargunv/kotlindsv/RecordDelimiter {
+public final class dev/sargunv/kotlindsv/RecordDelimiter {
+	public static final field Companion Ldev/sargunv/kotlindsv/RecordDelimiter$Companion;
 	public fun <init> (Ljava/lang/String;)V
-	public final fun component1 ()Ljava/lang/String;
-	public final fun copy (Ljava/lang/String;)Ldev/sargunv/kotlindsv/RecordDelimiter$Exact;
-	public static synthetic fun copy$default (Ldev/sargunv/kotlindsv/RecordDelimiter$Exact;Ljava/lang/String;ILjava/lang/Object;)Ldev/sargunv/kotlindsv/RecordDelimiter$Exact;
+	public fun <init> (Ljava/lang/String;Ljava/util/List;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/util/List;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public fun equals (Ljava/lang/Object;)Z
-	public fun getValue ()Ljava/lang/String;
+	public final fun getRead ()Ljava/util/List;
+	public final fun getWrite ()Ljava/lang/String;
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
 }
 
-public final class dev/sargunv/kotlindsv/RecordDelimiter$Lf : dev/sargunv/kotlindsv/RecordDelimiter {
-	public static final field INSTANCE Ldev/sargunv/kotlindsv/RecordDelimiter$Lf;
-	public fun equals (Ljava/lang/Object;)Z
-	public fun getValue ()Ljava/lang/String;
-	public fun hashCode ()I
-	public fun toString ()Ljava/lang/String;
+public final class dev/sargunv/kotlindsv/RecordDelimiter$Companion {
+	public final fun getCrLf ()Ldev/sargunv/kotlindsv/RecordDelimiter;
+	public final fun getLf ()Ldev/sargunv/kotlindsv/RecordDelimiter;
 }
 
 public final class dev/sargunv/kotlindsv/ShortRowPolicy : java/lang/Enum {
