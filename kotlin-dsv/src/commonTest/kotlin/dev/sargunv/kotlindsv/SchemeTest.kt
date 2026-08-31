@@ -36,6 +36,12 @@ class SchemeTest {
   }
 
   @Test
+  fun exactRecordDelimiterMustNotStartWithBom() {
+    assertFailsWith<IllegalArgumentException> { RecordDelimiter.Exact("\uFEFF") }
+    assertFailsWith<IllegalArgumentException> { RecordDelimiter.Exact("\uFEFFx") }
+  }
+
+  @Test
   fun quoteInExactRecordDelimiter() {
     assertFailsWith<IllegalArgumentException> {
       DsvScheme(delimiter = ',', recordDelimiter = RecordDelimiter.Exact("\n\"\n"))

@@ -87,6 +87,49 @@ class RecordDelimiterTest {
   }
 
   @Test
+  fun exactDelimiterSuffixOverlapRoundTrips() {
+    val scheme = scheme(RecordDelimiter.Exact("%%"))
+    val records = listOf(listOf("%"))
+    val output = write(records, scheme)
+    assertEquals("\"%\"%%", output)
+    assertEquals(records, parse(output, scheme))
+  }
+
+  @Test
+  fun exactDelimiterLastFieldSuffixOverlapRoundTrips() {
+    val scheme = scheme(RecordDelimiter.Exact("%%"))
+    val records = listOf(listOf("a", "x%"))
+    val output = write(records, scheme)
+    assertEquals("a,\"x%\"%%", output)
+    assertEquals(records, parse(output, scheme))
+  }
+
+  @Test
+  fun exactSelfOverlappingDelimiterRoundTrips() {
+    val scheme = scheme(RecordDelimiter.Exact("aba"))
+    val records = listOf(listOf("ab"))
+    val output = write(records, scheme)
+    assertEquals("\"ab\"aba", output)
+    assertEquals(records, parse(output, scheme))
+  }
+
+  @Test
+  fun exactDelimiterPrefixInNonLastFieldStaysUnquoted() {
+    val scheme = scheme(RecordDelimiter.Exact("%%"))
+    assertEquals("%,b%%", write(listOf(listOf("%", "b")), scheme))
+    assertEquals(listOf(listOf("%", "b")), parse("%,b%%", scheme))
+  }
+
+  @Test
+  fun exactDelimiterMayContainBomAfterFirstChar() {
+    val scheme = scheme(RecordDelimiter.Exact("x\uFEFF"))
+    val records = listOf(listOf("a"), listOf("b"))
+    val output = write(records, scheme)
+    assertEquals("ax\uFEFFbx\uFEFF", output)
+    assertEquals(records, parse(output, scheme))
+  }
+
+  @Test
   fun quotedFieldMayContainExactDelimiter() {
     val scheme = scheme(RecordDelimiter.Exact("%%"))
     assertEquals(listOf(listOf("a%%b", "c")), parse("\"a%%b\",c%%", scheme))

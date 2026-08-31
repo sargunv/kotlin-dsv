@@ -23,11 +23,12 @@ public sealed interface RecordDelimiter {
   /**
    * Writes and reads [value] exactly.
    *
-   * @throws IllegalArgumentException if [value] is empty.
+   * @throws IllegalArgumentException if [value] is empty or starts with U+FEFF.
    */
   public data class Exact(override val value: String) : RecordDelimiter {
     init {
       require(value.isNotEmpty()) { "Record delimiter must not be empty" }
+      require(value.first() != UTF8_BOM) { "Record delimiter must not start with a BOM" }
     }
   }
 }
@@ -45,6 +46,11 @@ internal fun RecordDelimiter.quoteNeedles(): Sequence<String> =
     RecordDelimiter.CrLf -> sequenceOf("\n", "\r")
     is RecordDelimiter.Exact -> sequenceOf(value)
   }
+
+internal fun RecordDelimiter.suffixOverlapsWriteValue(field: String): Boolean =
+  (field + value).indexOf(value) < field.length
+
+internal const val UTF8_BOM = '\uFEFF'
 
 private fun matchCrStarLf(charAt: (Int) -> Char?, pos: Int): Int? {
   var cursor = pos

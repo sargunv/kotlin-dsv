@@ -17,13 +17,14 @@ public class DsvWriter(private val sink: Sink, private val scheme: DsvScheme) {
 
   private fun Sink.writeChar(c: Char) = writeString(c.toString())
 
-  private fun fieldNeedsQuoting(field: String): Boolean {
+  private fun fieldNeedsQuoting(field: String, lastField: Boolean): Boolean {
     if (field.any { it == scheme.delimiter || it == scheme.quote }) return true
-    return scheme.recordDelimiter.quoteNeedles().any { field.contains(it) }
+    if (scheme.recordDelimiter.quoteNeedles().any { field.contains(it) }) return true
+    return lastField && scheme.recordDelimiter.suffixOverlapsWriteValue(field)
   }
 
-  private fun writeField(field: String) =
-    if (fieldNeedsQuoting(field)) {
+  private fun writeField(field: String, lastField: Boolean) =
+    if (fieldNeedsQuoting(field, lastField)) {
       sink.writeChar(scheme.quote)
       sink.writeString(
         field.replace(scheme.quote.toString(), scheme.quote.toString() + scheme.quote)
@@ -44,7 +45,7 @@ public class DsvWriter(private val sink: Sink, private val scheme: DsvScheme) {
 
     record.forEachIndexed { i, field ->
       if (i > 0) sink.writeChar(scheme.delimiter)
-      writeField(field)
+      writeField(field, lastField = i == record.lastIndex)
     }
 
     sink.writeString(scheme.recordDelimiter.value)

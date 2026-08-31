@@ -220,6 +220,5 @@ public class DsvParser(private val input: Source, private val scheme: DsvScheme)
 
   private companion object {
     private const val MAX_UTF8_INCOMPLETE_BYTES = 3
-    private const val UTF8_BOM = '\uFEFF'
   }
 }
