@@ -192,7 +192,7 @@ final class dev.sargunv.kotlindsv/DsvWriter { // dev.sargunv.kotlindsv/DsvWriter
 }
 
 open class dev.sargunv.kotlindsv/DsvFormat : kotlinx.serialization/SerialFormat { // dev.sargunv.kotlindsv/DsvFormat|null[0]
-    constructor <init>(dev.sargunv.kotlindsv/DsvScheme, kotlinx.serialization.modules/SerializersModule = ..., dev.sargunv.kotlindsv/DsvNamingStrategy = ..., kotlin/Boolean = ..., kotlin/Boolean = ..., kotlin/Boolean = ...) // dev.sargunv.kotlindsv/DsvFormat.<init>|<init>(dev.sargunv.kotlindsv.DsvScheme;kotlinx.serialization.modules.SerializersModule;dev.sargunv.kotlindsv.DsvNamingStrategy;kotlin.Boolean;kotlin.Boolean;kotlin.Boolean){}[0]
+    constructor <init>(dev.sargunv.kotlindsv/DsvScheme, kotlinx.serialization.modules/SerializersModule = ..., dev.sargunv.kotlindsv/DsvNamingStrategy = ..., kotlin/Boolean = ..., kotlin/Boolean = ..., kotlin/Boolean = ..., kotlin/Boolean = ...) // dev.sargunv.kotlindsv/DsvFormat.<init>|<init>(dev.sargunv.kotlindsv.DsvScheme;kotlinx.serialization.modules.SerializersModule;dev.sargunv.kotlindsv.DsvNamingStrategy;kotlin.Boolean;kotlin.Boolean;kotlin.Boolean;kotlin.Boolean){}[0]
 
     final val ignoreUnknownKeys // dev.sargunv.kotlindsv/DsvFormat.ignoreUnknownKeys|{}ignoreUnknownKeys[0]
         final fun <get-ignoreUnknownKeys>(): kotlin/Boolean // dev.sargunv.kotlindsv/DsvFormat.ignoreUnknownKeys.<get-ignoreUnknownKeys>|<get-ignoreUnknownKeys>(){}[0]
@@ -202,6 +202,8 @@ open class dev.sargunv.kotlindsv/DsvFormat : kotlinx.serialization/SerialFormat 
         final fun <get-scheme>(): dev.sargunv.kotlindsv/DsvScheme // dev.sargunv.kotlindsv/DsvFormat.scheme.<get-scheme>|<get-scheme>(){}[0]
     final val treatMissingColumnsAsNull // dev.sargunv.kotlindsv/DsvFormat.treatMissingColumnsAsNull|{}treatMissingColumnsAsNull[0]
         final fun <get-treatMissingColumnsAsNull>(): kotlin/Boolean // dev.sargunv.kotlindsv/DsvFormat.treatMissingColumnsAsNull.<get-treatMissingColumnsAsNull>|<get-treatMissingColumnsAsNull>(){}[0]
+    final val trimFields // dev.sargunv.kotlindsv/DsvFormat.trimFields|{}trimFields[0]
+        final fun <get-trimFields>(): kotlin/Boolean // dev.sargunv.kotlindsv/DsvFormat.trimFields.<get-trimFields>|<get-trimFields>(){}[0]
     final val writeEnumsByName // dev.sargunv.kotlindsv/DsvFormat.writeEnumsByName|{}writeEnumsByName[0]
         final fun <get-writeEnumsByName>(): kotlin/Boolean // dev.sargunv.kotlindsv/DsvFormat.writeEnumsByName.<get-writeEnumsByName>|<get-writeEnumsByName>(){}[0]
     open val serializersModule // dev.sargunv.kotlindsv/DsvFormat.serializersModule|{}serializersModule[0]

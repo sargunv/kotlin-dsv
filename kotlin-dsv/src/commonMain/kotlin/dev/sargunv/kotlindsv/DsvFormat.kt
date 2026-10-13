@@ -45,6 +45,10 @@ import org.intellij.lang.annotations.Language
  *   throwing an error.
  * @property writeEnumsByName When true, enums are written using their name; otherwise their ordinal
  *   is used.
+ * @property trimFields When true, decoding ignores leading and trailing whitespace (as
+ *   [Char.isWhitespace] defines it) in each field, quoted or not, so a field of only whitespace
+ *   reads as an empty field. Whitespace inside a value is kept. Encoding is unaffected. Column
+ *   names are always trimmed, whatever this is set to.
  */
 public open class DsvFormat(
   public val scheme: DsvScheme,
@@ -53,6 +57,7 @@ public open class DsvFormat(
   public val treatMissingColumnsAsNull: Boolean = false,
   public val ignoreUnknownKeys: Boolean = false,
   public val writeEnumsByName: Boolean = true,
+  public val trimFields: Boolean = false,
 ) : SerialFormat {
 
   /** Encodes the given [value] to a DSV string. */

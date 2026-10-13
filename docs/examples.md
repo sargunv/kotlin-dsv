@@ -79,6 +79,15 @@ Available strategies:
 You can also implement custom strategies by extending
 [DsvNamingStrategy](./api/kotlin-dsv/dev.sargunv.kotlindsv/-dsv-naming-strategy/index.html).
 
+## Trimming Padded Fields
+
+Some producers pad values with spaces, such as `"005B95 "` in a GTFS feed. To read them without the
+padding, set [`trimFields`](./api/kotlin-dsv/dev.sargunv.kotlindsv/-dsv-format/trim-fields.html):
+
+```kotlin
+val format = DsvFormat(Csv.scheme, trimFields = true)
+```
+
 ## Handling Missing or Extra Columns
 
 Handle CSVs with incomplete or extra columns:
