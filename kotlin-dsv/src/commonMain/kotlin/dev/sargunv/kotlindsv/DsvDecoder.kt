@@ -37,7 +37,8 @@ internal class DsvDecoder(
   override fun beginStructure(descriptor: SerialDescriptor): CompositeDecoder {
     require(!open) { "Nested structures are not supported in DSV format" }
     open = true
-    record = records.next()
+    val next = records.next()
+    record = if (format.trimFields) next.map { it.trim() } else next
     return this
   }
 
