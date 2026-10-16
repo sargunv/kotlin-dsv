@@ -133,9 +133,10 @@ public final class dev/sargunv/kotlindsv/DsvScheme {
 	public fun <init> (CCLdev/sargunv/kotlindsv/RecordDelimiter;Z)V
 	public fun <init> (CCLdev/sargunv/kotlindsv/RecordDelimiter;ZLdev/sargunv/kotlindsv/ShortRowPolicy;)V
 	public fun <init> (CCLdev/sargunv/kotlindsv/RecordDelimiter;ZLdev/sargunv/kotlindsv/ShortRowPolicy;Ldev/sargunv/kotlindsv/LongRowPolicy;)V
-	public synthetic fun <init> (CCLdev/sargunv/kotlindsv/RecordDelimiter;ZLdev/sargunv/kotlindsv/ShortRowPolicy;Ldev/sargunv/kotlindsv/LongRowPolicy;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
-	public final fun copy (CCLdev/sargunv/kotlindsv/RecordDelimiter;ZLdev/sargunv/kotlindsv/ShortRowPolicy;Ldev/sargunv/kotlindsv/LongRowPolicy;)Ldev/sargunv/kotlindsv/DsvScheme;
-	public static synthetic fun copy$default (Ldev/sargunv/kotlindsv/DsvScheme;CCLdev/sargunv/kotlindsv/RecordDelimiter;ZLdev/sargunv/kotlindsv/ShortRowPolicy;Ldev/sargunv/kotlindsv/LongRowPolicy;ILjava/lang/Object;)Ldev/sargunv/kotlindsv/DsvScheme;
+	public fun <init> (CCLdev/sargunv/kotlindsv/RecordDelimiter;ZLdev/sargunv/kotlindsv/ShortRowPolicy;Ldev/sargunv/kotlindsv/LongRowPolicy;Z)V
+	public synthetic fun <init> (CCLdev/sargunv/kotlindsv/RecordDelimiter;ZLdev/sargunv/kotlindsv/ShortRowPolicy;Ldev/sargunv/kotlindsv/LongRowPolicy;ZILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun copy (CCLdev/sargunv/kotlindsv/RecordDelimiter;ZLdev/sargunv/kotlindsv/ShortRowPolicy;Ldev/sargunv/kotlindsv/LongRowPolicy;Z)Ldev/sargunv/kotlindsv/DsvScheme;
+	public static synthetic fun copy$default (Ldev/sargunv/kotlindsv/DsvScheme;CCLdev/sargunv/kotlindsv/RecordDelimiter;ZLdev/sargunv/kotlindsv/ShortRowPolicy;Ldev/sargunv/kotlindsv/LongRowPolicy;ZILjava/lang/Object;)Ldev/sargunv/kotlindsv/DsvScheme;
 	public fun equals (Ljava/lang/Object;)Z
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;

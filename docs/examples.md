@@ -88,6 +88,17 @@ padding, set [`trimFields`](./api/kotlin-dsv/dev.sargunv.kotlindsv/-dsv-format/t
 val format = DsvFormat(Csv.scheme, trimFields = true)
 ```
 
+## Spaces Before a Quoted Field
+
+Some producers write a space after the delimiter, before a quoted field, such as `a, "b"`. RFC 4180
+rejects that, so by default it fails to parse. To skip spaces at the start of each field, as
+Python's `csv` does with `skipinitialspace`, set
+[`skipInitialSpace`](./api/kotlin-dsv/dev.sargunv.kotlindsv/-dsv-scheme/index.html):
+
+```kotlin
+val format = DsvFormat(Csv.scheme.copy(skipInitialSpace = true))
+```
+
 ## Handling Missing or Extra Columns
 
 Handle CSVs with incomplete or extra columns:
