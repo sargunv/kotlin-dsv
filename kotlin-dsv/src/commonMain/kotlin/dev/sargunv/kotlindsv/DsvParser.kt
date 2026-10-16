@@ -103,8 +103,19 @@ public class DsvParser(private val input: Source, private val scheme: DsvScheme)
     return ReadResult(result.toString(), cursor)
   }
 
-  private fun readNonEmptyField(pos: Int): ReadResult<String>? =
-    readQuotedField(pos) ?: readNonQuotedField(pos)
+  private fun readNonEmptyField(pos: Int): ReadResult<String>? {
+    val start = skipInitialSpace(pos)
+    return readQuotedField(start)
+      ?: readNonQuotedField(start)
+      ?: if (start > pos) ReadResult("", start) else null
+  }
+
+  private fun skipInitialSpace(pos: Int): Int {
+    if (!scheme.skipInitialSpace) return pos
+    var cursor = pos
+    while (charAt(cursor) == ' ') cursor++
+    return cursor
+  }
 
   private fun readRecord(pos: Int): ReadResult<List<String>>? {
     val (firstField, newPos) = readNonEmptyField(pos) ?: return null

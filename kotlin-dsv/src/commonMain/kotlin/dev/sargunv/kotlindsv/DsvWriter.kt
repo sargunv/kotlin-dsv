@@ -19,6 +19,7 @@ public class DsvWriter(private val sink: Sink, private val scheme: DsvScheme) {
 
   private fun fieldNeedsQuoting(field: String, lastField: Boolean): Boolean {
     if (field.any { it == scheme.delimiter || it == scheme.quote }) return true
+    if (scheme.skipInitialSpace && field.startsWith(' ')) return true
     if (scheme.recordDelimiter.quoteNeedles().any { field.contains(it) }) return true
     return lastField && scheme.recordDelimiter.suffixOverlapsWriteValue(field)
   }
