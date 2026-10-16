@@ -11,10 +11,7 @@ import kotlin.jvm.JvmOverloads
  * @property skipEmptyLines When true, empty lines in the input are skipped during parsing.
  * @property shortRowPolicy How later rows with fewer fields than the first kept row are handled.
  * @property longRowPolicy How later rows with more fields than the first kept row are handled.
- * @property skipInitialSpace When true, spaces at the start of each field are ignored when reading,
- *   as with Python csv's `skipinitialspace`. This reads `a, "b"` as `a` and `b`, which RFC 4180
- *   rejects, and reads `a, b` as `a` and `b`. When writing, fields that start with a space are
- *   quoted so they read back unchanged.
+ * @property skipInitialSpace When true, spaces at the start of each field are ignored when parsing.
  */
 public data class DsvScheme
 @JvmOverloads
