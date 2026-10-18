@@ -24,7 +24,7 @@ hk_version = "2.6.0"
 java_version = "openjdk-25.0.2"
 ktfmt_version = "0.65"
 node_version = "26.12.0"
-python_version = "3.14.7"
+python_version = "3.15.0"
 shellcheck_version = "0.11.0"
 xcodes_version = "2.0.3"
 
