@@ -297,7 +297,7 @@ class EncoderDecoderTest {
             recordDelimiter = RecordDelimiter.Lf,
             shortRowPolicy = ShortRowPolicy.Pad,
             longRowPolicy = LongRowPolicy.Truncate,
-          )
+          ),
       )
 
     @Serializable data class Person(val name: String, val age: Int, val city: String?)
@@ -328,7 +328,7 @@ class EncoderDecoderTest {
             recordDelimiter = RecordDelimiter.Lf,
             shortRowPolicy = ShortRowPolicy.Skip,
             longRowPolicy = LongRowPolicy.Skip,
-          )
+          ),
       )
 
     @Serializable data class Person(val name: String, val age: Int, val city: String?)
@@ -357,7 +357,7 @@ class EncoderDecoderTest {
             recordDelimiter = RecordDelimiter.Lf,
             shortRowPolicy = ShortRowPolicy.Pad,
             longRowPolicy = LongRowPolicy.Skip,
-          )
+          ),
       )
 
     @Serializable data class Person(val name: String, val age: Int, val city: String?)

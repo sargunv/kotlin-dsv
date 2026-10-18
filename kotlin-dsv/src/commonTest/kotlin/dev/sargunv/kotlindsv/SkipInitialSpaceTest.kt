@@ -52,7 +52,7 @@ class SkipInitialSpaceTest {
           routeColor = "E12A40",
           routeTextColor = "FFFFFF",
           routeSortOrder = null,
-        )
+        ),
       ),
       DsvFormat(scheme, namingStrategy = DsvNamingStrategy.SnakeCase)
         .decodeFromString<Route>(nftaRoutes),
