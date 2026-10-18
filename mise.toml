@@ -19,12 +19,12 @@ postinstall = ["hk install --mise"]
 
 [vars]
 actionlint_version = "1.7.12"
-dprint_version = "0.55.2"
-hk_version = "1.54.1"
+dprint_version = "0.63.0"
+hk_version = "2.6.0"
 java_version = "openjdk-21.0.2"
 ktfmt_version = "0.64"
-node_version = "24.19.0"
-pkl_version = "0.30.2"
+node_version = "24.22.0"
+pkl_version = "0.32.1"
 python_version = "3.14.7"
 shellcheck_version = "0.11.0"
 xcodes_version = "2.0.3"
@@ -42,7 +42,7 @@ xcodes_version = "2.0.3"
 # For tooling outside Gradle (also provides npm for the npm: backend below);
 # Kotlin/JS brings its own Node via Gradle.
 "core:node" = "{{vars.node_version}}"
-"npm:actions-up" = "1.18.0"
+"npm:actions-up" = "1.21.0"
 
 # The CLI only; Xcode itself is installed via the xcode:* tasks. macOS-only.
 "aqua:XcodesOrg/xcodes" = { version = "{{vars.xcodes_version}}", os = ["macos"] }

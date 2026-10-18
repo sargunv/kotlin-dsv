@@ -45,6 +45,7 @@ mise run test:native
 # Lint and format checks / auto-fix
 mise run check
 mise run fix
+# `hk fix [FILES...]` targets specific files; add `--stage` to stage the fixes.
 
 # Run a single test
 mise exec -- ./gradlew :kotlin-dsv:jvmTest --tests "*SomeTest*"
