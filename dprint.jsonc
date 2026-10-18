@@ -20,7 +20,7 @@
         "kotlin-dsv/src/fsTest/resources/china-city-subway-csv/**",
     ],
     "json": { "indentWidth": 4, "preferSingleLine": true },
-    "markdown": { "textWrap": "always", "wrapCodeSpans": false, "html.skipFormat": true },
+    "markdown": { "textWrap": "always" },
     "toml": {},
     "yaml": { "indentWidth": 4 },
     "exec": {
