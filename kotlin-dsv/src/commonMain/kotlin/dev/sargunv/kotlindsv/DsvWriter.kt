@@ -28,7 +28,7 @@ public class DsvWriter(private val sink: Sink, private val scheme: DsvScheme) {
     if (fieldNeedsQuoting(field, lastField)) {
       sink.writeChar(scheme.quote)
       sink.writeString(
-        field.replace(scheme.quote.toString(), scheme.quote.toString() + scheme.quote)
+        field.replace(scheme.quote.toString(), scheme.quote.toString() + scheme.quote),
       )
       sink.writeChar(scheme.quote)
     } else {
@@ -75,7 +75,7 @@ public class DsvWriter(private val sink: Sink, private val scheme: DsvScheme) {
           require(row.keys == keys) { "All rows must have the same keys" }
           yield(keys.map { row[it]!! })
         }
-      }
+      },
     )
 
   /** Writes a list of records as maps, using keys as the header row. */

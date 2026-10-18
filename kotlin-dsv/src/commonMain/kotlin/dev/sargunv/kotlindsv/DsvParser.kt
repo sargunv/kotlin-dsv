@@ -191,7 +191,7 @@ public class DsvParser(private val input: Source, private val scheme: DsvScheme)
           when (scheme.shortRowPolicy) {
             ShortRowPolicy.Reject ->
               throw DsvParseException(
-                "Expected $expectedColumns columns, got ${record.size} in record $record"
+                "Expected $expectedColumns columns, got ${record.size} in record $record",
               )
             ShortRowPolicy.Skip -> continue
             ShortRowPolicy.Pad -> yield(record + List(expectedColumns - record.size) { "" })
@@ -200,7 +200,7 @@ public class DsvParser(private val input: Source, private val scheme: DsvScheme)
           when (scheme.longRowPolicy) {
             LongRowPolicy.Reject ->
               throw DsvParseException(
-                "Expected $expectedColumns columns, got ${record.size} in record $record"
+                "Expected $expectedColumns columns, got ${record.size} in record $record",
               )
             LongRowPolicy.Skip -> continue
             LongRowPolicy.Truncate -> yield(record.take(expectedColumns))
