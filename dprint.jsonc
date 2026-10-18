@@ -10,6 +10,7 @@
         "**/build",
         "**/.gradle",
         "**/.kotlin",
+        "**/.mise/locks",
         "kotlin-js-store",
         "**/*.api",
         "gradlew",
