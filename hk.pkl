@@ -1,10 +1,11 @@
 // Drives pre-commit, `mise run check`, and `mise run fix`.
+// Top-level steps create the implicit check, fix, and pre-commit hooks.
 
 amends "package://github.com/jdx/hk/releases/download/v2.6.0/hk@2.6.0#/Config.pkl"
 
 import "package://github.com/jdx/hk/releases/download/v2.6.0/hk@2.6.0#/Builtins.pkl"
 
-local allSteps = new Mapping<String, Step> {
+steps {
   // Unbatched: dprint parallelizes itself, and batching oversubscribes the
   // machine badly enough that its ktfmt children hit dprint's timeout.
   ["dprint"] = (Builtins.dprint) {
@@ -35,26 +36,5 @@ local allSteps = new Mapping<String, Step> {
     check = "./gradlew checkKotlinAbi"
     fix = "./gradlew updateKotlinAbi"
     exclusive = true
-  }
-}
-
-hooks {
-  ["pre-commit"] {
-    fix = true
-    stash = "git"
-    steps {
-      ...allSteps
-    }
-  }
-  ["check"] {
-    steps {
-      ...allSteps
-    }
-  }
-  ["fix"] {
-    fix = true
-    steps {
-      ...allSteps
-    }
   }
 }

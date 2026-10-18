@@ -93,7 +93,7 @@ class ParserTest {
       "comma,comma","newline
       newline","quote""quote"
       """
-        .trimIndent()
+        .trimIndent(),
     ) {
       assertEquals(
         listOf(listOf("comma,comma", "newline\nnewline", "quote\"quote")),
