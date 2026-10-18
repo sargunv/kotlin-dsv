@@ -38,7 +38,7 @@ class WriterTest {
       DsvTable(
         header = listOf("a", "b", "c"),
         records = sequenceOf(listOf("1", "2", "3"), listOf("4", "5", "6"), listOf("7", "8", "9")),
-      )
+      ),
     )
   }
 
@@ -50,7 +50,7 @@ class WriterTest {
         listOf("1", "2", "3"),
         listOf("4", "5", "6"),
         listOf("7", "8", "9"),
-      )
+      ),
     )
   }
 
@@ -62,7 +62,7 @@ class WriterTest {
         listOf("1", "2", "3"),
         listOf("4", "5", "6"),
         listOf("7", "8", "9"),
-      )
+      ),
     )
   }
 
@@ -73,7 +73,7 @@ class WriterTest {
         mapOf("a" to "1", "b" to "2", "c" to "3"),
         mapOf("a" to "4", "b" to "5", "c" to "6"),
         mapOf("a" to "7", "b" to "8", "c" to "9"),
-      )
+      ),
     )
   }
 
@@ -84,7 +84,7 @@ class WriterTest {
         mapOf("a" to "1", "b" to "2", "c" to "3"),
         mapOf("a" to "4", "b" to "5", "c" to "6"),
         mapOf("a" to "7", "b" to "8", "c" to "9"),
-      )
+      ),
     )
   }
 
@@ -97,7 +97,7 @@ class WriterTest {
       "comma,comma","newline
       newline","quote""quote"
       """
-        .trimIndent()
+        .trimIndent(),
     ) {
       write(listOf(listOf("comma,comma", "newline\nnewline", "quote\"quote")))
     }

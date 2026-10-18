@@ -132,7 +132,7 @@ class DocsTest {
           Csv.scheme.copy(
             shortRowPolicy = ShortRowPolicy.Pad,
             longRowPolicy = LongRowPolicy.Truncate,
-          )
+          ),
       )
 
     val csv =
@@ -161,7 +161,7 @@ class DocsTest {
     val format =
       DsvFormat(
         scheme =
-          Csv.scheme.copy(shortRowPolicy = ShortRowPolicy.Skip, longRowPolicy = LongRowPolicy.Skip)
+          Csv.scheme.copy(shortRowPolicy = ShortRowPolicy.Skip, longRowPolicy = LongRowPolicy.Skip),
       )
 
     val csv =
@@ -210,7 +210,7 @@ class DocsTest {
             delimiter = ';',
             quote = '\'',
             recordDelimiter = RecordDelimiter.Lf,
-          )
+          ),
       )
     // --8<-- [end:custom-quote]
   }
@@ -224,7 +224,7 @@ class DocsTest {
     // --8<-- [start:custom-record-delimiter]
     val mysqlOutfile =
       DsvFormat(
-        scheme = DsvScheme(delimiter = ',', recordDelimiter = RecordDelimiter.Exact("\n%%\n"))
+        scheme = DsvScheme(delimiter = ',', recordDelimiter = RecordDelimiter.Exact("\n%%\n")),
       )
 
     val dumped = mysqlOutfile.encodeToString(rows)
