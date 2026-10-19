@@ -20,7 +20,7 @@ jobs:
                   # .mise/bin/version-args reads the release tag off the checkout.
                   fetch-depth: 0
                   persist-credentials: false
-            - uses: jdx/mise-action@2d8d4cafcbd33be2ea37d2b6f5ad595363d1f1ca # v5.1.1
+            - uses: jdx/mise-action@9b200bcecbfd6303e69a4a261b2e09e3757440a7 # v5.2.0
             - run: mise run publish:release
               env:
                   ORG_GRADLE_PROJECT_mavenCentralUsername:
@@ -50,7 +50,7 @@ jobs:
                   # .mise/bin/version-args reads the release tag off the checkout.
                   fetch-depth: 0
                   persist-credentials: false
-            - uses: jdx/mise-action@2d8d4cafcbd33be2ea37d2b6f5ad595363d1f1ca # v5.1.1
+            - uses: jdx/mise-action@9b200bcecbfd6303e69a4a261b2e09e3757440a7 # v5.2.0
             - run: mise run build:docs
             - uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5.0.0
               with:
