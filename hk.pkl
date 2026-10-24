@@ -1,9 +1,9 @@
 // Drives pre-commit, `mise run check`, and `mise run fix`.
 // Top-level steps create the implicit check, fix, and pre-commit hooks.
 
-amends "package://github.com/jdx/hk/releases/download/v2.6.0/hk@2.6.0#/Config.pkl"
+amends "package://github.com/jdx/hk/releases/download/v2.8.0/hk@2.8.0#/Config.pkl"
 
-import "package://github.com/jdx/hk/releases/download/v2.6.0/hk@2.6.0#/Builtins.pkl"
+import "package://github.com/jdx/hk/releases/download/v2.8.0/hk@2.8.0#/Builtins.pkl"
 
 steps {
   // Unbatched: dprint parallelizes itself, and batching oversubscribes the
