@@ -141,7 +141,7 @@ xcodebuild -downloadPlatform watchOS
 
 [tasks.check]
 description = "Run all linting and formatting checks"
-run = "hk check --all"
+run = "hk validate --deny-warnings && hk check --all"
 
 [tasks.fix]
 description = "Auto-fix formatting issues"
