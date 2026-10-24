@@ -219,10 +219,9 @@ checksum = "sha256:b3efd5c70cba3308ed46e7e699a9b8aac075bbc6b027fcb39c84c31acc25e
 url = "https://nodejs.org/dist/v26.12.1/node-v26.12.1-win-x64.zip"
 
 [[tools."npm:actions-up"]]
-version = "1.21.0"
-aube = { path = ".mise/locks/npm-actions-up/1.21.0", digest = "sha256:e2076fec05607492ea9894c5910264c5c1e6185cf0d070be68ce1a9ba5b9c84f" }
+version = "2.0.0"
 backend = "npm:actions-up"
-specifiers = ["1.21.0"]
+specifiers = ["2.0.0"]
 
 [[tools.python]]
 version = "3.15.1"
