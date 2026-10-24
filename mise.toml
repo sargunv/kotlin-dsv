@@ -40,7 +40,7 @@ xcodes_version = "2.1.0"
 # For tooling outside Gradle (also provides npm for the npm: backend below);
 # Kotlin/JS brings its own Node via Gradle.
 "core:node" = "{{vars.node_version}}"
-"npm:actions-up" = "1.21.0"
+"npm:actions-up" = "2.0.0"
 
 # The CLI only; Xcode itself is installed via the xcode:* tasks. macOS-only.
 "aqua:XcodesOrg/xcodes" = { version = "{{vars.xcodes_version}}", os = ["macos"] }
