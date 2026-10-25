@@ -40,7 +40,9 @@ xcodes_version = "2.1.0"
 "npm:actions-up" = "2.0.0"
 
 # The CLI only; Xcode itself is installed via the xcode:* tasks. macOS-only.
-"aqua:XcodesOrg/xcodes" = { version = "{{vars.xcodes_version}}", os = ["macos"] }
+"aqua:XcodesOrg/xcodes" = { version = "{{vars.xcodes_version}}", os = [
+  "macos",
+] }
 
 [tasks.build]
 description = "Build and check all targets"

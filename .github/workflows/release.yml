@@ -1,59 +1,59 @@
 name: Release
 
 on:
-    push:
-        tags: [v*.*.*]
+  push:
+    tags: [v*.*.*]
 
 permissions:
-    contents: read
+  contents: read
 
 jobs:
-    publish-maven:
-        timeout-minutes: 60
-        runs-on: ubuntu-latest
-        environment:
-            name: maven-central
-            url: https://central.sonatype.com/namespace/dev.sargunv.kotlin-dsv
-        steps:
-            - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-              with:
-                  # .mise/bin/version-args reads the release tag off the checkout.
-                  fetch-depth: 0
-                  persist-credentials: false
-            - uses: jdx/mise-action@9b200bcecbfd6303e69a4a261b2e09e3757440a7 # v5.2.0
-            - run: mise run publish:release
-              env:
-                  ORG_GRADLE_PROJECT_mavenCentralUsername:
-                      ${{ secrets.MAVEN_CENTRAL_USERNAME }}
-                  ORG_GRADLE_PROJECT_mavenCentralPassword:
-                      ${{ secrets.MAVEN_CENTRAL_PASSWORD }}
-                  ORG_GRADLE_PROJECT_signingInMemoryKey: ${{ secrets.GPG_PRIVATE_KEY }}
-                  ORG_GRADLE_PROJECT_signingInMemoryKeyPassword:
-                      ${{ secrets.GPG_PASSPHRASE }}
+  publish-maven:
+    timeout-minutes: 60
+    runs-on: ubuntu-latest
+    environment:
+      name: maven-central
+      url: https://central.sonatype.com/namespace/dev.sargunv.kotlin-dsv
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          # .mise/bin/version-args reads the release tag off the checkout.
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: jdx/mise-action@9b200bcecbfd6303e69a4a261b2e09e3757440a7 # v5.2.0
+      - run: mise run publish:release
+        env:
+          ORG_GRADLE_PROJECT_mavenCentralUsername:
+            ${{ secrets.MAVEN_CENTRAL_USERNAME }}
+          ORG_GRADLE_PROJECT_mavenCentralPassword:
+            ${{ secrets.MAVEN_CENTRAL_PASSWORD }}
+          ORG_GRADLE_PROJECT_signingInMemoryKey: ${{ secrets.GPG_PRIVATE_KEY }}
+          ORG_GRADLE_PROJECT_signingInMemoryKeyPassword:
+            ${{ secrets.GPG_PASSPHRASE }}
 
-    publish-pages:
-        needs:
-            - publish-maven
-        timeout-minutes: 30
-        runs-on: ubuntu-latest
-        permissions:
-            # A job-level block replaces the workflow-level one, so checkout needs this.
-            contents: read
-            pages: write
-            id-token: write
-        environment:
-            name: github-pages
-            url: ${{ steps.deploy-pages.outputs.page_url }}
-        steps:
-            - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-              with:
-                  # .mise/bin/version-args reads the release tag off the checkout.
-                  fetch-depth: 0
-                  persist-credentials: false
-            - uses: jdx/mise-action@9b200bcecbfd6303e69a4a261b2e09e3757440a7 # v5.2.0
-            - run: mise run build:docs
-            - uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5.0.0
-              with:
-                  path: build/mkdocs
-            - uses: actions/deploy-pages@368f82528645a54fb793d4d04e342629a3f51346 # v5.0.1
-              id: deploy-pages
+  publish-pages:
+    needs:
+      - publish-maven
+    timeout-minutes: 30
+    runs-on: ubuntu-latest
+    permissions:
+      # A job-level block replaces the workflow-level one, so checkout needs this.
+      contents: read
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy-pages.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          # .mise/bin/version-args reads the release tag off the checkout.
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: jdx/mise-action@9b200bcecbfd6303e69a4a261b2e09e3757440a7 # v5.2.0
+      - run: mise run build:docs
+      - uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5.0.0
+        with:
+          path: build/mkdocs
+      - uses: actions/deploy-pages@368f82528645a54fb793d4d04e342629a3f51346 # v5.0.1
+        id: deploy-pages
