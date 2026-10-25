@@ -1,0 +1,41 @@
+lockfileVersion: '9.0'
+
+settings:
+  autoInstallPeers: true
+  excludeLinksFromLockfile: false
+
+importers:
+
+  .:
+    dependencies:
+      actions-up:
+        specifier: 2.0.0
+        version: 2.0.0
+
+packages:
+
+  actions-up@2.0.0:
+    resolution: {integrity: sha512-zv5/KePnrY9T0fah3yQyjcSTWSpCd7Yl5QLx44eFp+fXeMbn2HrliDj4PHT1f9V98MbPt0olQZwZoO1076Clgw==}
+    engines: {node: '>=22.12.0'}
+    hasBin: true
+
+  semver@7.8.5:
+    resolution: {integrity: sha512-Y7/KDsb8LjooZpwaqGyulO6DQlksgCncchHGk+sZIY4SBvUocMBEFH5Ur1fI4dV+Jvl0w6cjvucaIi40puRioA==}
+    engines: {node: '>=10'}
+    hasBin: true
+
+  yaml@2.9.1:
+    resolution: {integrity: sha512-3NxN8+78OdzbT7C/WjGsyfPAtJaN3FNDsWxv7Y7mcDsT/oOmgW8BpyQQFFBnvZE3j9Y2Sdz1ULFLezL7Eb2yFw==}
+    engines: {node: '>= 14.6'}
+    hasBin: true
+
+snapshots:
+
+  actions-up@2.0.0:
+    dependencies:
+      semver: 7.8.5
+      yaml: 2.9.1
+
+  semver@7.8.5: {}
+
+  yaml@2.9.1: {}

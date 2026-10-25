@@ -6,8 +6,7 @@ amends "package://github.com/jdx/hk/releases/download/v2.8.0/hk@2.8.0#/Config.pk
 import "package://github.com/jdx/hk/releases/download/v2.8.0/hk@2.8.0#/Builtins.pkl"
 
 steps {
-  // Unbatched: dprint parallelizes itself, and batching oversubscribes the
-  // machine badly enough that its ktfmt children hit dprint's timeout.
+  // Unbatched: dprint parallelizes itself.
   ["dprint"] = (Builtins.dprint) {
     exclusive = true
   }
