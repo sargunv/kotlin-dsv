@@ -1,7 +1,7 @@
 site_name: "Kotlin DSV"
 
 site_description:
-    "Kotlin Multiplatform utilities for working with delimiter-separated values"
+  "Kotlin Multiplatform utilities for working with delimiter-separated values"
 site_url: https://sargunv.github.io/kotlin-dsv
 site_author: Sargun Vohra
 
@@ -12,87 +12,87 @@ edit_uri: edit/main/docs/
 copyright: "Copyright &copy; 2025 Sargun Vohra"
 
 nav:
-    - Introduction: index.md
-    - Examples: examples.md
-    - "API Reference": api/index.html
+  - Introduction: index.md
+  - Examples: examples.md
+  - "API Reference": api/index.html
 
 theme:
-    name: "material"
+  name: "material"
 
-    icon:
-        repo: fontawesome/brands/github
-    features:
-        - content.code.copy
-        - content.code.annotate
-        - navigation.instant
-        - navigation.instant.prefetch
-        - navigation.instant.progress
-        - navigation.instant.preview
-        - navigation.tracking
-        - navigation.path
-        - navigation.indexes
-        - toc.follow
-        - content.action.edit
-        - content.tabs.link
-    palette:
-        - media: (prefers-color-scheme)
-          toggle:
-              icon: material/brightness-auto
-              name: Switch to light mode
-          primary: "blue"
-          accent: "blue"
-        - media: "(prefers-color-scheme: light)"
-          scheme: default
-          toggle:
-              icon: material/brightness-7
-              name: Switch to dark mode
-          primary: "blue"
-          accent: "blue"
-        - media: "(prefers-color-scheme: dark)"
-          scheme: slate
-          toggle:
-              icon: material/brightness-4
-              name: Switch to system preference
-          primary: "blue"
-          accent: "blue"
+  icon:
+    repo: fontawesome/brands/github
+  features:
+    - content.code.copy
+    - content.code.annotate
+    - navigation.instant
+    - navigation.instant.prefetch
+    - navigation.instant.progress
+    - navigation.instant.preview
+    - navigation.tracking
+    - navigation.path
+    - navigation.indexes
+    - toc.follow
+    - content.action.edit
+    - content.tabs.link
+  palette:
+    - media: (prefers-color-scheme)
+      toggle:
+        icon: material/brightness-auto
+        name: Switch to light mode
+      primary: "blue"
+      accent: "blue"
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+      primary: "blue"
+      accent: "blue"
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      toggle:
+        icon: material/brightness-4
+        name: Switch to system preference
+      primary: "blue"
+      accent: "blue"
 
 plugins:
-    - search
-    - markdownextradata
+  - search
+  - markdownextradata
 
 markdown_extensions:
-    # Python Markdown
-    - abbr
-    - admonition
-    - attr_list
-    - def_list
-    - footnotes
-    - meta
-    - md_in_html
-    - toc:
-          permalink: true
-    - tables
+  # Python Markdown
+  - abbr
+  - admonition
+  - attr_list
+  - def_list
+  - footnotes
+  - meta
+  - md_in_html
+  - toc:
+      permalink: true
+  - tables
 
-    # Python Markdown Extensions
-    - pymdownx.arithmatex:
-          generic: true
-    - pymdownx.betterem:
-          smart_enable: all
-    - pymdownx.caret
-    - pymdownx.details
-    - pymdownx.emoji:
-          emoji_index: !!python/name:material.extensions.emoji.twemoji
-          emoji_generator: !!python/name:material.extensions.emoji.to_svg
-    - pymdownx.highlight
-    - pymdownx.inlinehilite
-    - pymdownx.keys
-    - pymdownx.mark
-    - pymdownx.smartsymbols
-    - pymdownx.snippets:
-          dedent_subsections: true
-    - pymdownx.superfences
-    - pymdownx.tabbed:
-          alternate_style: true
-    - pymdownx.tasklist:
-          custom_checkbox: true
-    - pymdownx.tilde
+  # Python Markdown Extensions
+  - pymdownx.arithmatex:
+      generic: true
+  - pymdownx.betterem:
+      smart_enable: all
+  - pymdownx.caret
+  - pymdownx.details
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+  - pymdownx.highlight
+  - pymdownx.inlinehilite
+  - pymdownx.keys
+  - pymdownx.mark
+  - pymdownx.smartsymbols
+  - pymdownx.snippets:
+      dedent_subsections: true
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - pymdownx.tilde

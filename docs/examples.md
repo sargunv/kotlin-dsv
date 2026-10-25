@@ -4,8 +4,8 @@ This page demonstrates common use cases for kotlin-dsv.
 
 ## Streaming Large Files
 
-Use `encodeToSink` and `decodeFromSource` to work with streams instead of loading everything into
-memory:
+Use `encodeToSink` and `decodeFromSource` to work with streams instead of
+loading everything into memory:
 
 ```kotlin
 --8<-- "kotlin-dsv/src/commonTest/kotlin/dev/sargunv/kotlindsv/DocsTest.kt:streaming"
@@ -41,7 +41,8 @@ You can also customize the quote character and line endings:
 
 Use
 [RecordDelimiter.Exact](./api/kotlin-dsv/dev.sargunv.kotlindsv/-record-delimiter/-exact/index.html)
-to write and read one specific string. `Lf` and `CrLf` write one newline and read `\r*\n`:
+to write and read one specific string. `Lf` and `CrLf` write one newline and
+read `\r*\n`:
 
 ```kotlin
 --8<-- "kotlin-dsv/src/commonTest/kotlin/dev/sargunv/kotlindsv/DocsTest.kt:custom-record-delimiter"
@@ -81,8 +82,9 @@ You can also implement custom strategies by extending
 
 ## Trimming Padded Fields
 
-Some producers pad values with spaces, such as `"005B95 "` in a GTFS feed. To read them without the
-padding, set [`trimFields`](./api/kotlin-dsv/dev.sargunv.kotlindsv/-dsv-format/trim-fields.html):
+Some producers pad values with spaces, such as `"005B95 "` in a GTFS feed. To
+read them without the padding, set
+[`trimFields`](./api/kotlin-dsv/dev.sargunv.kotlindsv/-dsv-format/trim-fields.html):
 
 ```kotlin
 val format = DsvFormat(Csv.scheme, trimFields = true)
@@ -119,21 +121,22 @@ Serialize enums by name or ordinal:
 
 ## Put a structured value in one cell
 
-`DsvFormat` keeps row classes flat. A nested class, list, or map fails when its generated serializer
-opens a structure.
+`DsvFormat` keeps row classes flat. A nested class, list, or map fails when its
+generated serializer opens a structure.
 
-You can still store that value in one column. Give the property a `KSerializer` whose `serialize`
-and `deserialize` write and read one primitive, usually a string. Annotate the property with
-`@Serializable(with = ...)` or register the serializer as `@Contextual`. The format never inspects
-the Kotlin type. It only sees the one primitive encode.
+You can still store that value in one column. Give the property a `KSerializer`
+whose `serialize` and `deserialize` write and read one primitive, usually a
+string. Annotate the property with `@Serializable(with = ...)` or register the
+serializer as `@Contextual`. The format never inspects the Kotlin type. It only
+sees the one primitive encode.
 
-This example joins a list into one cell. A map, a class, or any other type uses the same adapter
-shape.
+This example joins a list into one cell. A map, a class, or any other type uses
+the same adapter shape.
 
 ```kotlin
 --8<-- "kotlin-dsv/src/commonTest/kotlin/dev/sargunv/kotlindsv/DocsTest.kt:pipe-list-serializer"
 --8<-- "kotlin-dsv/src/commonTest/kotlin/dev/sargunv/kotlindsv/DocsTest.kt:custom-cell-serializer"
 ```
 
-An empty cell on a nullable property decodes as null, even when your serializer would treat `""` as
-an empty list or a default object.
+An empty cell on a nullable property decodes as null, even when your serializer
+would treat `""` as an empty list or a default object.

@@ -1,84 +1,87 @@
 name: CI
 
 on:
-    push:
-        branches: [main]
-    pull_request:
-    workflow_dispatch:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
 
 concurrency:
-    group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
-    cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+  group:
+    ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 permissions:
-    contents: read
+  contents: read
 
 jobs:
-    build:
-        timeout-minutes: 30
-        runs-on: ubuntu-latest
-        steps:
-            - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-              with:
-                  persist-credentials: false
-                  submodules: recursive
-            - uses: jdx/mise-action@9b200bcecbfd6303e69a4a261b2e09e3757440a7 # v5.2.0
-            - run: ./gradlew build
+  build:
+    timeout-minutes: 30
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+          submodules: recursive
+      - uses: jdx/mise-action@9b200bcecbfd6303e69a4a261b2e09e3757440a7 # v5.2.0
+      - run: ./gradlew build
 
-    benchmark:
-        timeout-minutes: 30
-        runs-on: ubuntu-latest
-        steps:
-            - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-              with:
-                  persist-credentials: false
-            - uses: jdx/mise-action@9b200bcecbfd6303e69a4a261b2e09e3757440a7 # v5.2.0
-            - name: Run benchmark
-              run: |
-                  echo '## Benchmark' >> "$GITHUB_STEP_SUMMARY"
-                  ./gradlew -q benchmark -PbenchmarkIterations=1 >> "$GITHUB_STEP_SUMMARY"
+  benchmark:
+    timeout-minutes: 30
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: jdx/mise-action@9b200bcecbfd6303e69a4a261b2e09e3757440a7 # v5.2.0
+      - name: Run benchmark
+        run: |
+          echo '## Benchmark' >> "$GITHUB_STEP_SUMMARY"
+          ./gradlew -q benchmark -PbenchmarkIterations=1 >> "$GITHUB_STEP_SUMMARY"
 
-    build-docs:
-        timeout-minutes: 30
-        runs-on: ubuntu-latest
-        steps:
-            - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-              with:
-                  # .mise/bin/version-args reads the release tag off the checkout.
-                  fetch-depth: 0
-                  persist-credentials: false
-            - uses: jdx/mise-action@9b200bcecbfd6303e69a4a261b2e09e3757440a7 # v5.2.0
-            - run: mise run build:docs
-            - uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5.0.0
-              with:
-                  path: build/mkdocs
+  build-docs:
+    timeout-minutes: 30
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          # .mise/bin/version-args reads the release tag off the checkout.
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: jdx/mise-action@9b200bcecbfd6303e69a4a261b2e09e3757440a7 # v5.2.0
+      - run: mise run build:docs
+      - uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5.0.0
+        with:
+          path: build/mkdocs
 
-    check-format:
-        timeout-minutes: 30
-        runs-on: ubuntu-latest
-        steps:
-            - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-              with:
-                  persist-credentials: false
-            - uses: jdx/mise-action@9b200bcecbfd6303e69a4a261b2e09e3757440a7 # v5.2.0
-            - run: mise run check
+  check-format:
+    timeout-minutes: 30
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: jdx/mise-action@9b200bcecbfd6303e69a4a261b2e09e3757440a7 # v5.2.0
+      - run: mise run check
 
-    # Branch protection requires this job. always() still runs it after a needed
-    # job fails; GitHub otherwise skips it and treats that skip as a passing check.
-    all-good:
-        if: ${{ always() }}
-        needs: [build, check-format, build-docs, benchmark]
-        timeout-minutes: 5
-        runs-on: ubuntu-latest
-        steps:
-            - name: Check that every needed job succeeded
-              env:
-                  RESULTS: ${{ join(needs.*.result, ', ') }}
-                  ANY_BAD: ${{ contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled') }}
-              run: |
-                  echo "needed job results: ${RESULTS}"
-                  if [ "${ANY_BAD}" = true ]; then
-                    echo "a needed job did not succeed"
-                    exit 1
-                  fi
-                  echo 'All checks passed!'
+  # Branch protection requires this job. always() still runs it after a needed
+  # job fails; GitHub otherwise skips it and treats that skip as a passing check.
+  all-good:
+    if: ${{ always() }}
+    needs: [build, check-format, build-docs, benchmark]
+    timeout-minutes: 5
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check that every needed job succeeded
+        env:
+          RESULTS: ${{ join(needs.*.result, ', ') }}
+          ANY_BAD:
+            ${{ contains(needs.*.result, 'failure') || contains(needs.*.result,
+            'cancelled') }}
+        run: |
+          echo "needed job results: ${RESULTS}"
+          if [ "${ANY_BAD}" = true ]; then
+            echo "a needed job did not succeed"
+            exit 1
+          fi
+          echo 'All checks passed!'
