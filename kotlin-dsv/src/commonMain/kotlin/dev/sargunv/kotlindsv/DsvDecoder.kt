@@ -1,6 +1,9 @@
 package dev.sargunv.kotlindsv
 
+import kotlin.coroutines.cancellation.CancellationException
+import kotlinx.serialization.DeserializationStrategy
 import kotlinx.serialization.ExperimentalSerializationApi
+import kotlinx.serialization.MissingFieldException
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.descriptors.SerialDescriptor
 import kotlinx.serialization.descriptors.elementNames
@@ -31,14 +34,25 @@ internal class DsvDecoder(
   private var col = 0
   private lateinit var record: List<String>
   private var open = false
+  private var recordNumber = 0
+  private var currentColumnName: String? = null
+  private var currentColumnIndex: Int? = null
 
   internal fun hasNext(): Boolean = records.hasNext()
 
+  override fun <T> decodeSerializableValue(deserializer: DeserializationStrategy<T>): T =
+    withDecodingExceptionHandling {
+      deserializer.deserialize(this)
+    }
+
   override fun beginStructure(descriptor: SerialDescriptor): CompositeDecoder {
-    require(!open) { "Nested structures are not supported in DSV format" }
+    if (open) throw decodingException("Nested structures are not supported in DSV format")
     open = true
     val next = records.next()
     record = if (format.trimFields) next.map { it.trim() } else next
+    recordNumber++
+    currentColumnName = null
+    currentColumnIndex = null
     return this
   }
 
@@ -46,6 +60,8 @@ internal class DsvDecoder(
     require(open) { "No structure is open" }
     col = 0
     open = false
+    currentColumnName = null
+    currentColumnIndex = null
   }
 
   override fun decodeElementIndex(descriptor: SerialDescriptor): Int {
@@ -66,10 +82,16 @@ internal class DsvDecoder(
       col++
     } while (
       index == CompositeDecoder.UNKNOWN_NAME &&
-        (format.ignoreUnknownKeys ||
-          throw SerializationException("Unknown column '${table.header[col - 1]}'"))
+        (format.ignoreUnknownKeys || throw unknownColumnException(col - 1))
     )
     col--
+    if (index == CompositeDecoder.DECODE_DONE) {
+      currentColumnName = null
+      currentColumnIndex = null
+    } else {
+      currentColumnIndex = col
+      currentColumnName = columnNameAt(col)
+    }
     return index
   }
 
@@ -89,7 +111,7 @@ internal class DsvDecoder(
     }
     val value = decodeString()
     if (value.isEmpty()) return null
-    throw SerializationException("Expected null, but got '$value'")
+    throw decodingException("Expected null, but got '$value'")
   }
 
   override fun decodeBoolean(): Boolean = decodeString().toBoolean()
@@ -129,5 +151,59 @@ internal class DsvDecoder(
     }
 
     return ordinal
+  }
+
+  private fun columnNameAt(index: Int): String? {
+    val name =
+      if (index < table.header.size) table.header[index].trim()
+      else implicitNullElementNames.getOrNull(index - record.size)
+    return name?.takeIf { it.isNotEmpty() }
+  }
+
+  private fun unknownColumnException(index: Int): DsvDecodingException {
+    val header = table.header[index]
+    return decodingException(
+      message = "Unknown column '$header'",
+      columnName = columnNameAt(index),
+      columnIndex = index,
+    )
+  }
+
+  private fun decodingException(
+    message: String,
+    columnName: String? = currentColumnName,
+    columnIndex: Int? = currentColumnIndex,
+  ): DsvDecodingException =
+    DsvDecodingException(
+      message = message + dsvLocation(recordNumber, columnName, columnIndex),
+      record = recordNumber,
+      columnName = columnName,
+      columnIndex = columnIndex,
+    )
+
+  private inline fun <T> withDecodingExceptionHandling(block: () -> T): T {
+    try {
+      return block()
+    } catch (e: CancellationException) {
+      throw e
+    } catch (e: MissingFieldException) {
+      throw DsvDecodingException(
+        message = dsvExceptionMessage(e, recordNumber, currentColumnName, currentColumnIndex),
+        record = recordNumber,
+        columnName = currentColumnName,
+        columnIndex = currentColumnIndex,
+        cause = e,
+      )
+    } catch (e: SerializationException) {
+      throw e
+    } catch (e: Exception) {
+      throw DsvDecodingException(
+        message = dsvExceptionMessage(e, recordNumber, currentColumnName, currentColumnIndex),
+        record = recordNumber,
+        columnName = currentColumnName,
+        columnIndex = currentColumnIndex,
+        cause = e,
+      )
+    }
   }
 }

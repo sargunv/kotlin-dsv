@@ -16,6 +16,8 @@ Features:
 - Type-safe serialization using kotlinx.serialization
 - Streaming support for large files via kotlinx.io
 - Customizable delimiters, quoting, and naming strategies
+- Decode and encode errors report record and column, wrapping serializer
+  failures
 - Multiplatform support for JVM, JS, Native, and WASM targets
 
 ## Getting Started

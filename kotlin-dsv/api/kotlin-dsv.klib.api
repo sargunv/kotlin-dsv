@@ -144,7 +144,29 @@ sealed interface dev.sargunv.kotlindsv/RecordDelimiter { // dev.sargunv.kotlinds
     }
 }
 
-final class dev.sargunv.kotlindsv/DsvParseException : kotlinx.serialization/SerializationException { // dev.sargunv.kotlindsv/DsvParseException|null[0]
+final class dev.sargunv.kotlindsv/DsvDecodingException : dev.sargunv.kotlindsv/DsvException { // dev.sargunv.kotlindsv/DsvDecodingException|null[0]
+    constructor <init>(kotlin/String, kotlin/Int, kotlin/String? = ..., kotlin/Int? = ..., kotlin/Throwable? = ...) // dev.sargunv.kotlindsv/DsvDecodingException.<init>|<init>(kotlin.String;kotlin.Int;kotlin.String?;kotlin.Int?;kotlin.Throwable?){}[0]
+
+    final val columnIndex // dev.sargunv.kotlindsv/DsvDecodingException.columnIndex|{}columnIndex[0]
+        final fun <get-columnIndex>(): kotlin/Int? // dev.sargunv.kotlindsv/DsvDecodingException.columnIndex.<get-columnIndex>|<get-columnIndex>(){}[0]
+    final val columnName // dev.sargunv.kotlindsv/DsvDecodingException.columnName|{}columnName[0]
+        final fun <get-columnName>(): kotlin/String? // dev.sargunv.kotlindsv/DsvDecodingException.columnName.<get-columnName>|<get-columnName>(){}[0]
+    final val record // dev.sargunv.kotlindsv/DsvDecodingException.record|{}record[0]
+        final fun <get-record>(): kotlin/Int // dev.sargunv.kotlindsv/DsvDecodingException.record.<get-record>|<get-record>(){}[0]
+}
+
+final class dev.sargunv.kotlindsv/DsvEncodingException : dev.sargunv.kotlindsv/DsvException { // dev.sargunv.kotlindsv/DsvEncodingException|null[0]
+    constructor <init>(kotlin/String, kotlin/Int, kotlin/String? = ..., kotlin/Int? = ..., kotlin/Throwable? = ...) // dev.sargunv.kotlindsv/DsvEncodingException.<init>|<init>(kotlin.String;kotlin.Int;kotlin.String?;kotlin.Int?;kotlin.Throwable?){}[0]
+
+    final val columnIndex // dev.sargunv.kotlindsv/DsvEncodingException.columnIndex|{}columnIndex[0]
+        final fun <get-columnIndex>(): kotlin/Int? // dev.sargunv.kotlindsv/DsvEncodingException.columnIndex.<get-columnIndex>|<get-columnIndex>(){}[0]
+    final val columnName // dev.sargunv.kotlindsv/DsvEncodingException.columnName|{}columnName[0]
+        final fun <get-columnName>(): kotlin/String? // dev.sargunv.kotlindsv/DsvEncodingException.columnName.<get-columnName>|<get-columnName>(){}[0]
+    final val record // dev.sargunv.kotlindsv/DsvEncodingException.record|{}record[0]
+        final fun <get-record>(): kotlin/Int // dev.sargunv.kotlindsv/DsvEncodingException.record.<get-record>|<get-record>(){}[0]
+}
+
+final class dev.sargunv.kotlindsv/DsvParseException : dev.sargunv.kotlindsv/DsvException { // dev.sargunv.kotlindsv/DsvParseException|null[0]
     constructor <init>(kotlin/String) // dev.sargunv.kotlindsv/DsvParseException.<init>|<init>(kotlin.String){}[0]
 }
 
@@ -218,6 +240,8 @@ open class dev.sargunv.kotlindsv/DsvFormat : kotlinx.serialization/SerialFormat 
     final inline fun <#A1: reified kotlin/Any?> encodeToSink(kotlin.sequences/Sequence<#A1>, kotlinx.io/Sink) // dev.sargunv.kotlindsv/DsvFormat.encodeToSink|encodeToSink(kotlin.sequences.Sequence<0:0>;kotlinx.io.Sink){0§<kotlin.Any?>}[0]
     final inline fun <#A1: reified kotlin/Any?> encodeToString(kotlin.collections/List<#A1>): kotlin/String // dev.sargunv.kotlindsv/DsvFormat.encodeToString|encodeToString(kotlin.collections.List<0:0>){0§<kotlin.Any?>}[0]
 }
+
+sealed class dev.sargunv.kotlindsv/DsvException : kotlinx.serialization/SerializationException // dev.sargunv.kotlindsv/DsvException|null[0]
 
 final object dev.sargunv.kotlindsv/Csv : dev.sargunv.kotlindsv/DsvFormat // dev.sargunv.kotlindsv/Csv|null[0]
 

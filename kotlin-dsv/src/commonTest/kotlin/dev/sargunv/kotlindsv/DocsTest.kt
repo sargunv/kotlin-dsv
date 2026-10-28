@@ -4,6 +4,8 @@ package dev.sargunv.kotlindsv
 
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
+import kotlin.test.assertIs
 import kotlinx.io.Buffer
 import kotlinx.io.buffered
 import kotlinx.io.files.Path
@@ -294,5 +296,26 @@ class DocsTest {
 
     val decoded = Csv.decodeFromString<Order>(csv)
     // --8<-- [end:custom-cell-serializer]
+  }
+
+  @Test
+  fun errorWrapping() {
+    @Serializable data class Person(val name: String, val age: Int)
+
+    // --8<-- [start:error-wrapping]
+    try {
+      Csv.decodeFromString<Person>("name,age\nAda,thirty\n")
+    } catch (e: DsvDecodingException) {
+      // e.record is 1; e.columnName is "age"; e.cause is NumberFormatException
+    }
+    // --8<-- [end:error-wrapping]
+
+    val e =
+      assertFailsWith<DsvDecodingException> {
+        Csv.decodeFromString<Person>("name,age\nAda,thirty\n")
+      }
+    assertEquals(1, e.record)
+    assertEquals("age", e.columnName)
+    assertIs<NumberFormatException>(e.cause)
   }
 }
