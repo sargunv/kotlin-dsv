@@ -23,7 +23,7 @@ review.
 
 Tooling is managed by [mise](https://mise.jdx.dev). Install mise, then run
 `mise install` to install the pinned tools (Java, dprint, hk, Python,
-actionlint, shellcheck) and set up the git hooks. Clone with
+jactionlint, shellcheck) and set up the git hooks. Clone with
 `--recurse-submodules` (or run `git submodule update --init --recursive`) so the
 filesystem test fixtures are present.
 
