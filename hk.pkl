@@ -1,9 +1,9 @@
 // Drives pre-commit, `mise run check`, and `mise run fix`.
 // Top-level steps create the implicit check, fix, and pre-commit hooks.
 
-amends "package://github.com/jdx/hk/releases/download/v2.8.0/hk@2.8.0#/Config.pkl"
+amends "package://github.com/jdx/hk/releases/download/v2.10.0/hk@2.10.0#/Config.pkl"
 
-import "package://github.com/jdx/hk/releases/download/v2.8.0/hk@2.8.0#/Builtins.pkl"
+import "package://github.com/jdx/hk/releases/download/v2.10.0/hk@2.10.0#/Builtins.pkl"
 
 steps {
   // Unbatched: dprint parallelizes itself.
@@ -11,12 +11,9 @@ steps {
     exclusive = true
   }
 
-  ["actionlint"] {
-    glob = List(".github/workflows/*.yml", ".github/workflows/*.yaml")
-    check = "actionlint {{files}}"
-  }
+  ["jactionlint"] = Builtins.jactionlint
 
-  // actionlint covers the `run:` blocks in workflows.
+  // jactionlint covers the `run:` blocks in workflows.
   ["shellcheck"] {
     glob = List("**/*.sh", ".mise/bin/*")
     check = "shellcheck {{files}}"

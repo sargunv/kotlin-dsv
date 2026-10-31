@@ -5,6 +5,10 @@ min_version = "2026.7.15"
 experimental = true
 pin = true
 lockfile = true
+# OpenJDK 25 has no windows-arm64 build, so generate mode cannot lock every
+# lockfile_platforms entry. merge updates changed tools and keeps the existing
+# java skip for that platform.
+lockfile_mode = "merge"
 lockfile_platforms = [
   "linux-x64",
   "linux-arm64",
@@ -17,12 +21,12 @@ lockfile_platforms = [
 postinstall = ["hk install --mise"]
 
 [vars]
-actionlint_version = "1.7.12"
-dprint_version = "0.64.1"
-hk_version = "2.8.0"
+dprint_version = "0.64.3"
+hk_version = "2.10.0"
+jactionlint_version = "2.4.0"
 java_version = "openjdk-25.0.2"
-node_version = "26.12.1"
-python_version = "3.15.1"
+node_version = "26.13.0"
+python_version = "3.15.2"
 shellcheck_version = "0.11.0"
 xcodes_version = "2.1.0"
 
@@ -30,8 +34,8 @@ xcodes_version = "2.1.0"
 "core:java" = "{{vars.java_version}}"
 "aqua:dprint/dprint" = "{{vars.dprint_version}}"
 "aqua:jdx/hk" = "{{vars.hk_version}}"
+"aqua:jdx/jactionlint" = "{{vars.jactionlint_version}}"
 "core:python" = "{{vars.python_version}}"
-"aqua:rhysd/actionlint" = "{{vars.actionlint_version}}"
 "aqua:koalaman/shellcheck" = "{{vars.shellcheck_version}}"
 
 # For tooling outside Gradle (also provides npm for the npm: backend below);

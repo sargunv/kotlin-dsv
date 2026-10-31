@@ -7,7 +7,7 @@ Install mise, then from the repo root install all required tools:
 mise install
 ```
 
-This installs the pinned versions of Java, dprint, hk, Python, actionlint, and
+This installs the pinned versions of Java, dprint, hk, Python, jactionlint, and
 shellcheck, and runs `hk install --mise` to set up the pre-commit hook.
 
 Clone with `--recurse-submodules`, or initialize them after the fact:
