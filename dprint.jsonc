@@ -27,7 +27,7 @@
   "ktfmt": { "style": "google", "lineWidth": 100 },
   // Digests are required on a bump; dprint reports the one it got.
   "plugins": [
-    "npm:@dprint/oxc@0.48.0@df41021ac038f6f34e39012425eef6247573f049203f0e6541120855e1c04082",
+    "npm:@dprint/oxc@0.49.1@4562e3e70a208e88894db98c5a5370de5aad2be4077e430b73f9d7ca6c53298d",
     "https://plugins.dprint.dev/sargunv/ktfmt-0.65.0.json@d355d4440dda00c0e315b5c39669f417bcfa76b64b68591fa1818f7a1f6b1005",
   ],
 }
