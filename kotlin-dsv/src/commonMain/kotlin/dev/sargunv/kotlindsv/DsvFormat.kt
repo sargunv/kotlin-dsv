@@ -36,6 +36,15 @@ import org.intellij.lang.annotations.Language
  * - Data classes must be flat (no nested objects, lists, or maps as properties)
  * - List elements must be serializable data classes, not primitives, maps, or lists
  *
+ * ## Errors
+ *
+ * Malformed input throws [DsvParseException]. Failures while mapping a parsed record onto a Kotlin
+ * type — including [IllegalArgumentException] from custom serializers or `require` in a constructor
+ * — are wrapped in [DsvDecodingException] with the record and column, and the original exception as
+ * [DsvDecodingException.cause]. [kotlinx.serialization.SerializationException] from a serializer is
+ * rethrown as-is, except [kotlinx.serialization.MissingFieldException], which is wrapped so the
+ * record is included. Encoding wraps similarly in [DsvEncodingException].
+ *
  * @property scheme The [DsvScheme] defining delimiters and quoting rules.
  * @property serializersModule Custom serializers module for the format.
  * @property namingStrategy Strategy for transforming property names to/from column names.
@@ -119,7 +128,7 @@ public open class DsvFormat(
     writer.writeRecord(header)
 
     val encoder = DsvEncoder(this, writer, descriptor)
-    sequence.forEach { record -> serializer.serialize(encoder, record) }
+    sequence.forEach { record -> encoder.encodeSerializableValue(serializer, record) }
   }
 
   /**
@@ -142,7 +151,7 @@ public open class DsvFormat(
 
     return sequence {
       while (decoder.hasNext()) {
-        yield(deserializer.deserialize(decoder))
+        yield(decoder.decodeSerializableValue(deserializer))
       }
     }
   }

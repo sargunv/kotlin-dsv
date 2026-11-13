@@ -72,7 +72,7 @@ class CsvDataTest {
 
   @Test
   fun fake_ints_skipline_csv() =
-    invalidTestCase<ABCDEFGHIJ, NumberFormatException>("fake_data/ints_skipline.csv")
+    invalidTestCase<ABCDEFGHIJ, DsvDecodingException>("fake_data/ints_skipline.csv")
 
   @Test
   fun fake_delimiter() {

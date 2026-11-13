@@ -9,3 +9,7 @@ Core types and format implementations for DSV serialization.
 
 Start with [Csv] or [Tsv] for common formats, or create a custom [DsvFormat]
 with [DsvScheme] for other delimiters.
+
+Malformed input throws [DsvParseException]. Serializer and constructor failures
+during decode are wrapped in [DsvDecodingException] with record and column
+location. Encoding wraps similarly in [DsvEncodingException].

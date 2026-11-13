@@ -59,10 +59,8 @@ class TrimFieldsTest {
   @Test
   fun whitespaceOnlyNonNullableNumbersAndEnumsStillFail() {
     for (value in listOf(" ", "\" \t\"")) {
-      assertFailsWith<NumberFormatException> {
-        format.decodeFromString<Number>("value\n$value\n")
-      }
-      assertFailsWith<IllegalArgumentException> {
+      assertFailsWith<DsvDecodingException> { format.decodeFromString<Number>("value\n$value\n") }
+      assertFailsWith<DsvDecodingException> {
         format.decodeFromString<EnumValue>("value\n$value\n")
       }
     }
@@ -72,12 +70,12 @@ class TrimFieldsTest {
   fun paddedNumbersAndEnumsDecodeOnlyWithTrimming() {
     for (value in listOf(" 42 ", "\" 42 \"")) {
       val csv = "value\n$value\n"
-      assertFailsWith<NumberFormatException> { Csv.decodeFromString<Number>(csv) }
+      assertFailsWith<DsvDecodingException> { Csv.decodeFromString<Number>(csv) }
       assertEquals(listOf(Number(42)), format.decodeFromString<Number>(csv))
     }
     for (value in listOf(" ACTIVE ", "\" ACTIVE \"", " 0 ", "\" 0 \"")) {
       val csv = "value\n$value\n"
-      assertFailsWith<IllegalArgumentException> { Csv.decodeFromString<EnumValue>(csv) }
+      assertFailsWith<DsvDecodingException> { Csv.decodeFromString<EnumValue>(csv) }
       assertEquals(listOf(EnumValue(Status.ACTIVE)), format.decodeFromString<EnumValue>(csv))
     }
   }
