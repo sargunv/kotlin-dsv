@@ -1,6 +1,9 @@
 package dev.sargunv.kotlindsv
 
+import kotlin.coroutines.cancellation.CancellationException
 import kotlinx.serialization.ExperimentalSerializationApi
+import kotlinx.serialization.SerializationException
+import kotlinx.serialization.SerializationStrategy
 import kotlinx.serialization.descriptors.SerialDescriptor
 import kotlinx.serialization.encoding.AbstractEncoder
 import kotlinx.serialization.encoding.CompositeEncoder
@@ -16,12 +19,26 @@ internal class DsvEncoder(
 
   private var nextIndex: Int = -1
   private val record: MutableList<String> = MutableList(descriptor.elementsCount, init = { "" })
+  private val columnNames: List<String> =
+    List(descriptor.elementsCount) { index ->
+      format.namingStrategy.toDsvName(descriptor.getElementName(index))
+    }
 
   private var open = false
+  private var recordNumber = 0
+  private var currentColumnName: String? = null
+  private var currentColumnIndex: Int? = null
+
+  override fun <T> encodeSerializableValue(serializer: SerializationStrategy<T>, value: T) {
+    withEncodingExceptionHandling { super.encodeSerializableValue(serializer, value) }
+  }
 
   override fun beginStructure(descriptor: SerialDescriptor): CompositeEncoder {
-    require(!open) { "Nested structures are not supported in DSV format" }
+    if (open) throw encodingException("Nested structures are not supported in DSV format")
     open = true
+    recordNumber++
+    currentColumnName = null
+    currentColumnIndex = null
     return this
   }
 
@@ -30,10 +47,14 @@ internal class DsvEncoder(
     writer.writeRecord(record)
     record.fill("")
     open = false
+    currentColumnName = null
+    currentColumnIndex = null
   }
 
   override fun encodeElement(descriptor: SerialDescriptor, index: Int): Boolean {
     nextIndex = index
+    currentColumnIndex = index
+    currentColumnName = columnNames.getOrNull(index)?.takeIf { it.isNotEmpty() }
     return true
   }
 
@@ -65,4 +86,30 @@ internal class DsvEncoder(
   override fun encodeEnum(enumDescriptor: SerialDescriptor, index: Int) =
     if (format.writeEnumsByName) encodeString(enumDescriptor.getElementName(index))
     else encodeInt(index)
+
+  private fun encodingException(message: String): DsvEncodingException =
+    DsvEncodingException(
+      message = message + dsvLocation(recordNumber, currentColumnName, currentColumnIndex),
+      record = recordNumber,
+      columnName = currentColumnName,
+      columnIndex = currentColumnIndex,
+    )
+
+  private inline fun withEncodingExceptionHandling(block: () -> Unit) {
+    try {
+      block()
+    } catch (e: CancellationException) {
+      throw e
+    } catch (e: SerializationException) {
+      throw e
+    } catch (e: Exception) {
+      throw DsvEncodingException(
+        message = dsvExceptionMessage(e, recordNumber, currentColumnName, currentColumnIndex),
+        record = recordNumber,
+        columnName = currentColumnName,
+        columnIndex = currentColumnIndex,
+        cause = e,
+      )
+    }
+  }
 }
