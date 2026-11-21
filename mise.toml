@@ -5,9 +5,8 @@ min_version = "2026.7.15"
 experimental = true
 pin = true
 lockfile = true
-# OpenJDK 25 has no windows-arm64 build, so generate mode cannot lock every
-# lockfile_platforms entry. merge updates changed tools and keeps the existing
-# java skip for that platform.
+# merge keeps existing platform entries; generate rebuilds every platform and
+# fails when a tool has no asset for one of them.
 lockfile_mode = "merge"
 lockfile_platforms = [
   "linux-x64",
@@ -21,10 +20,10 @@ lockfile_platforms = [
 postinstall = ["hk install --mise"]
 
 [vars]
-dprint_version = "0.64.3"
-hk_version = "2.12.0"
+dprint_version = "0.65.0"
+hk_version = "2.13.0"
 jactionlint_version = "2.6.0"
-java_version = "openjdk-25.0.2"
+java_version = "zulu-25.38.201.0"
 node_version = "26.13.1"
 python_version = "3.15.2"
 shellcheck_version = "0.11.0"
