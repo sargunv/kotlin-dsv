@@ -140,3 +140,23 @@ the same adapter shape.
 
 An empty cell on a nullable property decodes as null, even when your serializer
 would treat `""` as an empty list or a default object.
+
+## Decode and encode errors
+
+Malformed DSV (unterminated quotes, jagged rows with the default reject
+policies, and so on) still throws
+[`DsvParseException`](./api/kotlin-dsv/dev.sargunv.kotlindsv/-dsv-parse-exception/index.html).
+
+When a custom serializer, generated constructor, or primitive conversion fails
+while mapping a parsed row, the format wraps the original exception in
+[`DsvDecodingException`](./api/kotlin-dsv/dev.sargunv.kotlindsv/-dsv-decoding-exception/index.html).
+The message includes the 1-based record number and column header; `cause` is the
+original exception. `SerializationException` is rethrown as-is, except
+`MissingFieldException`, which is wrapped so the record is included.
+
+Encoding wraps the same way in
+[`DsvEncodingException`](./api/kotlin-dsv/dev.sargunv.kotlindsv/-dsv-encoding-exception/index.html).
+
+```kotlin
+--8<-- "kotlin-dsv/src/commonTest/kotlin/dev/sargunv/kotlindsv/DocsTest.kt:error-wrapping"
+```

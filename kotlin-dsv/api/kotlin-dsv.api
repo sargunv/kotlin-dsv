@@ -2,6 +2,27 @@ public final class dev/sargunv/kotlindsv/Csv : dev/sargunv/kotlindsv/DsvFormat {
 	public static final field INSTANCE Ldev/sargunv/kotlindsv/Csv;
 }
 
+public final class dev/sargunv/kotlindsv/DsvDecodingException : dev/sargunv/kotlindsv/DsvException {
+	public fun <init> (Ljava/lang/String;ILjava/lang/String;Ljava/lang/Integer;Ljava/lang/Throwable;)V
+	public synthetic fun <init> (Ljava/lang/String;ILjava/lang/String;Ljava/lang/Integer;Ljava/lang/Throwable;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun getColumnIndex ()Ljava/lang/Integer;
+	public final fun getColumnName ()Ljava/lang/String;
+	public final fun getRecord ()I
+}
+
+public final class dev/sargunv/kotlindsv/DsvEncodingException : dev/sargunv/kotlindsv/DsvException {
+	public fun <init> (Ljava/lang/String;ILjava/lang/String;Ljava/lang/Integer;Ljava/lang/Throwable;)V
+	public synthetic fun <init> (Ljava/lang/String;ILjava/lang/String;Ljava/lang/Integer;Ljava/lang/Throwable;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun getColumnIndex ()Ljava/lang/Integer;
+	public final fun getColumnName ()Ljava/lang/String;
+	public final fun getRecord ()I
+}
+
+public abstract class dev/sargunv/kotlindsv/DsvException : kotlinx/serialization/SerializationException {
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/Throwable;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public synthetic fun <init> (Ljava/lang/String;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+}
+
 public class dev/sargunv/kotlindsv/DsvFormat : kotlinx/serialization/SerialFormat {
 	public fun <init> (Ldev/sargunv/kotlindsv/DsvScheme;Lkotlinx/serialization/modules/SerializersModule;Ldev/sargunv/kotlindsv/DsvNamingStrategy;ZZZZ)V
 	public synthetic fun <init> (Ldev/sargunv/kotlindsv/DsvScheme;Lkotlinx/serialization/modules/SerializersModule;Ldev/sargunv/kotlindsv/DsvNamingStrategy;ZZZZILkotlin/jvm/internal/DefaultConstructorMarker;)V
@@ -116,7 +137,7 @@ public final class dev/sargunv/kotlindsv/DsvNamingStrategy$UppercaseWords : dev/
 	public fun toString ()Ljava/lang/String;
 }
 
-public final class dev/sargunv/kotlindsv/DsvParseException : kotlinx/serialization/SerializationException {
+public final class dev/sargunv/kotlindsv/DsvParseException : dev/sargunv/kotlindsv/DsvException {
 	public fun <init> (Ljava/lang/String;)V
 }
 
