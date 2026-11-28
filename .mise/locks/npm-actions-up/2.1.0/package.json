@@ -2,6 +2,6 @@
   "name": "mise-npm-install",
   "private": true,
   "dependencies": {
-    "actions-up": "2.0.0"
+    "actions-up": "2.1.0"
   }
 }
